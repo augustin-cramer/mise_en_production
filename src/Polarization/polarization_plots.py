@@ -78,7 +78,7 @@ def choose_pol(
     else:
         companies = ["all"]
 
-    if os.path.exists(f"plots/Polarization/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.png"):
+    if os.path.exists(f"plots/Polarization/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.png") and os.path.exists(f"notebooks/polarization/polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.csv"):
         print('graph aldready exists')
         img = mpimg.imread(f'plots/Polarization/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.png')
         plt.figure(figsize=(12, 8))
