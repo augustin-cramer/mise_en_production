@@ -78,6 +78,64 @@ def plot_from_sources(df_all_grouped, axis, sources):
     plt.tight_layout()  # Adjust layout
     plt.show()
 
+import plotly.graph_objects as go
+
+def plot_from_sources_plotly(df_all_grouped, axis, sources):
+    """
+    Plots cosine similarity values from different sources over years,
+    including confidence intervals, using Plotly.
+    
+    Parameters:
+    - df_all_grouped (DataFrame): A pandas DataFrame containing the grouped data.
+    - axis (int): The axis number to plot the cosine similarity for.
+    - sources (list): A list of sources to include in the plot.
+    """
+    # Initialize the Plotly figure
+    fig = go.Figure()
+
+    # Loop through each source to add to the plot
+    for source in sources:
+        # Filter data for the current source
+        df_source = df_all_grouped[df_all_grouped["source"] == source]
+        
+        # Extract data
+        x = df_source["year"]
+        y = df_source[f"cos axe {axis}"]
+        ci_low = df_source[f"CI_{axis}_inf"]
+        ci_high = df_source[f"CI_{axis}_sup"]
+
+        # Add the main line plot
+        fig.add_trace(go.Scatter(
+            x=x, y=y,
+            mode='lines',
+            name=f"Cosine similarity on axis {axis} of {source}",
+            line=dict(width=2)
+        ))
+        
+        # Add confidence interval area
+        fig.add_trace(go.Scatter(
+            x=list(x) + list(x)[::-1],  # x, then x reversed
+            y=list(ci_high) + list(ci_low)[::-1],
+            fill='toself',
+            fillcolor='rgba(0,100,80,0.2)',
+            line=dict(color='rgba(255,255,255,0)'),
+            showlegend=False,
+            name=f"Confidence Interval {source}"
+        ))
+
+    # Update plot layout
+    fig.update_layout(
+        title=f"Cosine Similarity on Axis {axis}",
+        xaxis_title="Year",
+        yaxis_title="Cosine Similarity",
+        legend_title="Source",
+        template="plotly_white"
+    )
+
+    # Show the figure
+    fig.show()
+
+
 def choose_projection_cos(
     axis=1,
     sources=["par", "GUA", "TE", "DM", "DE", "MET"],
@@ -159,5 +217,5 @@ def choose_projection_cos(
     df_all_grouped = bootstrap(df_all_grouped, df, source_column="source", axis=axis)
 
     # Plotting the final visualization
-    plot_from_sources(df_all_grouped, axis, sources)
+    plot_from_sources_plotly(df_all_grouped, axis, sources)
 
