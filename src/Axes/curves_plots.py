@@ -1,6 +1,6 @@
 import os
-from Axes.projection_functions import *
-from Axes.bootstraping import *
+from ..Axes.projection_functions import *
+from ..Axes.bootstraping import *
 import pandas as pd 
 from matplotlib import pyplot as plt
 
@@ -133,7 +133,7 @@ def plot_from_sources_plotly(df_all_grouped, axis, sources):
     )
 
     # Show the figure
-    fig.show()
+    return fig
 
 
 def choose_projection_cos(
@@ -217,5 +217,5 @@ def choose_projection_cos(
     df_all_grouped = bootstrap(df_all_grouped, df, source_column="source", axis=axis)
 
     # Plotting the final visualization
-    plot_from_sources_plotly(df_all_grouped, axis, sources)
+    return plot_from_sources_plotly(df_all_grouped, axis, sources)
 
