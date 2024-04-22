@@ -1,7 +1,14 @@
 import streamlit as st
 import numpy as np
 import plotly.figure_factory as ff
+import s3fs
 from src.Axes.curves_plots import choose_projection_cos
+
+# connexion to ssp cloud bucket
+ssp_cloud = True # variable in the plot
+S3_ENDPOINT_URL = "https://minio.lab.sspcloud.fr"
+fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': S3_ENDPOINT_URL})
+bucket = "nfarhan/diffusion/mise_en_production"
 
 with_parliament = st.checkbox('With Parliament')
 
@@ -41,7 +48,8 @@ if st.button('Generate graph'):
             focus_on_companies = None
         if curves_by_company == []:
             curves_by_company = None
-        fig = choose_projection_cos(axis, sources, focus_on_companies, curves_by_company, with_parliament)
+        fig = choose_projection_cos(axis, sources, focus_on_companies, curves_by_company,
+         with_parliament, ssp_cloud=ssp_cloud, fs=fs, bucket=bucket)
         st.plotly_chart(fig, use_container_width=True, theme=None)
     # with tab2:
     #     # Plot!
