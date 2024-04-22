@@ -8,6 +8,8 @@ import numpy as np
 import os 
 import datetime
 import matplotlib.image as mpimg
+import plotly.graph_objects as go
+from IPython.display import Image, display, HTML
 
 
 # DISCLAIMER : Axis visualization only works for the parliament for now.
@@ -78,13 +80,48 @@ def choose_pol(
     else:
         companies = ["all"]
 
-    if os.path.exists(f"plots/Polarization/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.png") and os.path.exists(f"notebooks/polarization/polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.csv"):
-        print('graph aldready exists')
-        img = mpimg.imread(f'plots/Polarization/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.png')
-        plt.figure(figsize=(12, 8))
-        plt.imshow(img)
-        plt.axis('off')
-        plt.show()
+    for company in companies : 
+        if not os.path.exists(f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.csv"):
+            break
+        else :
+
+            fig = go.Figure()
+            
+            # Convert the company's metrics into a DataFrame and save to CSV
+            df_pol = pd.read_csv(f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {company}, percentiles = {percentiles}, with parliament = {with_parliament}.csv")
+
+            # Extract polarization metrics for plotting
+            real_pol = np.array(df_pol['real_pol'])
+            random_pol = np.array(df_pol['random_pol'])
+            CI_lows_real = np.array(df_pol['CI_lows_real'])
+            CI_high_real = np.array(df_pol['CI_high_real'])
+            CI_lows_random = np.array(df_pol['CI_lows_random'])
+            CI_high_random = np.array(df_pol['CI_high_random'])
+            x = [2010 + i for i in range(len(real_pol))]
+
+            # Plot real polarization with confidence intervals
+            fig.add_trace(go.Scatter(x=x, y=real_pol, mode='lines', name=f'Real Polarization - {company}', line=dict(color='blue')))
+            fig.add_trace(go.Scatter(x=x, y=CI_high_real, mode='lines', name='Upper CI Real', line=dict(width=0), showlegend=False))
+            fig.add_trace(go.Scatter(x=x, y=CI_lows_real, mode='lines', fill='tonexty', name='CI Real', line=dict(width=0), fillcolor='rgba(0, 0, 255, 0.2)', showlegend=False))
+
+            # Optionally plot random polarization with confidence intervals
+            if print_random_pol:
+                fig.add_trace(go.Scatter(x=x, y=random_pol, mode='lines', name=f'Random Polarization - {company}', line=dict(color='red', dash='dash')))
+                fig.add_trace(go.Scatter(x=x, y=CI_high_random, mode='lines', name='Upper CI Random', line=dict(width=0), showlegend=False))
+                fig.add_trace(go.Scatter(x=x, y=CI_lows_random, mode='lines', fill='tonexty', name='CI Random', line=dict(width=0), fillcolor='rgba(255, 165, 0, 0.2)', showlegend=False))
+
+
+        fig.update_layout(
+        title=f"Polarization between {left_side} vs {right_side}; Axis = {axis}, Companies = {companies}, Percentiles = {percentiles}, With Parliament = {with_parliament}",
+        xaxis_title="Year",
+        yaxis_title="Polarization",
+        legend_title="Metric",
+        template="plotly_white"
+    )
+
+        # Show the figure
+        fig.show()
+        return
 
     else :
         # Load projection data if an axis is specified
@@ -199,14 +236,14 @@ def choose_pol(
         df_pol_BT = {}
 
         # Set up the plotting figure with a specified size
-        plt.figure(figsize=(10, 6))
+        fig = go.Figure()
 
         # Loop over each company to plot polarization metrics
         for company in companies:
             # Convert the company's metrics into a DataFrame and save to CSV
             df_pol_BT[company] = pd.DataFrame(values_by_company[company])
             df_pol_BT[company].to_csv(
-                f"notebooks/polarization/polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.csv", index=False)
+                f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {company}, percentiles = {percentiles}, with parliament = {with_parliament}.csv", index=False)
 
             # Extract polarization metrics for plotting
             real_pol = np.array(values_by_company[company]['real_pol'])
@@ -218,20 +255,25 @@ def choose_pol(
             x = [2010 + i for i in range(len(real_pol))]
 
             # Plot real polarization with confidence intervals
-            plt.plot(x, real_pol, label='Real Polarization', color='blue', linewidth=2)
-            plt.fill_between(x, CI_lows_real, CI_high_real, color='blue', alpha=0.1)
+            fig.add_trace(go.Scatter(x=x, y=real_pol, mode='lines', name=f'Real Polarization - {company}', line=dict(color='blue')))
+            fig.add_trace(go.Scatter(x=x, y=CI_high_real, mode='lines', name='Upper CI Real', line=dict(width=0), showlegend=False))
+            fig.add_trace(go.Scatter(x=x, y=CI_lows_real, mode='lines', fill='tonexty', name='CI Real', line=dict(width=0), fillcolor='rgba(0, 0, 255, 0.2)', showlegend=False))
 
             # Optionally plot random polarization with confidence intervals
             if print_random_pol:
-                plt.plot(x, random_pol, label='Random Polarization', color='orange', linestyle='--', linewidth=2)
-                plt.fill_between(x, CI_lows_random, CI_high_random, color='orange', alpha=0.1)
+                fig.add_trace(go.Scatter(x=x, y=random_pol, mode='lines', name=f'Random Polarization - {company}', line=dict(color='red', dash='dash')))
+                fig.add_trace(go.Scatter(x=x, y=CI_high_random, mode='lines', name='Upper CI Random', line=dict(width=0), showlegend=False))
+                fig.add_trace(go.Scatter(x=x, y=CI_lows_random, mode='lines', fill='tonexty', name='CI Random', line=dict(width=0), fillcolor='rgba(255, 165, 0, 0.2)', showlegend=False))
 
-        # Customize the plot with titles, labels, and grid
-        plt.title(f"Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}")
-        plt.xlabel("Year")
-        plt.ylabel("Polarization")
-        plt.legend()
-        plt.grid(True, linestyle="--", alpha=0.5)
-        plt.tight_layout()
-        plt.savefig(f"plots/Polarization/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.png")
-        plt.show()  # Display the plot
+
+        fig.update_layout(
+        title=f"Polarization between {left_side} vs {right_side}; Axis = {axis}, Companies = {companies}, Percentiles = {percentiles}, With Parliament = {with_parliament}",
+        xaxis_title="Year",
+        yaxis_title="Polarization",
+        legend_title="Metric",
+        template="plotly_white"
+    )
+
+        # Show the figure
+        #fig.write_image(f"plots/Polarization/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.png")
+        fig.show()

@@ -24,7 +24,7 @@ def get_quantiles(data, percentiles):
     """
     return np.percentile(data, percentiles)
 
-def cluster_words(year, axis, left_threshold=None, right_threshold=None, head=None, tail=None, with_parliament=True, percentiles=None):
+def cluster_words(year, axis, left_threshold=None, right_threshold=None, head=None, tail=None, with_parliament=True, percentiles=None, company = None):
 
     if year > 2019 :
         year = year + 18090
@@ -38,6 +38,9 @@ def cluster_words(year, axis, left_threshold=None, right_threshold=None, head=No
         model_sentences = txt_to_model_sentences('data/without parliament/sentence_embeddings/sentence_embeddings_'+str(year)+'.txt')
 
     df_t= df_BT.loc[df_BT['year'] == year]
+
+    if company:
+        df_t = df_t.loc[df_t['class'] == company]
 
     if left_threshold or right_threshold:
         df_t = df_t.loc[(df_t[f'cos axe {axis}'] < left_threshold) | (df_t[f'cos axe {axis}'] > right_threshold)]

@@ -14,6 +14,7 @@ from sklearn.cluster import KMeans
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.feature_extraction.text import TfidfVectorizer
+import plotly.graph_objects as go
 
 
 def silhouette_score_(k_rng, data):
@@ -37,11 +38,21 @@ def silhouette_score_(k_rng, data):
         labels = kmeans.predict(data)
         sil.append(silhouette_score(data, labels))
 
-    plt.plot(k_rng, np.array(sil))
-    plt.xlabel("k")
-    plt.ylabel("Silhouette index")
-    plt.show()
-    plt.close()
+    # Create a Plotly figure
+    fig = go.Figure()
+
+    # Add a line trace for silhouette scores
+    fig.add_trace(go.Scatter(x=k_rng, y=sil, mode='lines+markers'))
+
+    # Customize layout
+    fig.update_layout(
+        xaxis_title="k",
+        yaxis_title="Silhouette index",
+        title="Silhouette Scores Across Different Values of k"
+    )
+
+    # Show the plot
+    fig.show()
 
 
 
@@ -62,13 +73,24 @@ def sse_scaler_(k_rng, data):
     sse_scaler = []
     for k in k_rng:
         km = KMeans(n_clusters=k).fit(data)
-        sse_scaler.append(km.inertia_)
+        sse_scaler.append(km.inertia_)  # The inertia attribute gives the SSE
 
-    plt.plot(k_rng, sse_scaler)
-    plt.xlabel("k")
-    plt.ylabel("Sum of squared error")
-    plt.show()
-    plt.close()
+    # Create a Plotly figure
+    fig = go.Figure()
+
+    # Add a line trace for the SSE values
+    fig.add_trace(go.Scatter(x=k_rng, y=sse_scaler, mode='lines+markers', name='SSE'))
+
+    # Customize layout
+    fig.update_layout(
+        xaxis_title="k",
+        yaxis_title="Sum of squared error",
+        title="SSE Across Different Values of k",
+        xaxis=dict(tickmode='linear', tick0=min(k_rng), dtick=1)  # Ensuring every k value is marked if discrete
+    )
+
+    # Show the plot
+    fig.show()
 
 
 
