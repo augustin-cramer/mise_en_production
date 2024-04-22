@@ -33,7 +33,7 @@ if st.button('Generate graph'):
 # fig = ff.create_distplot(hist_data, group_labels, bin_size=[.1, .25, .5])
 
 
-    tab1, tab2 = st.tabs(["Streamlit theme (default)", "Plotly native theme"])
+    tab1, tab2 = st.tabs(["Cosine similarity", "Plotly native theme"])
 
     with tab1:
         # Plot!
