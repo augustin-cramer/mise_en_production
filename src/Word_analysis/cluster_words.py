@@ -39,7 +39,6 @@ def cluster_words(
     with_parliament=True,
     percentiles=None,
 ):
-
     if year > 2019:
         year = year + 18090
     i = eval(str(year)[-1:])

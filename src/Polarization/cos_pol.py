@@ -15,7 +15,6 @@ def draw_cos_pol(
     force_i_lim=None,
     with_parliament=True,
 ):
-
     if curves_by_company:
         raise ValueError("Not implemented with company curves yet")
 
