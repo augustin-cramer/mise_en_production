@@ -39,7 +39,13 @@ def df_BT(df):
     df_BT_microsoft["class"] = "mi"
 
     df_BT = pd.concat(
-        [df_BT_amazon, df_BT_facebook, df_BT_apple, df_BT_google, df_BT_microsoft]
+        [
+            df_BT_amazon,
+            df_BT_facebook,
+            df_BT_apple,
+            df_BT_google,
+            df_BT_microsoft,
+        ]
     )
     return df_BT
 
@@ -260,7 +266,10 @@ def projection_1D(pos_k: list, neg_k: list, model_words, model_sentences, df):
     b1 = barycentre(pos_a, model_words) - barycentre(neg_a, model_words)
     b1 = b1 / np.linalg.norm(b1)
 
-    proj_barycentres = [barycentre(pos_a, model_words), barycentre(neg_a, model_words)]
+    proj_barycentres = [
+        barycentre(pos_a, model_words),
+        barycentre(neg_a, model_words),
+    ]
 
     Wv = [i.tolist() for i in proj_barycentres]
     for i in df.index:
@@ -281,7 +290,13 @@ def projection_1D(pos_k: list, neg_k: list, model_words, model_sentences, df):
 
 
 def projection_2D(
-    pos_k: list, neg_k: list, pos_l: list, neg_l: list, model_words, model_sentences, df
+    pos_k: list,
+    neg_k: list,
+    pos_l: list,
+    neg_l: list,
+    model_words,
+    model_sentences,
+    df,
 ):
     """Returns the 2D projection matrix (Wp) of the sentences in df on the axes defined, and a dataframe containing the coordinates of these projections
 
@@ -360,18 +375,42 @@ def projection_3D(
 
     pos_a = filter_model(pos_k, model_words)
     neg_a = filter_model(neg_k, model_words)
-    pos_a = [model_words.most_similar(word)[i][0] for i in range(5) for word in pos_a]
-    neg_a = [model_words.most_similar(word)[i][0] for i in range(5) for word in neg_a]
+    pos_a = [
+        model_words.most_similar(word)[i][0]
+        for i in range(5)
+        for word in pos_a
+    ]
+    neg_a = [
+        model_words.most_similar(word)[i][0]
+        for i in range(5)
+        for word in neg_a
+    ]
 
     pos_b = filter_model(pos_l, model_words)
     neg_b = filter_model(neg_l, model_words)
-    pos_b = [model_words.most_similar(word)[i][0] for i in range(5) for word in pos_b]
-    neg_b = [model_words.most_similar(word)[i][0] for i in range(5) for word in neg_b]
+    pos_b = [
+        model_words.most_similar(word)[i][0]
+        for i in range(5)
+        for word in pos_b
+    ]
+    neg_b = [
+        model_words.most_similar(word)[i][0]
+        for i in range(5)
+        for word in neg_b
+    ]
 
     pos_c = filter_model(pos_m, model_words)
     neg_c = filter_model(neg_m, model_words)
-    pos_c = [model_words.most_similar(word)[i][0] for i in range(5) for word in pos_c]
-    neg_c = [model_words.most_similar(word)[i][0] for i in range(5) for word in neg_c]
+    pos_c = [
+        model_words.most_similar(word)[i][0]
+        for i in range(5)
+        for word in pos_c
+    ]
+    neg_c = [
+        model_words.most_similar(word)[i][0]
+        for i in range(5)
+        for word in neg_c
+    ]
 
     b1 = barycentre(pos_a, model_words) - barycentre(neg_a, model_words)
     b1 = b1 / np.linalg.norm(b1)

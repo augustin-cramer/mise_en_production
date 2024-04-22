@@ -5,15 +5,23 @@ import plotly.graph_objects as go
 
 print(os.getcwd())
 
-def draw_cos_pol(left_side, right_side, curves_by_company=None, axis=None,
-    percentiles=[10, 90], print_random_pol=True, force_i_lim=None, with_parliament=True):
 
+def draw_cos_pol(
+    left_side,
+    right_side,
+    curves_by_company=None,
+    axis=None,
+    percentiles=[10, 90],
+    print_random_pol=True,
+    force_i_lim=None,
+    with_parliament=True,
+):
     if curves_by_company:
         raise ValueError("Not implemented with company curves yet")
-    
+
     if not axis:
         raise ValueError("It only works on an axis")
-    
+
     companies = ["all"]
 
     sources = left_side + right_side

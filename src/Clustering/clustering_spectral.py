@@ -55,7 +55,6 @@ def silhouette_score_(k_rng, data):
     fig.show()
 
 
-
 def sse_scaler_(k_rng, data):
     """
     Calculate and plot the sum of squared errors (SSE) for a range of cluster sizes.
@@ -93,7 +92,6 @@ def sse_scaler_(k_rng, data):
     fig.show()
 
 
-
 def plot_clusters_on_pc_spectral(number_of_clusters, data):
     """
     Perform Spectral Clustering and visualize the clusters in 2D using PCA.
@@ -106,8 +104,13 @@ def plot_clusters_on_pc_spectral(number_of_clusters, data):
     - number_of_clusters (int): The number of clusters to generate.
     - data (array-like): The dataset to be clustered and visualized.
     """
-    model = SpectralClustering(n_clusters=number_of_clusters, assign_labels="discretize",
-                               random_state=0, affinity="nearest_neighbors", n_neighbors=10)
+    model = SpectralClustering(
+        n_clusters=number_of_clusters,
+        assign_labels="discretize",
+        random_state=0,
+        affinity="nearest_neighbors",
+        n_neighbors=10,
+    )
     model.fit(data.astype("double"))
     pc = PCA(n_components=2).fit_transform(data)
     label = model.fit_predict(data.astype("double"))
@@ -115,7 +118,6 @@ def plot_clusters_on_pc_spectral(number_of_clusters, data):
     df_pc = pd.DataFrame(zip(pc.T[0].tolist(), pc.T[1].tolist(), label))
     fig = px.scatter(df_pc, x=0, y=1, color=2)
     fig.show()
-
 
 
 def plot_clusters_on_pc_kmeans(number_of_clusters, data):
@@ -157,7 +159,8 @@ def plot_clusters_on_pc_spectral_3d(number_of_clusters, data, marker_size=0.5):
 
     # Create a DataFrame with the 3D coordinates and the labels
     df_pc = pd.DataFrame(
-        zip(pc[:, 0], pc[:, 1], pc[:, 2], label), columns=["x", "y", "z", "label"]
+        zip(pc[:, 0], pc[:, 1], pc[:, 2], label),
+        columns=["x", "y", "z", "label"],
     )
 
     # Use Plotly Express to create a 3D scatter plot
@@ -177,7 +180,8 @@ def plot_clusters_on_pc_kmeans_3d(number_of_clusters, data, marker_size=0.5):
 
     # Create a DataFrame with the 3D coordinates and the labels
     df_pc = pd.DataFrame(
-        zip(pc[:, 0], pc[:, 1], pc[:, 2], label), columns=["x", "y", "z", "label"]
+        zip(pc[:, 0], pc[:, 1], pc[:, 2], label),
+        columns=["x", "y", "z", "label"],
     )
 
     # Use Plotly Express to create a 3D scatter plot
@@ -203,7 +207,7 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
     to analyze the text data `df_t`. It visualizes significant words for each cluster in a treemap
     and deploys a Dash app for interactive exploration.
     """
-    
+
     nbr_clusters = number_of_clusters
     model = SpectralClustering(
         n_clusters=nbr_clusters,
@@ -220,7 +224,10 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
 
     df_pc = pd.DataFrame(
         zip(
-            pc.T[0].tolist(), pc.T[1].tolist(), label, df_t["text"].apply(read).tolist()
+            pc.T[0].tolist(),
+            pc.T[1].tolist(),
+            label,
+            df_t["text"].apply(read).tolist(),
         )
     )
 
@@ -378,7 +385,11 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
     }
 
     # the style arguments for the main content page.
-    CONTENT_STYLE = {"margin-left": "5%", "margin-right": "5%", "padding": "20px 10p"}
+    CONTENT_STYLE = {
+        "margin-left": "5%",
+        "margin-right": "5%",
+        "padding": "20px 10p",
+    }
 
     TEXT_STYLE = {"textAlign": "center", "color": "#191970"}
 
@@ -390,7 +401,8 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
                 dcc.Dropdown(
                     id="dropdown",
                     options=[
-                        {"label": str(i), "value": i} for i in range(nbr_clusters)
+                        {"label": str(i), "value": i}
+                        for i in range(nbr_clusters)
                     ],
                     value=0,
                     clearable=False,

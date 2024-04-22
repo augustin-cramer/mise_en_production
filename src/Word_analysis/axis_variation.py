@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 from Processing.text_cleaning import *
 from GloVe.weights import *
 import warnings
+
 warnings.filterwarnings("ignore")
 from Axes.projection_functions import *
 from Axes.models import *
@@ -17,73 +18,88 @@ def process_embeddings(file_path):
     # Load the data
     df = standard_opening(file_path, False)
     # Transform the 'sentence_embedding' column
-    df['sentence_embedding'] = df['sentence_embedding'].apply(eval).apply(np.array, args=(float,))
-    df['count'] = 1
+    df["sentence_embedding"] = (
+        df["sentence_embedding"].apply(eval).apply(np.array, args=(float,))
+    )
+    df["count"] = 1
     # Select specific columns and group by 'source'
-    df = df[['sentence_embedding', 'source', 'count']].groupby(by='source', as_index=False).sum()
+    df = (
+        df[["sentence_embedding", "source", "count"]]
+        .groupby(by="source", as_index=False)
+        .sum()
+    )
     # Normalize the sentence embeddings by the count using vectorized operation
-    df['sentence_embedding'] = df.apply(lambda x: x['sentence_embedding'] / x['count'], axis=1)
+    df["sentence_embedding"] = df.apply(
+        lambda x: x["sentence_embedding"] / x["count"], axis=1
+    )
     return df
 
+
 def give_embed_anyway(word, model_word, list_of_words):
-    if word in filter_model(list_of_words, model_word): 
+    if word in filter_model(list_of_words, model_word):
         return model_word[word]
-    else :
+    else:
         return np.array([0 for i in range(50)], dtype=float)
-    
-def see_variation_on_axis(year:int, df, source = None):    
 
-    if source :
-        df = df.loc[df['source'] == source]
-    df = df.loc[df['year'] == year]
 
-    l = []
-    for word in clean(tech, 'unigram') :
-        try : 
-            l.append(df[word].tolist()[0])
-        except :
-            print(word)
-    var_tech = dict(zip(clean(tech, 'unigram'), l))
-    sorted_var_tech = sorted(var_tech.items(), key = lambda x : x[1], reverse = True)
+def see_variation_on_axis(year: int, df, source=None):
+    if source:
+        df = df.loc[df["source"] == source]
+    df = df.loc[df["year"] == year]
 
     l = []
-    for word in clean(reg, 'unigram') :
-        try : 
+    for word in clean(tech, "unigram"):
+        try:
             l.append(df[word].tolist()[0])
-        except :
+        except:
             print(word)
-    var_reg = dict(zip(clean(reg, 'unigram'), l))
-    sorted_var_reg = sorted(var_reg.items(), key = lambda x : x[1], reverse = True)
+    var_tech = dict(zip(clean(tech, "unigram"), l))
+    sorted_var_tech = sorted(
+        var_tech.items(), key=lambda x: x[1], reverse=True
+    )
 
     l = []
-    for word in clean(pos, 'unigram') :
-        try : 
+    for word in clean(reg, "unigram"):
+        try:
             l.append(df[word].tolist()[0])
-        except :
+        except:
             print(word)
-    var_pos = dict(zip(clean(pos, 'unigram'), l))
-    sorted_var_pos = sorted(var_pos.items(), key = lambda x : x[1], reverse = True)
+    var_reg = dict(zip(clean(reg, "unigram"), l))
+    sorted_var_reg = sorted(var_reg.items(), key=lambda x: x[1], reverse=True)
 
     l = []
-    for word in clean(neg, 'unigram') :
-        try : 
+    for word in clean(pos, "unigram"):
+        try:
             l.append(df[word].tolist()[0])
-        except :
+        except:
             print(word)
-    var_neg = dict(zip(clean(neg, 'unigram'), l))
-    sorted_var_neg = sorted(var_neg.items(), key = lambda x : x[1], reverse = True)
+    var_pos = dict(zip(clean(pos, "unigram"), l))
+    sorted_var_pos = sorted(var_pos.items(), key=lambda x: x[1], reverse=True)
 
-    return(sorted_var_tech, sorted_var_reg, sorted_var_pos, sorted_var_neg)
+    l = []
+    for word in clean(neg, "unigram"):
+        try:
+            l.append(df[word].tolist()[0])
+        except:
+            print(word)
+    var_neg = dict(zip(clean(neg, "unigram"), l))
+    sorted_var_neg = sorted(var_neg.items(), key=lambda x: x[1], reverse=True)
+
+    return (sorted_var_tech, sorted_var_reg, sorted_var_pos, sorted_var_neg)
 
 
-def project_variation_on_axis(axis, source:str, year:int, df, number_of_words, with_parliament) :
-
+def project_variation_on_axis(
+    axis, source: str, year: int, df, number_of_words, with_parliament
+):
     # Fetching data for the plots
-        
-    if axis == 1:
 
-        data_for_var_up = dict(see_variation_on_axis(year, df, source)[0][:number_of_words])
-        data_for_var_down = dict(see_variation_on_axis(year, df, source)[1][:number_of_words])
+    if axis == 1:
+        data_for_var_up = dict(
+            see_variation_on_axis(year, df, source)[0][:number_of_words]
+        )
+        data_for_var_down = dict(
+            see_variation_on_axis(year, df, source)[1][:number_of_words]
+        )
 
     if axis == 2:
 

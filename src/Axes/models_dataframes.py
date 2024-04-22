@@ -32,6 +32,7 @@ for i, df in enumerate(dfs[:6]):
 
 # Projections by Year
 
+
 def both_cosines(df, pos_1, neg_1, pos_2, neg_2, model_words, model_sentences):
     """
     Computes cosine similarities for two axes and updates the dataframe with these values.
@@ -58,14 +59,18 @@ def both_cosines(df, pos_1, neg_1, pos_2, neg_2, model_words, model_sentences):
     )
     return df
 
+
 # Apply the cosine similarity calculations for all prepared DataFrames
 for i in range(14):
-    dfs[i] = both_cosines(dfs[i], pos_1, neg_1, pos_2, neg_2, models_w[i], models_s[i])
+    dfs[i] = both_cosines(
+        dfs[i], pos_1, neg_1, pos_2, neg_2, models_w[i], models_s[i]
+    )
 
 # Combine all DataFrames into one for further analysis
 df = pd.concat(dfs)
 
 # BigTech DataFrames Creation
+
 
 def tostring(list):
     """
@@ -79,6 +84,7 @@ def tostring(list):
     """
     return str(list)
 
+
 # Copying the main DataFrame to isolate Big Tech related entries
 df_BT = df.copy()
 df_BT.reset_index(drop=True, inplace=True)
@@ -89,10 +95,19 @@ df_BT["theme"] = df_BT["theme"].apply(tostring)
 
 # Filtering entries by Big Tech companies based on theme presence
 big_tech_companies = ["amazon", "facebook", "apple", "google", "microsoft"]
-dfs_big_tech = {company: df_BT[df_BT["theme"].str.contains(company)] for company in big_tech_companies}
+dfs_big_tech = {
+    company: df_BT[df_BT["theme"].str.contains(company)]
+    for company in big_tech_companies
+}
 
 # Assigning a unique class identifier for each Big Tech company
-class_map = {"amazon": "am", "facebook": "fb", "apple": "ap", "google": "go", "microsoft": "mi"}
+class_map = {
+    "amazon": "am",
+    "facebook": "fb",
+    "apple": "ap",
+    "google": "go",
+    "microsoft": "mi",
+}
 for company, dfi in dfs_big_tech.items():
     dfi["class"] = class_map[company]
 
@@ -101,4 +116,6 @@ df_BT = pd.concat(dfs_big_tech.values())
 
 # Saving the processed DataFrames for future use
 df.to_csv("data/without parliament/current_dataframes/df.csv", index=False)
-df_BT.to_csv("data/without parliament/current_dataframes/df_BT.csv", index=False)
+df_BT.to_csv(
+    "data/without parliament/current_dataframes/df_BT.csv", index=False
+)
