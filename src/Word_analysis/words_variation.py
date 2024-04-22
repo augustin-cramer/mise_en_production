@@ -123,7 +123,16 @@ def get_top_variations(df_keywords, axis, number):
     ).head(number)[["text", "year", f"var cos axe {axis}"]]
     return var_up, var_down
 
-def visualize_top_variations(df_keywords, axis_1, axis_2=None, variation_1='up', variation_2='down', with_parliament=True, number=20):
+
+def visualize_top_variations(
+    df_keywords,
+    axis_1,
+    axis_2=None,
+    variation_1="up",
+    variation_2="down",
+    with_parliament=True,
+    number=20,
+):
     # Data fetching logic remains the same
     var_up_1, var_down_1 = get_top_variations(df_keywords, axis_1, number)
 
@@ -139,67 +148,121 @@ def visualize_top_variations(df_keywords, axis_1, axis_2=None, variation_1='up',
         var_down_2 = var_up_2
 
     # Initialize Plotly figure with subplots
-    fig = make_subplots(rows=2, cols=1, vertical_spacing=0.3, subplot_titles=[
-        f"Increasing Variation on Axis {axis_1}",
-        f"Decreasing Variation on Axis {axis_2}"
-    ])
+    fig = make_subplots(
+        rows=2,
+        cols=1,
+        vertical_spacing=0.3,
+        subplot_titles=[
+            f"Increasing Variation on Axis {axis_1}",
+            f"Decreasing Variation on Axis {axis_2}",
+        ],
+    )
 
     # Adding bar charts for increasing and decreasing variations
-    fig.add_trace(go.Bar(x=var_up_1['text'], y=var_up_1[f'var cos axe {axis_1}'], name='Increasing', marker_color='skyblue'), row=1, col=1)
-    fig.add_trace(go.Bar(x=var_down_2['text'], y=var_down_2[f'var cos axe {axis_2}'], name='Decreasing', marker_color='lightgreen'), row=2, col=1)
+    fig.add_trace(
+        go.Bar(
+            x=var_up_1["text"],
+            y=var_up_1[f"var cos axe {axis_1}"],
+            name="Increasing",
+            marker_color="skyblue",
+        ),
+        row=1,
+        col=1,
+    )
+    fig.add_trace(
+        go.Bar(
+            x=var_down_2["text"],
+            y=var_down_2[f"var cos axe {axis_2}"],
+            name="Decreasing",
+            marker_color="lightgreen",
+        ),
+        row=2,
+        col=1,
+    )
 
     # Update layout and axes properties
     fig.update_layout(
         title=f"Extreme Embedding Variation on Axis {axis_1} and {axis_2}",
         showlegend=True,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        legend=dict(
+            orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+        ),
     )
-    fig.update_xaxes(tickangle=45, tickmode='array', tickvals=var_up_1['text'], row=1, col=1)
-    fig.update_xaxes(tickangle=45, tickmode='array', tickvals=var_down_2['text'], row=2, col=1)
+    fig.update_xaxes(
+        tickangle=45, tickmode="array", tickvals=var_up_1["text"], row=1, col=1
+    )
+    fig.update_xaxes(
+        tickangle=45,
+        tickmode="array",
+        tickvals=var_down_2["text"],
+        row=2,
+        col=1,
+    )
 
     # Display the figure
     fig.show()
 
 
-def word_variations(year, axis_1 = 1, axis_2 = 1, variation_1 = 'up', variation_2 = 'down', with_parliament=True, number=20):
-   
-    if year > 2019 :
+def word_variations(
+    year,
+    axis_1=1,
+    axis_2=1,
+    variation_1="up",
+    variation_2="down",
+    with_parliament=True,
+    number=20,
+):
+    if year > 2019:
         year = year + 18090
     i = eval(str(year)[-1:])
-    
+
     # Assuming you have a dictionary `model_words` with keys as years and values as the corresponding model for that year
     path_1 = f"word analysis values/processed yearly data ; year = {year}, model = {i}, with parliament = {with_parliament}"
     if not os.path.exists(path_1):
-        print(f'processing year {year}')
+        print(f"processing year {year}")
         current_df = process_year_data(year, models_w[i], with_parliament)
         current_df.to_csv(path_1, index=False)
-    else :
-        print(f'{year} already processed')
+    else:
+        print(f"{year} already processed")
         current_df = pd.read_csv(path_1)
-    
+
     path_2 = f"word analysis values/processed yearly data ; year = {year-1}, model = {i-1}, with parliament = {with_parliament}"
     if not os.path.exists(path_2):
-        print(f'processing year {year-1}')
-        previous_df = process_year_data(year-1, models_w[i-1], with_parliament)
+        print(f"processing year {year-1}")
+        previous_df = process_year_data(
+            year - 1, models_w[i - 1], with_parliament
+        )
         previous_df.to_csv(path_2, index=False)
-    else :
-        print(f'{year-1} already processed')
+    else:
+        print(f"{year-1} already processed")
         previous_df = pd.read_csv(path_2)
 
-    path_3 = f'word analysis values/var embed real ; current year = {year}, previous year = {year-1}'
+    path_3 = f"word analysis values/var embed real ; current year = {year}, previous year = {year-1}"
     if not os.path.exists(path_3):
-        for cos_axe in ['cos axe 1', 'cos axe 2']:
-                var_column_name = f'var {cos_axe}'
-                print(f'comuting var embed for {cos_axe}')
-                current_df[var_column_name] = current_df['text'].apply(var_embed_real, 
-                                                                    df1=previous_df, 
-                                                                    df2=current_df, 
-                                                                    cos_axe=cos_axe)
-        current_df.to_csv(f'word analysis values/var embed real ; current year = {year}, previous year = {year-1}', index=False)
-    else :
+        for cos_axe in ["cos axe 1", "cos axe 2"]:
+            var_column_name = f"var {cos_axe}"
+            print(f"comuting var embed for {cos_axe}")
+            current_df[var_column_name] = current_df["text"].apply(
+                var_embed_real,
+                df1=previous_df,
+                df2=current_df,
+                cos_axe=cos_axe,
+            )
+        current_df.to_csv(
+            f"word analysis values/var embed real ; current year = {year}, previous year = {year-1}",
+            index=False,
+        )
+    else:
         current_df = pd.read_csv(path_3)
 
     current_df = process_yearly_data(current_df, year, with_parliament)
 
-    visualize_top_variations(current_df, axis_1, axis_2, variation_1, variation_2, with_parliament=with_parliament, number=number)
-        
+    visualize_top_variations(
+        current_df,
+        axis_1,
+        axis_2,
+        variation_1,
+        variation_2,
+        with_parliament=with_parliament,
+        number=number,
+    )

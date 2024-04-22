@@ -28,9 +28,19 @@ def get_quantiles(data, percentiles):
     """
     return np.percentile(data, percentiles)
 
-def cluster_words(year, axis, left_threshold=None, right_threshold=None, head=None, tail=None, with_parliament=True, percentiles=None, company = None):
 
-    if year > 2019 :
+def cluster_words(
+    year,
+    axis,
+    left_threshold=None,
+    right_threshold=None,
+    head=None,
+    tail=None,
+    with_parliament=True,
+    percentiles=None,
+    company=None,
+):
+    if year > 2019:
         year = year + 18090
     i = eval(str(year)[-1:])
 
@@ -52,10 +62,10 @@ def cluster_words(year, axis, left_threshold=None, right_threshold=None, head=No
     df_t = df_BT.loc[df_BT["year"] == year]
 
     if company:
-        df_t = df_t.loc[df_t['class'] == company]
+        df_t = df_t.loc[df_t["class"] == company]
 
     if company:
-        df_t = df_t.loc[df_t['class'] == company]
+        df_t = df_t.loc[df_t["class"] == company]
 
     if left_threshold or right_threshold:
         df_t = df_t.loc[
