@@ -26,7 +26,6 @@ def intervals(t, digits=5):
 
 
 def bootstrap(df_g_cos, df, source_column="source", axis=1):
-
     # Validation check for axis parameter
     if axis not in [1, 2]:
         raise ValueError("source parameter must be one of [1, 2]")
@@ -35,7 +34,6 @@ def bootstrap(df_g_cos, df, source_column="source", axis=1):
     df_g_cos["CI_" + str(axis) + "_inf"] = None
 
     for i in df_g_cos.index:
-
         year = df_g_cos["year"][i]
         source = df_g_cos[source_column][i]
 

@@ -181,9 +181,9 @@ def choose_pol(
                     )  # Presumably filters or processes data by company
                     df = df[df["class"] == company]
                 else:
-                    df["class"] = (
-                        0  # Default class if not processing by company
-                    )
+                    df[
+                        "class"
+                    ] = 0  # Default class if not processing by company
 
                 # Further refine the DataFrame structure for analysis
                 df = df[

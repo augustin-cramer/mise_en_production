@@ -22,7 +22,6 @@ new_topics = list(set(clean(new_topics, "unigram")))
 
 
 def process_year_data(year, model_words_year, with_parliament=True):
-
     if with_parliament:
         with open(f"data/with parliament/words/Finalwords_{year}.json") as f:
             words_year = json.load(f)
@@ -133,7 +132,6 @@ def vizualize_top_variations(
     number=20,
     with_parliament=True,
 ):
-
     var_up_1, var_down_1 = get_top_variations(df_keywords, axis_1, number)
 
     if axis_2:
@@ -207,7 +205,6 @@ def word_variations(
     variation_2="down",
     with_parliament=True,
 ):
-
     if os.path.exists(
         f"plots/Word_analysis/Extreme embedding variation on axis {axis_1} and {axis_2} ; variation_1 = {variation_1}, variation_2 = {variation_2}, with_parliament = {with_parliament}.png"
     ):
@@ -221,7 +218,6 @@ def word_variations(
         plt.show()
 
     else:
-
         print("computing")
 
         if year > 2019:

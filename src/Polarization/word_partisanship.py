@@ -63,7 +63,6 @@ def log_odds(counts1, counts2, prior, zscore=True):
 
 
 def get_log_odds_values(df_speeches, words2idx, party_1, party_2):
-
     dem_tweets, rep_tweets = (
         df_speeches[df_speeches["party"] == party_1],
         df_speeches[df_speeches["party"] == party_2],
@@ -94,7 +93,6 @@ def from_unigrams_to_bigrams(list_of_strings):
 def get_word_partisanship(
     df_speeches, year, party_1, party_2, bigram=False, with_parliament=True
 ):
-
     if with_parliament:
         with open(
             "data/with parliament/vocabs/vocab_" + str(year) + ".json"
@@ -169,7 +167,6 @@ def get_word_partisanship(
 
 
 def cosine_with_axis_word(word: str, b, model_words):
-
     array_1 = model_words[word]
     array_2 = b
 
@@ -179,7 +176,6 @@ def cosine_with_axis_word(word: str, b, model_words):
 
 
 def cosine_with_axis_bigram(bigram: str, b, model_words):
-
     word_1, word_2 = bigram.split(" ")
 
     array_1 = (model_words[word_1] + model_words[word_2]) * 0.5
@@ -242,7 +238,6 @@ def partizan_words(
     percentiles_refiltering_cos=[25, 75],
     with_parliament=True,
 ):
-
     sources = left_side + right_side
 
     s = str(year)[-2:]

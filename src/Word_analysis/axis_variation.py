@@ -43,7 +43,6 @@ def give_embed_anyway(word, model_word, list_of_words):
 
 
 def see_variation_on_axis(year: int, df, source=None):
-
     if source:
         df = df.loc[df["source"] == source]
     df = df.loc[df["year"] == year]
@@ -92,11 +91,9 @@ def see_variation_on_axis(year: int, df, source=None):
 def project_variation_on_axis(
     axis, source: str, year: int, df, number_of_words, with_parliament
 ):
-
     # Fetching data for the plots
 
     if axis == 1:
-
         data_for_var_up = dict(
             see_variation_on_axis(year, df, source)[0][:number_of_words]
         )
@@ -105,7 +102,6 @@ def project_variation_on_axis(
         )
 
     if axis == 2:
-
         data_for_var_up = dict(
             see_variation_on_axis(year, df, source)[2][:number_of_words]
         )
@@ -174,7 +170,6 @@ axes_words = clean(tech + reg + pos + neg, "unigram")
 def axis_variation(
     axis, source=None, year=2013, number_of_words=30, with_parliament=True
 ):
-
     if os.path.exists(
         f"plots/Word_analysis/the {number_of_words} words most responsible for the move of {source} towards the respective poles between year {year-1} and {year} ; axis = {axis}, with_parliament = {with_parliament}.png"
     ):
@@ -188,7 +183,6 @@ def axis_variation(
         plt.show()
 
     else:
-
         print("computing")
 
         if year > 2019:

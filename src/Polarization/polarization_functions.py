@@ -99,7 +99,6 @@ def chi_square(dem_t, rep_t, dem_not_t, rep_not_t, dem_no, rep_no):
 def calculate_polarization(
     dem_counts, rep_counts, measure="posterior", leaveout=True
 ):
-
     dem_user_total = dem_counts.sum(axis=1)
     rep_user_total = rep_counts.sum(axis=1)
 
@@ -309,14 +308,12 @@ def get_values(
 
 
 def compute_polarization_and_CI(df, year, party_1, party_2):
-
     tau = len(df)
     pi_s = []
     sqrt_tau_s = []
     random_pi_s = []
 
     for k in range(100):
-
         sub_sample_k = df.sample(frac=0.1, replace=False, random_state=1)
         values = get_values(
             sub_sample_k,
