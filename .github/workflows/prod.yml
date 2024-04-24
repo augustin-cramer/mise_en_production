@@ -6,6 +6,7 @@ on:
       - 'main'
       - 'augustin/deployment_ssp_cloud_2'
 
+
 jobs:
   docker:
     runs-on: ubuntu-latest
