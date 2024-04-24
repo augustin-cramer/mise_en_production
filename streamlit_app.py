@@ -2,8 +2,17 @@ import streamlit as st
 import numpy as np
 import plotly.figure_factory as ff
 from src.Axes.curves_plots import choose_projection_cos
+import os
+import s3fs
+
+st.text(os.environ.get("AWS_S3_ENDPOINT", "NO ENDPOINT"))
+
+S3_ENDPOINT_URL = os.environ.get("AWS_S3_ENDPOINT")
+fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': S3_ENDPOINT_URL})
+st.text(fs.ls("."))
 
 with_parliament = st.checkbox("With Parliament")
+
 
 axis = st.selectbox("axis", (1, 2))
 
