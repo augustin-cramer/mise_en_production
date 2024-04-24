@@ -18,4 +18,4 @@ spec:
       - name: mep
         image: augustincramer1999/mise-en-production:latest
         ports:
-        - containerPort: 5000
+        - containerPort: 8501
