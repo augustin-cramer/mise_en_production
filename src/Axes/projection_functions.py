@@ -5,7 +5,7 @@ import numpy as np
 from dask import dataframe as dd
 import ast
 from numpy.linalg import norm
-from GloVe.weights import *
+from ..GloVe.weights import *
 import warnings
 import os
 

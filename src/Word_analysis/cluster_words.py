@@ -38,6 +38,7 @@ def cluster_words(
     tail=None,
     with_parliament=True,
     percentiles=None,
+    company=None,
 ):
     if year > 2019:
         year = year + 18090
@@ -59,6 +60,12 @@ def cluster_words(
         )
 
     df_t = df_BT.loc[df_BT["year"] == year]
+
+    if company:
+        df_t = df_t.loc[df_t["class"] == company]
+
+    if company:
+        df_t = df_t.loc[df_t["class"] == company]
 
     if left_threshold or right_threshold:
         df_t = df_t.loc[

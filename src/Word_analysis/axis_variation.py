@@ -109,59 +109,68 @@ def project_variation_on_axis(
             see_variation_on_axis(year, df, source)[3][:number_of_words]
         )
 
-    fig, axs = plt.subplots(2, 1, figsize=(16, 12))
+    # Axis titles based on the 'axis' variable
+    labels = [
+        "Tech" if axis == 1 else "Positive",
+        "Reg" if axis == 1 else "Negative",
+    ]
+    colors = ["#1f77b4", "#ff7f0e"]
 
-    # Color palette for a unified look
-    colors = [
-        "#1f77b4",
-        "#ff7f0e",
-    ]  # Example: blue for 'tech' or 'pos', orange for 'reg' or 'neg'
-
-    # Plotting with enhanced aesthetics
-    for i, (data, label) in enumerate(
-        [
-            (data_for_var_up, "Tech" if axis == 1 else "Positive"),
-            (data_for_var_down, "Reg" if axis == 1 else "Negative"),
-        ]
-    ):
-        axs[i].bar(
-            data.keys(),
-            data.values(),
-            color=colors[i],
-            label=f"Variation in {label}",
-            alpha=0.75,
-            edgecolor="black",
-        )
-        axs[i].set_title(f"Variation in {label}", fontsize=14)
-        axs[i].tick_params(axis="x", rotation=45)
-        axs[i].tick_params(
-            axis="both", which="major", labelsize=12
-        )  # Bigger fonts for readability
-        axs[i].legend(fontsize=12)
-
-        # Adding a light grid to help estimate bar values
-        axs[i].grid(
-            True, which="major", linestyle="--", linewidth="0.5", color="gray"
-        )
-        axs[i].set_axisbelow(True)  # Ensure gridlines are behind the bars
-
-    # General improvements
-    fig.suptitle(
-        f"{number_of_words} words most responsible for the move of {source} towards the respective poles between year {year} and {year + 1}; axis = {axis}",
-        fontsize=16,
+    # Create a subplot figure with 2 vertical plots
+    fig = make_subplots(
+        rows=2,
+        cols=1,
+        vertical_spacing=0.3,
+        subplot_titles=[
+            f"Variation in {labels[0]}",
+            f"Variation in {labels[1]}",
+        ],
     )
 
-    # Use tight_layout to automatically adjust subplot params. `rect` argument ensures suptitle is not overlapped.
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    # Add bar charts to the subplots
+    fig.add_trace(
+        go.Bar(
+            x=list(data_for_var_up.keys()),
+            y=list(data_for_var_up.values()),
+            name=f"Variation in {labels[0]}",
+            marker_color=colors[0],
+        ),
+        row=1,
+        col=1,
+    )
+    fig.add_trace(
+        go.Bar(
+            x=list(data_for_var_down.keys()),
+            y=list(data_for_var_down.values()),
+            name=f"Variation in {labels[1]}",
+            marker_color=colors[1],
+        ),
+        row=2,
+        col=1,
+    )
 
-    # Save the figure
-    plt.savefig(
-        f"plots/Word_analysis/the {number_of_words} words most responsible for the move of {source} towards the respective poles between year {year} and {year + 1} ; axis = {axis}, with_parliament = {with_parliament}.png",
-        dpi=300,
-    )  # dpi parameter to improve resolution
+    # Customize layout
+    fig.update_layout(
+        title_text=f"{number_of_words} words most responsible for the move of {source} towards the respective poles between year {year} and {year + 1}; axis = {axis}",
+        showlegend=True,
+        legend=dict(
+            orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+        ),
+    )
 
-    # Show the plot
-    plt.show()
+    # Customize x-axis properties
+    fig.update_xaxes(tickangle=45, tickfont=dict(size=12), row=1, col=1)
+    fig.update_xaxes(tickangle=45, tickfont=dict(size=12), row=2, col=1)
+
+    # Customize y-axis properties for clarity
+    fig.update_yaxes(title_text="Count", row=1, col=1)
+    fig.update_yaxes(title_text="Count", row=2, col=1)
+
+    # Add grid lines
+    fig.update_yaxes(showgrid=True, gridwidth=0.5, gridcolor="gray")
+
+    # Display the figure
+    fig.show()
 
 
 axes_words = clean(tech + reg + pos + neg, "unigram")
@@ -170,98 +179,83 @@ axes_words = clean(tech + reg + pos + neg, "unigram")
 def axis_variation(
     axis, source=None, year=2013, number_of_words=30, with_parliament=True
 ):
-    if os.path.exists(
-        f"plots/Word_analysis/the {number_of_words} words most responsible for the move of {source} towards the respective poles between year {year-1} and {year} ; axis = {axis}, with_parliament = {with_parliament}.png"
-    ):
-        print("already computed")
-        img = mpimg.imread(
-            f"plots/Word_analysis/the {number_of_words} words most responsible for the move of {source} towards the respective poles between year {year-1} and {year} ; axis = {axis}, with_parliament = {with_parliament}.png"
-        )
-        plt.figure(figsize=(12, 8))
-        plt.imshow(img)
-        plt.axis("off")
-        plt.show()
+    print("computing")
 
-    else:
-        print("computing")
+    if year > 2019:
+        year = year + 18090
+    i = eval(str(year)[-1:])
 
-        if year > 2019:
-            year = year + 18090
-        i = eval(str(year)[-1:])
+    year_plus1 = year
+    year = year_plus1 - 1
 
-        year_plus1 = year
-        year = year_plus1 - 1
+    if year_plus1 == 20110:
+        year = 2019
 
-        if year_plus1 == 20110:
-            year = 2019
+    if with_parliament:
+        file_path_1 = f"data/with parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
+        file_path_2 = f"data/with parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
 
-        if with_parliament:
-            file_path_1 = f"data/with parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
-            file_path_2 = f"data/with parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
+    if not with_parliament:
+        file_path_1 = f"data/without parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
+        file_path_2 = f"data/without parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
 
-        if not with_parliament:
-            file_path_1 = f"data/without parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
-            file_path_2 = f"data/without parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
+    dataframes = []
+    dataframes.append(process_embeddings(file_path_1))
+    dataframes.append(process_embeddings(file_path_2))
 
-        dataframes = []
-        dataframes.append(process_embeddings(file_path_1))
-        dataframes.append(process_embeddings(file_path_2))
+    axes_words_embeddings = [
+        [
+            give_embed_anyway(word, models_w[i], axes_words)
+            for word in axes_words
+        ],
+        [
+            give_embed_anyway(word, models_w[i + 1], axes_words)
+            for word in axes_words
+        ],
+    ]
 
-        axes_words_embeddings = [
-            [
-                give_embed_anyway(word, models_w[i], axes_words)
-                for word in axes_words
-            ],
-            [
-                give_embed_anyway(word, models_w[i + 1], axes_words)
-                for word in axes_words
-            ],
-        ]
+    df_axes = pd.DataFrame(
+        zip(axes_words, *axes_words_embeddings),
+        columns=["text", f"embedding 201{i}", f"embedding 201{i+1}"],
+    )
 
-        df_axes = pd.DataFrame(
-            zip(axes_words, *axes_words_embeddings),
-            columns=["text", f"embedding 201{i}", f"embedding 201{i+1}"],
-        )
+    poles = []
 
-        poles = []
+    pos_a = filter_model(pos_1, models_w[i])
+    neg_a = filter_model(neg_1, models_w[i])
 
-        pos_a = filter_model(pos_1, models_w[i])
-        neg_a = filter_model(neg_1, models_w[i])
+    pos_b = filter_model(pos_2, models_w[i])
+    neg_b = filter_model(neg_2, models_w[i])
 
-        pos_b = filter_model(pos_2, models_w[i])
-        neg_b = filter_model(neg_2, models_w[i])
+    b1 = barycentre(pos_a, models_w[i]) - barycentre(neg_a, models_w[i])
+    b2 = barycentre(pos_b, models_w[i]) - barycentre(neg_b, models_w[i])
 
-        b1 = barycentre(pos_a, models_w[i]) - barycentre(neg_a, models_w[i])
-        b2 = barycentre(pos_b, models_w[i]) - barycentre(neg_b, models_w[i])
+    poles = [b1, b2]
 
-        poles = [b1, b2]
+    for i in df_axes.index:
+        word = df_axes[df_axes.columns[1]][i]
+        var = []
+        for j in dataframes[0].index:
+            diff = (
+                dataframes[1]["sentence_embedding"][j]
+                / (np.linalg.norm(dataframes[1]["sentence_embedding"][j]))
+            ) - (
+                dataframes[0]["sentence_embedding"][j]
+                / (np.linalg.norm(dataframes[0]["sentence_embedding"][j]))
+            )
+            var.append(np.dot(diff, word) / (np.linalg.norm(poles[axis - 1])))
+        dataframes[0][str(df_axes["text"][i])] = var
 
-        for i in df_axes.index:
-            word = df_axes[df_axes.columns[1]][i]
-            var = []
-            for j in dataframes[0].index:
-                diff = (
-                    dataframes[1]["sentence_embedding"][j]
-                    / (np.linalg.norm(dataframes[1]["sentence_embedding"][j]))
-                ) - (
-                    dataframes[0]["sentence_embedding"][j]
-                    / (np.linalg.norm(dataframes[0]["sentence_embedding"][j]))
-                )
-                var.append(
-                    np.dot(diff, word) / (np.linalg.norm(poles[axis - 1]))
-                )
-            dataframes[0][str(df_axes["text"][i])] = var
+    dataframes[0]["year"] = year
+    dataframes[1]["year"] = year_plus1
 
-        dataframes[0]["year"] = year
-        dataframes[1]["year"] = year_plus1
+    df = pd.concat([dataframes[0], dataframes[1]])
 
-        df = pd.concat([dataframes[0], dataframes[1]])
-
-        project_variation_on_axis(
-            axis=axis,
-            source=source,
-            year=year,
-            df=df,
-            number_of_words=number_of_words,
-            with_parliament=with_parliament,
-        )
+    project_variation_on_axis(
+        axis=axis,
+        source=source,
+        year=year,
+        df=df,
+        number_of_words=number_of_words,
+        with_parliament=with_parliament,
+    )

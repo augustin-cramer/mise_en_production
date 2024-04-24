@@ -15,6 +15,7 @@ from Processing.preprocess_parliament import *
 import os
 import matplotlib.image as mpimg
 from matplotlib import pyplot as plt
+import plotly.graph_objects as go
 
 
 events_keywordskeywords = list(set(clean(events_keywords, "unigram")))
@@ -123,15 +124,16 @@ def get_top_variations(df_keywords, axis, number):
     return var_up, var_down
 
 
-def vizualize_top_variations(
+def visualize_top_variations(
     df_keywords,
     axis_1,
     axis_2=None,
     variation_1="up",
     variation_2="down",
-    number=20,
     with_parliament=True,
+    number=20,
 ):
+    # Data fetching logic remains the same
     var_up_1, var_down_1 = get_top_variations(df_keywords, axis_1, number)
 
     if axis_2:
@@ -145,56 +147,60 @@ def vizualize_top_variations(
     if variation_2 == "up":
         var_down_2 = var_up_2
 
-    """fig = make_subplots(rows=2, cols=1)
-
-    # Add bar plot for increasing variations
-    fig.add_trace(go.Bar(x=var_up_1['text'], y=var_up_1[f'var cos axe {axis_1}'], name='Increasing'), row=1, col=1)
-
-    # Add bar plot for decreasing variations
-    fig.add_trace(go.Bar(x=var_down_2['text'], y=var_down_2[f'var cos axe {axis_2}'], name='Decreasing'), row=2, col=1)
-
-    fig.update_layout(title_text= f"Extreme embedding variation on axis {axis_1} and {axis_2}")
-    fig.update_layout(autosize=False, width=1000, height=800)
-    fig.write_html(f"plots/Word_analysis/Extreme embedding variation on axis {axis_1} and {axis_2} ; variation_1 = {variation_1}, variation_2 = {variation_2}, with_parliament = {with_parliament}.png")
-
-    fig.show()"""
-
-    fig, axs = plt.subplots(
-        2, 1, figsize=(12, 10)
-    )  # Create two subplots vertically
-
-    # Plot for increasing variations
-    axs[0].bar(
-        var_up_1["text"],
-        var_up_1[f"var cos axe {axis_1}"],
-        color="skyblue",
-        label="Increasing",
-    )
-    axs[0].set_title(f"Increasing Variation on Axis {axis_1}")
-    axs[0].legend()
-    axs[0].set_xticklabels(var_up_1["text"], rotation=45, ha="right")
-
-    # Plot for decreasing variations
-    axs[1].bar(
-        var_down_2["text"],
-        var_down_2[f"var cos axe {axis_2}"],
-        color="lightgreen",
-        label="Decreasing",
-    )
-    axs[1].set_title(f"Decreasing Variation on Axis {axis_2}")
-    axs[1].legend()
-    axs[1].set_xticklabels(var_down_2["text"], rotation=45, ha="right")
-
-    # Overall figure title and layout adjustments
-    plt.suptitle(f"Extreme Embedding Variation on Axis {axis_1} and {axis_2}")
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-
-    # Saving the figure
-    plt.savefig(
-        f"plots/Word_analysis/Extreme embedding variation on axis {axis_1} and {axis_2} ; variation_1 = {variation_1}, variation_2 = {variation_2}, with_parliament = {with_parliament}.png"
+    # Initialize Plotly figure with subplots
+    fig = make_subplots(
+        rows=2,
+        cols=1,
+        vertical_spacing=0.3,
+        subplot_titles=[
+            f"Increasing Variation on Axis {axis_1}",
+            f"Decreasing Variation on Axis {axis_2}",
+        ],
     )
 
-    plt.show()
+    # Adding bar charts for increasing and decreasing variations
+    fig.add_trace(
+        go.Bar(
+            x=var_up_1["text"],
+            y=var_up_1[f"var cos axe {axis_1}"],
+            name="Increasing",
+            marker_color="skyblue",
+        ),
+        row=1,
+        col=1,
+    )
+    fig.add_trace(
+        go.Bar(
+            x=var_down_2["text"],
+            y=var_down_2[f"var cos axe {axis_2}"],
+            name="Decreasing",
+            marker_color="lightgreen",
+        ),
+        row=2,
+        col=1,
+    )
+
+    # Update layout and axes properties
+    fig.update_layout(
+        title=f"Extreme Embedding Variation on Axis {axis_1} and {axis_2}",
+        showlegend=True,
+        legend=dict(
+            orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+        ),
+    )
+    fig.update_xaxes(
+        tickangle=45, tickmode="array", tickvals=var_up_1["text"], row=1, col=1
+    )
+    fig.update_xaxes(
+        tickangle=45,
+        tickmode="array",
+        tickvals=var_down_2["text"],
+        row=2,
+        col=1,
+    )
+
+    # Display the figure
+    fig.show()
 
 
 def word_variations(
@@ -204,48 +210,59 @@ def word_variations(
     variation_1="up",
     variation_2="down",
     with_parliament=True,
+    number=20,
 ):
-    if os.path.exists(
-        f"plots/Word_analysis/Extreme embedding variation on axis {axis_1} and {axis_2} ; variation_1 = {variation_1}, variation_2 = {variation_2}, with_parliament = {with_parliament}.png"
-    ):
-        print("already computed")
-        img = mpimg.imread(
-            f"plots/Word_analysis/Extreme embedding variation on axis {axis_1} and {axis_2} ; variation_1 = {variation_1}, variation_2 = {variation_2}, with_parliament = {with_parliament}.png"
-        )
-        plt.figure(figsize=(12, 8))
-        plt.imshow(img)
-        plt.axis("off")
-        plt.show()
+    if year > 2019:
+        year = year + 18090
+    i = eval(str(year)[-1:])
 
-    else:
-        print("computing")
-
-        if year > 2019:
-            year = year + 18090
-        i = eval(str(year)[-1:])
-
-        # Assuming you have a dictionary `model_words` with keys as years and values as the corresponding model for that year
+    # Assuming you have a dictionary `model_words` with keys as years and values as the corresponding model for that year
+    path_1 = f"word analysis values/processed yearly data ; year = {year}, model = {i}, with parliament = {with_parliament}"
+    if not os.path.exists(path_1):
+        print(f"processing year {year}")
         current_df = process_year_data(year, models_w[i], with_parliament)
+        current_df.to_csv(path_1, index=False)
+    else:
+        print(f"{year} already processed")
+        current_df = pd.read_csv(path_1)
+
+    path_2 = f"word analysis values/processed yearly data ; year = {year-1}, model = {i-1}, with parliament = {with_parliament}"
+    if not os.path.exists(path_2):
+        print(f"processing year {year-1}")
         previous_df = process_year_data(
             year - 1, models_w[i - 1], with_parliament
         )
+        previous_df.to_csv(path_2, index=False)
+    else:
+        print(f"{year-1} already processed")
+        previous_df = pd.read_csv(path_2)
 
+    path_3 = f"word analysis values/var embed real ; current year = {year}, previous year = {year-1}"
+    if not os.path.exists(path_3):
         for cos_axe in ["cos axe 1", "cos axe 2"]:
             var_column_name = f"var {cos_axe}"
+            print(f"comuting var embed for {cos_axe}")
             current_df[var_column_name] = current_df["text"].apply(
                 var_embed_real,
                 df1=previous_df,
                 df2=current_df,
                 cos_axe=cos_axe,
             )
-
-        current_df = process_yearly_data(current_df, year, with_parliament)
-
-        vizualize_top_variations(
-            current_df,
-            axis_1,
-            axis_2,
-            variation_1,
-            variation_2,
-            with_parliament=with_parliament,
+        current_df.to_csv(
+            f"word analysis values/var embed real ; current year = {year}, previous year = {year-1}",
+            index=False,
         )
+    else:
+        current_df = pd.read_csv(path_3)
+
+    current_df = process_yearly_data(current_df, year, with_parliament)
+
+    visualize_top_variations(
+        current_df,
+        axis_1,
+        axis_2,
+        variation_1,
+        variation_2,
+        with_parliament=with_parliament,
+        number=number,
+    )
