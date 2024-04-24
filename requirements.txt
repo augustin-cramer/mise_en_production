@@ -78,6 +78,7 @@ scipy==1.10.1
 six==1.16.0
 smart-open==7.0.4
 stack-data==0.6.3
+streamlit==1.33.0
 tenacity==8.2.3
 threadpoolctl==3.4.0
 toolz==0.12.1
