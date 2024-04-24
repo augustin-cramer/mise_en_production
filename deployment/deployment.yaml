@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: mep
-        image: acramer/mise-en-production:latest
+        image: augustincramer1999/mise-en-production:latest
         ports:
         - containerPort: 5000
