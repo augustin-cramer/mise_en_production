@@ -6,7 +6,6 @@ on:
       - 'main'
       - 'augustin/connect_db'
 
-
 jobs:
   docker:
     runs-on: ubuntu-latest
