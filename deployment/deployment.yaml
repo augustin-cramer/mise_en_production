@@ -21,4 +21,6 @@ spec:
         - containerPort: 8501
         env:
         - name: AWS_ACCESS_KEY_ID
-          value: ${{ AWS_ACCESS_KEY_ID }}
+          valueFrom:
+            fieldRef:
+              fieldPath: AWS_ACCESS_KEY_ID
