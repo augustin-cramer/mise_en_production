@@ -19,8 +19,3 @@ spec:
         image: augustincramer1999/mise-en-production:latest
         ports:
         - containerPort: 8501
-        env:
-        - name: AWS_ACCESS_KEY_ID
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.AWS_ACCESS_KEY_ID
