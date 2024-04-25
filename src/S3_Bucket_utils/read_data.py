@@ -1,7 +1,6 @@
-import pandas as pd
 import json
+import pandas as pd
 from scipy import sparse
-import s3fs
 
 
 def read_csv_bucket(fs, FILE_PATH_S3):
