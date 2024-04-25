@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - 'main'
-      - 'augustin/deployment_ssp_cloud_2'
+      - 'augustin/connect_db'
 
 
 jobs:
