@@ -5,6 +5,7 @@ from src.Axes.curves_plots import choose_projection_cos
 import os
 import s3fs
 
+st.text(os.environ.get("AWS_ACCESS_KEY_ID", "NO AWS_ACCESS_KEY_ID"))
 st.text(os.environ.get("AWS_S3_ENDPOINT", "NO ENDPOINT"))
 
 S3_ENDPOINT_URL = os.environ.get("AWS_S3_ENDPOINT")
