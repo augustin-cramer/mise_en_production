@@ -23,4 +23,4 @@ spec:
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             fieldRef:
-              fieldPath: AWS_ACCESS_KEY_ID
+              fieldPath: metadata.AWS_ACCESS_KEY_ID
