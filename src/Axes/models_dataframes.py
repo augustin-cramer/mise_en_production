@@ -8,9 +8,6 @@ from Axes.projection_functions import *
 from Axes.axes_definition import *
 from Axes.models import *
 
-os.chdir("../")
-print(os.getcwd())
-
 # DataFrames Preparation and Processing
 
 dfs = []

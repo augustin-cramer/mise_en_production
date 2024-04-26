@@ -1,9 +1,8 @@
-from Polarization.polarization_plots import *
-from Axes.bootstraping import *
+from ..Polarization.polarization_plots import *
+from ..Axes.bootstraping import *
 import os
 import plotly.graph_objects as go
 
-print(os.getcwd())
 
 
 def draw_cos_pol(
@@ -22,7 +21,7 @@ def draw_cos_pol(
     if not axis:
         raise ValueError("It only works on an axis")
 
-    companies = ["all"]
+    companies = "all"
 
     sources = left_side + right_side
 
@@ -39,6 +38,7 @@ def draw_cos_pol(
             print_random_pol=print_random_pol,
             force_i_lim=force_i_lim,
             with_parliament=with_parliament,
+            return_fig=False
         )
 
     else:
@@ -289,4 +289,4 @@ def draw_cos_pol(
         )
 
     # Display the figure
-    fig.show()
+    return fig

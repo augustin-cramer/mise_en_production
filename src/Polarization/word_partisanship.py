@@ -3,11 +3,11 @@ import numpy as np
 from collections import defaultdict
 import math
 import json
-from Polarization.polarization_functions import *
-from GloVe.weights import *
-from Axes.projection_functions import *
-from Axes.axes_definition import *
-from Axes.models import *
+from ..Polarization.polarization_functions import *
+from ..GloVe.weights import *
+from ..Axes.projection_functions import *
+from ..Axes.axes_definition import *
+from ..Axes.models import *
 
 
 def get_counts(text, vocab):

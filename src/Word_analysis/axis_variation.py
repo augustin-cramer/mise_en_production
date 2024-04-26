@@ -2,16 +2,15 @@ import pandas as pd
 import numpy as np
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
-from Processing.text_cleaning import *
-from GloVe.weights import *
+from ..Processing.text_cleaning import *
+from ..GloVe.weights import *
 import warnings
 
 warnings.filterwarnings("ignore")
-from Axes.projection_functions import *
-from Axes.models import *
-from Processing.preprocess_parliament import *
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
+from ..Axes.projection_functions import *
+from ..Axes.models import *
+from ..Processing.preprocess_parliament import *
+import streamlit as st 
 
 
 def process_embeddings(file_path):
@@ -43,6 +42,9 @@ def give_embed_anyway(word, model_word, list_of_words):
 
 
 def see_variation_on_axis(year: int, df, source=None):
+    
+    st.write('Computing...')
+
     if source:
         df = df.loc[df["source"] == source]
     df = df.loc[df["year"] == year]
@@ -52,7 +54,7 @@ def see_variation_on_axis(year: int, df, source=None):
         try:
             l.append(df[word].tolist()[0])
         except:
-            print(word)
+            print(f'{word} not in the model')
     var_tech = dict(zip(clean(tech, "unigram"), l))
     sorted_var_tech = sorted(
         var_tech.items(), key=lambda x: x[1], reverse=True
@@ -170,7 +172,7 @@ def project_variation_on_axis(
     fig.update_yaxes(showgrid=True, gridwidth=0.5, gridcolor="gray")
 
     # Display the figure
-    fig.show()
+    return fig
 
 
 axes_words = clean(tech + reg + pos + neg, "unigram")
@@ -251,7 +253,7 @@ def axis_variation(
 
     df = pd.concat([dataframes[0], dataframes[1]])
 
-    project_variation_on_axis(
+    return project_variation_on_axis(
         axis=axis,
         source=source,
         year=year,

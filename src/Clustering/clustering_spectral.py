@@ -1,5 +1,4 @@
 from sklearn.cluster import SpectralClustering
-import matplotlib.pyplot as plt
 import dash
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
@@ -9,12 +8,12 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 from sklearn.metrics import silhouette_score
 import pandas as pd
-import joblib
 from sklearn.cluster import KMeans
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.feature_extraction.text import TfidfVectorizer
 import plotly.graph_objects as go
+import streamlit as st
 
 
 def silhouette_score_(k_rng, data):
@@ -52,7 +51,7 @@ def silhouette_score_(k_rng, data):
     )
 
     # Show the plot
-    fig.show()
+    st.plotly_chart(fig, use_container_width=True)
 
 
 def sse_scaler_(k_rng, data):
@@ -93,7 +92,7 @@ def sse_scaler_(k_rng, data):
     )
 
     # Show the plot
-    fig.show()
+    st.plotly_chart(fig, use_container_width=True)
 
 
 def plot_clusters_on_pc_spectral(number_of_clusters, data):
@@ -121,7 +120,7 @@ def plot_clusters_on_pc_spectral(number_of_clusters, data):
 
     df_pc = pd.DataFrame(zip(pc.T[0].tolist(), pc.T[1].tolist(), label))
     fig = px.scatter(df_pc, x=0, y=1, color=2)
-    fig.show()
+    return fig
 
 
 def plot_clusters_on_pc_kmeans(number_of_clusters, data):
@@ -136,7 +135,7 @@ def plot_clusters_on_pc_kmeans(number_of_clusters, data):
     df_pc = pd.DataFrame(zip(pc.T[0].tolist(), pc.T[1].tolist(), label))
 
     fig = px.scatter(df_pc, x=0, y=1, color=2)
-    fig.show()
+    return fig
 
 
 def plot_clusters_on_pc_spectral_3d(number_of_clusters, data, marker_size=0.5):
@@ -171,7 +170,7 @@ def plot_clusters_on_pc_spectral_3d(number_of_clusters, data, marker_size=0.5):
     fig = px.scatter_3d(df_pc, x="x", y="y", z="z", color="label")
     fig.update_traces(marker=dict(size=marker_size))
     fig.update_layout(width=1000, height=800)
-    fig.show()
+    st.plotly_chart(fig, use_container_width=True)
 
 
 def plot_clusters_on_pc_kmeans_3d(number_of_clusters, data, marker_size=0.5):
@@ -192,7 +191,7 @@ def plot_clusters_on_pc_kmeans_3d(number_of_clusters, data, marker_size=0.5):
     fig = px.scatter_3d(df_pc, x="x", y="y", z="z", color="label")
     fig.update_traces(marker=dict(size=marker_size))
     fig.update_layout(width=1000, height=800)
-    fig.show()
+    st.plotly_chart(fig, use_container_width=True)
 
 
 def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
@@ -374,7 +373,7 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
 
         fig.update_layout(autosize=False, width=1000, height=500)
 
-        return fig
+        st.plotly_chart(fig, use_container_width=True)
 
     app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
     # the style arguments for the sidebar.
@@ -487,8 +486,10 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
 
 
 def plot_silhouette_and_sse(rank, data):
-    print(silhouette_score_([i for i in range(2, rank)], data))
-    print(sse_scaler_([i for i in range(2, rank)], data))
+    '''print(silhouette_score_([i for i in range(2, rank)], data))
+    print(sse_scaler_([i for i in range(2, rank)], data))'''
+
+    return (silhouette_score_([i for i in range(2, rank)], data), sse_scaler_([i for i in range(2, rank)], data))
 
 
 def read(text):

@@ -1,4 +1,4 @@
-from Processing.text_cleaning import clean
+from ..Processing.text_cleaning import clean
 
 tech = [
     "chrome",

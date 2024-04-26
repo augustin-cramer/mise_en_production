@@ -1,13 +1,10 @@
-from GloVe.weights import *
+from ..GloVe.weights import *
 import warnings
 import os
 
 warnings.filterwarnings("ignore")
-from Axes.projection_functions import *
-from Axes.axes_definition import *
-
-os.chdir("../")
-print(os.getcwd())
+from ..Axes.projection_functions import *
+from ..Axes.axes_definition import *
 
 
 # PART I: Generation of word2vec models for sentence and word embeddings
@@ -28,5 +25,3 @@ for i in range(14):  # Loop through the same range for word embeddings
     # Load the text data and convert it into a word2vec model for words
     models_w.append(txt_to_model_words(file_path))
 
-# Change the directory back to 'src' to continue with script execution
-os.chdir(r"src")
