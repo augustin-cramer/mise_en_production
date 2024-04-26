@@ -9,6 +9,14 @@ from src.Polarization.cos_pol import draw_cos_pol
 from src.Word_analysis.words_variation import word_variations
 from src.Word_analysis.axis_variation import axis_variation
 from src.Word_analysis.cluster_words import *
+from src.Axes.curves_plots import choose_projection_cos
+import s3fs
+import yaml
+
+s3_config = yaml.safe_load(open("S3_config.yml"))
+ssp_cloud = True
+fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': s3_config['endpoint_url']},key = s3_config["key"], secret = s3_config["secret"], token = s3_config["token"])
+bucket = "nfarhan/diffusion/mise_en_production"
 
 # Custom CSS to increase button size
 st.markdown(
