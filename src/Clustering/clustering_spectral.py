@@ -1,5 +1,4 @@
 from sklearn.cluster import SpectralClustering
-import matplotlib.pyplot as plt
 import dash
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
@@ -9,12 +8,12 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 from sklearn.metrics import silhouette_score
 import pandas as pd
-import joblib
 from sklearn.cluster import KMeans
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.feature_extraction.text import TfidfVectorizer
 import plotly.graph_objects as go
+import streamlit as st
 
 
 def silhouette_score_(k_rng, data):
@@ -52,7 +51,7 @@ def silhouette_score_(k_rng, data):
     )
 
     # Show the plot
-    fig.show()
+    return fig
 
 
 def sse_scaler_(k_rng, data):
@@ -78,9 +77,7 @@ def sse_scaler_(k_rng, data):
     fig = go.Figure()
 
     # Add a line trace for the SSE values
-    fig.add_trace(
-        go.Scatter(x=k_rng, y=sse_scaler, mode="lines+markers", name="SSE")
-    )
+    fig.add_trace(go.Scatter(x=k_rng, y=sse_scaler, mode="lines+markers", name="SSE"))
 
     # Customize layout
     fig.update_layout(
@@ -93,7 +90,7 @@ def sse_scaler_(k_rng, data):
     )
 
     # Show the plot
-    fig.show()
+    return fig
 
 
 def plot_clusters_on_pc_spectral(number_of_clusters, data):
@@ -121,7 +118,7 @@ def plot_clusters_on_pc_spectral(number_of_clusters, data):
 
     df_pc = pd.DataFrame(zip(pc.T[0].tolist(), pc.T[1].tolist(), label))
     fig = px.scatter(df_pc, x=0, y=1, color=2)
-    fig.show()
+    return fig
 
 
 def plot_clusters_on_pc_kmeans(number_of_clusters, data):
@@ -136,7 +133,7 @@ def plot_clusters_on_pc_kmeans(number_of_clusters, data):
     df_pc = pd.DataFrame(zip(pc.T[0].tolist(), pc.T[1].tolist(), label))
 
     fig = px.scatter(df_pc, x=0, y=1, color=2)
-    fig.show()
+    return fig
 
 
 def plot_clusters_on_pc_spectral_3d(number_of_clusters, data, marker_size=0.5):
@@ -171,7 +168,8 @@ def plot_clusters_on_pc_spectral_3d(number_of_clusters, data, marker_size=0.5):
     fig = px.scatter_3d(df_pc, x="x", y="y", z="z", color="label")
     fig.update_traces(marker=dict(size=marker_size))
     fig.update_layout(width=1000, height=800)
-    fig.show()
+    
+    return fig
 
 
 def plot_clusters_on_pc_kmeans_3d(number_of_clusters, data, marker_size=0.5):
@@ -192,7 +190,7 @@ def plot_clusters_on_pc_kmeans_3d(number_of_clusters, data, marker_size=0.5):
     fig = px.scatter_3d(df_pc, x="x", y="y", z="z", color="label")
     fig.update_traces(marker=dict(size=marker_size))
     fig.update_layout(width=1000, height=800)
-    fig.show()
+    return fig
 
 
 def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
@@ -374,7 +372,7 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
 
         fig.update_layout(autosize=False, width=1000, height=500)
 
-        return fig
+        st.plotly_chart(fig, use_container_width=True)
 
     app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
     # the style arguments for the sidebar.
@@ -405,8 +403,7 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
                 dcc.Dropdown(
                     id="dropdown",
                     options=[
-                        {"label": str(i), "value": i}
-                        for i in range(nbr_clusters)
+                        {"label": str(i), "value": i} for i in range(nbr_clusters)
                     ],
                     value=0,
                     clearable=False,
@@ -487,9 +484,71 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
 
 
 def plot_silhouette_and_sse(rank, data):
-    print(silhouette_score_([i for i in range(2, rank)], data))
-    print(sse_scaler_([i for i in range(2, rank)], data))
+    """print(silhouette_score_([i for i in range(2, rank)], data))
+    print(sse_scaler_([i for i in range(2, rank)], data))"""
+
+    return(silhouette_score_([i for i in range(2, rank)], data), sse_scaler_([i for i in range(2, rank)], data))
 
 
 def read(text):
     return text.replace("_", " ")
+
+
+def visualize_main_words_in_clusters_TFIDF_streamlit(number_of_clusters, data, df_t):
+    """
+    Performs spectral clustering on the dataset and visualizes the main words in each cluster
+    using TF-IDF scores. This visualization is accomplished via a treemap and is interactive
+    through a Streamlit application. The main words are determined by their TF-IDF scores within
+    the text data associated with each cluster.
+
+    Parameters:
+    - number_of_clusters (int): Number of clusters for the spectral clustering.
+    - data (DataFrame or ndarray): Numerical data for clustering.
+    - df_t (DataFrame): DataFrame containing text data corresponding to `data` for TF-IDF analysis.
+    """
+
+    # Perform Spectral Clustering
+    model = SpectralClustering(n_clusters=number_of_clusters, assign_labels="discretize", random_state=0, affinity="nearest_neighbors", n_neighbors=10)
+    model.fit(data.astype("double"))
+
+    # Apply PCA for dimensionality reduction
+    pc = PCA(n_components=2).fit_transform(data)
+
+    # Combine PCA results and cluster labels with text data
+    df_pc = pd.DataFrame({
+        "pc1": pc[:, 0],
+        "pc2": pc[:, 1],
+        "cluster": model.labels_,
+        "text": df_t['text']
+    })
+
+    # Group data by cluster and concatenate texts
+    df_group = df_pc.groupby("cluster")['text'].apply(lambda texts: ' '.join(texts)).reset_index()
+    df_group.rename(columns={'text': 'concat_text'}, inplace=True)
+
+    # Using TF-IDF to find the most significant words in each cluster
+    vectorizer = TfidfVectorizer(ngram_range=(1, 2))
+    tfidf_matrix = vectorizer.fit_transform(df_group['concat_text'])
+    
+    def display_topic_cluster(n):
+        """ Extracts and displays the top 20 words from a selected cluster """
+        feature_array = np.array(vectorizer.get_feature_names())
+        tfidf_sorting = np.argsort(tfidf_matrix[n].toarray()).flatten()[::-1]
+        
+        top_n = feature_array[tfidf_sorting][:20]
+        scores = tfidf_matrix[n].toarray().flatten()[tfidf_sorting][:20]
+        
+        df_words = pd.DataFrame({
+            'word': top_n,
+            'score': scores
+        })
+
+        fig = px.treemap(df_words, path=['word'], values='score', color='score', color_continuous_scale='Blues')
+        return fig
+
+    # Streamlit interface
+    st.write("Text Clustering Analysis")
+    selected_cluster = st.selectbox("Select Cluster", df_group['cluster'])
+    fig = display_topic_cluster(selected_cluster)
+    return fig
+

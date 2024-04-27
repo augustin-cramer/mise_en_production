@@ -42,9 +42,7 @@ def plot_from_sources(df_all_grouped, axis, sources):
     # Loop through sources to gather data
     for source in sources:
         cos[source] = np.array(
-            df_all_grouped[df_all_grouped["source"] == source][
-                "cos axe " + str(axis)
-            ]
+            df_all_grouped[df_all_grouped["source"] == source]["cos axe " + str(axis)]
         )
         CI_low[source] = np.array(
             df_all_grouped[df_all_grouped["source"] == source][
@@ -68,10 +66,7 @@ def plot_from_sources(df_all_grouped, axis, sources):
         plt.plot(
             x,
             cos[source],
-            label="Cosine similarity on axis "
-            + str(axis)
-            + " of "
-            + str(source),
+            label="Cosine similarity on axis " + str(axis) + " of " + str(source),
             linewidth=2,
         )
         plt.fill_between(x, CI_low[source], CI_high[source], alpha=0.2)
@@ -174,15 +169,11 @@ def choose_projection_cos(
 
     if with_parliament:
         df = pd.read_csv("data/with parliament/current_dataframes/df.csv")
-        df_BT = pd.read_csv(
-            "data/with parliament/current_dataframes/df_BT.csv"
-        )
+        df_BT = pd.read_csv("data/with parliament/current_dataframes/df_BT.csv")
 
     if not with_parliament:
         df = pd.read_csv("data/without parliament/current_dataframes/df.csv")
-        df_BT = pd.read_csv(
-            "data/without parliament/current_dataframes/df_BT.csv"
-        )
+        df_BT = pd.read_csv("data/without parliament/current_dataframes/df_BT.csv")
 
     # Validate the sources parameter
     if sources is not None:
@@ -238,9 +229,7 @@ def choose_projection_cos(
 
     # Additional data preparation based on source type
     if "par" in sources or "Con" in sources or "Lab" in sources:
-        df_all_grouped = df_all_grouped[
-            df_all_grouped["year"] < 2020
-        ]  # Filter by year
+        df_all_grouped = df_all_grouped[df_all_grouped["year"] < 2020]  # Filter by year
     else:
         df_all_grouped["year"] = df_all_grouped["year"].apply(
             format_year
@@ -248,14 +237,10 @@ def choose_projection_cos(
         df["year"] = df["year"].apply(format_year)
 
     # Grouping and averaging the data
-    df_all_grouped = (
-        df_all_grouped.groupby(["source", "year"]).mean().reset_index()
-    )
+    df_all_grouped = df_all_grouped.groupby(["source", "year"]).mean().reset_index()
 
     # Bootstrapping for confidence intervals
-    df_all_grouped = bootstrap(
-        df_all_grouped, df, source_column="source", axis=axis
-    )
+    df_all_grouped = bootstrap(df_all_grouped, df, source_column="source", axis=axis)
 
     # Plotting the final visualization
     return plot_from_sources_plotly(df_all_grouped, axis, sources)

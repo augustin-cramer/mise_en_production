@@ -1,7 +1,7 @@
 import pandas as pd
 from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
-from Processing.text_cleaning import *
+from ..Processing.text_cleaning import *
 
 stemmer = SnowballStemmer(language="english")
 english_stopwords = set(stopwords.words("english"))

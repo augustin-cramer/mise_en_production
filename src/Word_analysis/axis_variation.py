@@ -2,16 +2,15 @@ import pandas as pd
 import numpy as np
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
-from Processing.text_cleaning import *
-from GloVe.weights import *
+from ..Processing.text_cleaning import *
+from ..GloVe.weights import *
 import warnings
 
 warnings.filterwarnings("ignore")
-from Axes.projection_functions import *
-from Axes.models import *
-from Processing.preprocess_parliament import *
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
+from ..Axes.projection_functions import *
+from ..Axes.models import *
+from ..Processing.preprocess_parliament import *
+import streamlit as st
 
 
 def process_embeddings(file_path):
@@ -43,6 +42,8 @@ def give_embed_anyway(word, model_word, list_of_words):
 
 
 def see_variation_on_axis(year: int, df, source=None):
+    st.write("Computing...")
+
     if source:
         df = df.loc[df["source"] == source]
     df = df.loc[df["year"] == year]
@@ -52,11 +53,9 @@ def see_variation_on_axis(year: int, df, source=None):
         try:
             l.append(df[word].tolist()[0])
         except:
-            print(word)
+            print(f"{word} not in the model")
     var_tech = dict(zip(clean(tech, "unigram"), l))
-    sorted_var_tech = sorted(
-        var_tech.items(), key=lambda x: x[1], reverse=True
-    )
+    sorted_var_tech = sorted(var_tech.items(), key=lambda x: x[1], reverse=True)
 
     l = []
     for word in clean(reg, "unigram"):
@@ -153,9 +152,7 @@ def project_variation_on_axis(
     fig.update_layout(
         title_text=f"{number_of_words} words most responsible for the move of {source} towards the respective poles between year {year} and {year + 1}; axis = {axis}",
         showlegend=True,
-        legend=dict(
-            orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
-        ),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     )
 
     # Customize x-axis properties
@@ -170,7 +167,7 @@ def project_variation_on_axis(
     fig.update_yaxes(showgrid=True, gridwidth=0.5, gridcolor="gray")
 
     # Display the figure
-    fig.show()
+    return fig
 
 
 axes_words = clean(tech + reg + pos + neg, "unigram")
@@ -192,7 +189,9 @@ def axis_variation(
         year = 2019
 
     if with_parliament:
-        file_path_1 = f"data/with parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
+        file_path_1 = (
+            f"data/with parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
+        )
         file_path_2 = f"data/with parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
 
     if not with_parliament:
@@ -204,14 +203,8 @@ def axis_variation(
     dataframes.append(process_embeddings(file_path_2))
 
     axes_words_embeddings = [
-        [
-            give_embed_anyway(word, models_w[i], axes_words)
-            for word in axes_words
-        ],
-        [
-            give_embed_anyway(word, models_w[i + 1], axes_words)
-            for word in axes_words
-        ],
+        [give_embed_anyway(word, models_w[i], axes_words) for word in axes_words],
+        [give_embed_anyway(word, models_w[i + 1], axes_words) for word in axes_words],
     ]
 
     df_axes = pd.DataFrame(
@@ -251,7 +244,7 @@ def axis_variation(
 
     df = pd.concat([dataframes[0], dataframes[1]])
 
-    project_variation_on_axis(
+    return project_variation_on_axis(
         axis=axis,
         source=source,
         year=year,

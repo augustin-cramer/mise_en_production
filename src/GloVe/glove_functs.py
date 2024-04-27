@@ -13,7 +13,7 @@ from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
 import os, psutil
 from tqdm import tqdm
-from Processing.text_cleaning import *
+from ..Processing.text_cleaning import *
 
 
 def vocab_dic(fichier):

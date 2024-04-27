@@ -42,9 +42,7 @@ def get_user_token_counts(df_speeches, vocab):
             col_idx.append(group_idx)
             row_idx.append(k)
             data.append(v)
-    return sp.csr_matrix(
-        (data, (col_idx, row_idx)), shape=(len(speakers), len(vocab))
-    )
+    return sp.csr_matrix((data, (col_idx, row_idx)), shape=(len(speakers), len(vocab)))
 
 
 def get_party_q(party_counts, exclude_user_id=None):
@@ -75,13 +73,9 @@ def mutual_information(dem_t, rep_t, dem_not_t, rep_not_t, dem_no, rep_no):
     all_t = dem_t + rep_t
     all_not_t = no_users - all_t + 4
     mi_dem_t = dem_t * np.log2(no_users * (dem_t / (all_t * dem_no)))
-    mi_dem_not_t = dem_not_t * np.log2(
-        no_users * (dem_not_t / (all_not_t * dem_no))
-    )
+    mi_dem_not_t = dem_not_t * np.log2(no_users * (dem_not_t / (all_not_t * dem_no)))
     mi_rep_t = rep_t * np.log2(no_users * (rep_t / (all_t * rep_no)))
-    mi_rep_not_t = rep_not_t * np.log2(
-        no_users * (rep_not_t / (all_not_t * rep_no))
-    )
+    mi_rep_not_t = rep_not_t * np.log2(no_users * (rep_not_t / (all_not_t * rep_no)))
     return (
         1 / no_users * (mi_dem_t + mi_dem_not_t + mi_rep_t + mi_rep_not_t)
     ).transpose()[:, np.newaxis]
@@ -96,9 +90,7 @@ def chi_square(dem_t, rep_t, dem_not_t, rep_not_t, dem_no, rep_no):
     return (chi_enum / chi_denom).transpose()[:, np.newaxis]
 
 
-def calculate_polarization(
-    dem_counts, rep_counts, measure="posterior", leaveout=True
-):
+def calculate_polarization(dem_counts, rep_counts, measure="posterior", leaveout=True):
     dem_user_total = dem_counts.sum(axis=1)
     rep_user_total = rep_counts.sum(axis=1)
 
@@ -123,9 +115,7 @@ def calculate_polarization(
     rep_t = get_token_user_counts(rep_counts)
     dem_not_t = dem_no - dem_t + 2  # because of add one smoothing
     rep_not_t = rep_no - rep_t + 2  # because of add one smoothing
-    func = (
-        mutual_information if measure == "mutual_information" else chi_square
-    )
+    func = mutual_information if measure == "mutual_information" else chi_square
 
     # apply measures via leave-out
     dem_addup = 0
@@ -205,9 +195,7 @@ def get_values(
     )  # get partisan tweets
 
     if with_parliament:
-        with open(
-            "data/with parliament/vocabs/vocab_" + str(year) + ".json"
-        ) as f:
+        with open("data/with parliament/vocabs/vocab_" + str(year) + ".json") as f:
             vocab = json.load(f)
     if not with_parliament:
         with open(
