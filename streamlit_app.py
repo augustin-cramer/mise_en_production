@@ -454,7 +454,7 @@ elif analysis_type == 'Word Analysis':
             )
 
             st.plotly_chart(fig_1, use_container_width=True)
-            #st.plotly_chart(fig_2, use_container_width=True)
+            st.plotly_chart(fig_2, use_container_width=True)
 
             n_clusters = st.number_input(
                 "Enter the number of clusters you want to use:", min_value=1, step=1
