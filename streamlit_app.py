@@ -441,7 +441,7 @@ elif analysis_type == 'Word Analysis':
         )[0]
 
         if st.button("Generate graph"):
-            data, df_t = cluster_words_intermediate(
+            fig_1, fig_2, data, df_t = cluster_words_intermediate(
                 year=year,
                 axis=1,
                 percentiles=percentiles,
@@ -452,11 +452,15 @@ elif analysis_type == 'Word Analysis':
                 head=head,
                 tail=tail,
             )
+
+            st.plotly_chart(fig_1, use_container_width=True)
+            #st.plotly_chart(fig_2, use_container_width=True)
+
             n_clusters = st.number_input(
                 "Enter the number of clusters you want to use:", min_value=1, step=1
             )
             st.write(n_clusters)
-            
+
             if st.button("View clusters"):
                 fig = display_clusters(n_clusters, data, df_t)
                 st.plotly_chart(fig, use_container_width=True)

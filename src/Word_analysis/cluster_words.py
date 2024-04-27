@@ -165,9 +165,9 @@ def cluster_words_intermediate(
         print("Invalid number, using a default value of 5 clusters.")
         n_clusters = 5  # Default value if the user input is not valid"""
     
-    plot_silhouette_and_sse(11, data)
+    fig_1, fig_2 = plot_silhouette_and_sse(11, data)
 
-    return  data, df_t
+    return  fig_1, fig_2, data, df_t
 
 
 def display_clusters(n_clusters, data, df_t):
