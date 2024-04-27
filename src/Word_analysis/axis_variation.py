@@ -249,7 +249,6 @@ def axis_variation(
     df = pd.concat([dataframes[0], dataframes[1]])
 
     return project_variation_on_axis(
-    return project_variation_on_axis(
         axis=axis,
         source=source,
         year=year,

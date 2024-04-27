@@ -101,7 +101,6 @@ def choose_pol(
     for company in companies:
         if not os.path.exists(
             f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {company}, percentiles = {percentiles}, with parliament = {with_parliament}.csv"
-            f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {company}, percentiles = {percentiles}, with parliament = {with_parliament}.csv"
         ):
             break
         else:
@@ -200,7 +199,6 @@ def choose_pol(
 
         # Show the figure
         return fig
-        return fig
 
     st.markdown("Polarization values not computed, starting computation...")
     # Load projection data if an axis is specified
@@ -242,29 +240,10 @@ def choose_pol(
                     True,
                 ).reset_index()
                 df["party"], df["Speaker"] = 0, 0
-            # Load data for the current year, with preprocessing
-            if with_parliament:
-                df = standard_opening(
-                    f"data/with parliament/FinalDataframes/FilteredFinalDataFrame_201{i}.csv",
-                    True,
-                ).reset_index()
-            if not with_parliament:
-                df = standard_opening(
-                    f"data/without parliament/FinalDataframes/FilteredFinalDataFrame_201{i}_WP.csv",
-                    True,
-                ).reset_index()
-                df["party"], df["Speaker"] = 0, 0
 
             # Project data onto specified axis if applicable
             if axis:
-            # Project data onto specified axis if applicable
-            if axis:
 
-                def to_phrase(list_of_words):
-                    text = ""
-                    for word in list_of_words:
-                        text += word + "_"
-                    return text
                 def to_phrase(list_of_words):
                     text = ""
                     for word in list_of_words:
@@ -275,8 +254,6 @@ def choose_pol(
 
                 df["to join"] = df["text"].apply(to_phrase)
                 df_proj_year["to join"] = df_proj_year["text"]
-                df["to join"] = df["text"].apply(to_phrase)
-                df_proj_year["to join"] = df_proj_year["text"]
 
                 df_proj_year = df_proj_year[
                     ["cos axe 1", "cos axe 2", "to join"]
@@ -284,11 +261,7 @@ def choose_pol(
 
                 df = pd.merge(df_proj_year, df, on="to join", how="inner")
                 df["cos axe"] = df[f"cos axe {axis}"]
-                df = pd.merge(df_proj_year, df, on="to join", how="inner")
-                df["cos axe"] = df[f"cos axe {axis}"]
 
-            else:
-                df["cos axe"] = 0  # Default to 0 if no axis specified
             else:
                 df["cos axe"] = 0  # Default to 0 if no axis specified
 
@@ -346,13 +319,13 @@ def choose_pol(
             # Combine the two DataFrames and reset index for continuity
             df = pd.concat([df1, df2]).reset_index(drop=True)
 
-                # Filter data based on quantiles if axis and percentiles are specified
-                if axis is not None:
-                    quantiles = get_quantiles(df["cos axe"], percentiles)
-                    df = df[
-                        (df["cos axe"] < quantiles[0])
-                        | (df["cos axe"] > quantiles[1])
-                    ]
+            # Filter data based on quantiles if axis and percentiles are specified
+            if axis is not None:
+                quantiles = get_quantiles(df["cos axe"], percentiles)
+                df = df[
+                    (df["cos axe"] < quantiles[0])
+                    | (df["cos axe"] > quantiles[1])
+                ]
 
             df = df[["year", "party", "text", "Speaker"]]
 

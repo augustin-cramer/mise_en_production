@@ -209,7 +209,7 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
     to analyze the text data `df_t`. It visualizes significant words for each cluster in a treemap
     and deploys a Dash app for interactive exploration.
     """
-
+    
     nbr_clusters = number_of_clusters
     model = SpectralClustering(
         n_clusters=nbr_clusters,
@@ -226,10 +226,7 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
 
     df_pc = pd.DataFrame(
         zip(
-            pc.T[0].tolist(),
-            pc.T[1].tolist(),
-            label,
-            df_t["text"].apply(read).tolist(),
+            pc.T[0].tolist(), pc.T[1].tolist(), label, df_t["text"].apply(read).tolist()
         )
     )
 
@@ -273,76 +270,6 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
         "delta",
         "dense",
         "earth",
-        "edge",
-        "electric",
-        "emrld",
-        "fall",
-        "geyser",
-        "gnbu",
-        "gray",
-        "greens",
-        "greys",
-        "haline",
-        "hot",
-        "hsv",
-        "ice",
-        "icefire",
-        "inferno",
-        "jet",
-        "magenta",
-        "magma",
-        "matter",
-        "mint",
-        "mrybm",
-        "mygbm",
-        "oranges",
-        "orrd",
-        "oryel",
-        "oxy",
-        "peach",
-        "phase",
-        "picnic",
-        "pinkyl",
-        "piyg",
-        "plasma",
-        "plotly3",
-        "portland",
-        "prgn",
-        "pubu",
-        "pubugn",
-        "puor",
-        "purd",
-        "purp",
-        "purples",
-        "purpor",
-        "rainbow",
-        "rdbu",
-        "rdgy",
-        "rdpu",
-        "rdylbu",
-        "rdylgn",
-        "redor",
-        "reds",
-        "solar",
-        "spectral",
-        "speed",
-        "sunset",
-        "sunsetdark",
-        "teal",
-        "tealgrn",
-        "tealrose",
-        "tempo",
-        "temps",
-        "thermal",
-        "tropic",
-        "turbid",
-        "turbo",
-        "twilight",
-        "viridis",
-        "ylgn",
-        "ylgnbu",
-        "ylorbr",
-        "ylorrd",
     ]
 
     vectorizer = TfidfVectorizer(ngram_range=(2, 2))
@@ -372,184 +299,134 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
 
         fig.update_layout(autosize=False, width=1000, height=500)
 
-        st.plotly_chart(fig, use_container_width=True)
-        st.plotly_chart(fig, use_container_width=True)
+        return fig
 
-    app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
-    # the style arguments for the sidebar.
-    SIDEBAR_STYLE = {
-        "position": "fixed",
-        "top": 0,
-        "left": 0,
-        "bottom": 0,
-        "width": "10%",
-        "padding": "20px 10px",
-        "background-color": "#f8f9fa",
-    }
+    for cluster_number in range(number_of_clusters):
+        fig = display_topic_cluster(cluster_number)
+        fig.show()
 
-    # the style arguments for the main content page.
-    CONTENT_STYLE = {
-        "margin-left": "5%",
-        "margin-right": "5%",
-        "padding": "20px 10p",
-    }
-
-    TEXT_STYLE = {"textAlign": "center", "color": "#191970"}
-
-    CARD_TEXT_STYLE = {"textAlign": "center", "color": "#0074D9"}
-
-    content_first_row = dbc.Row(
-        [
-            dbc.Col(
-                dcc.Dropdown(
-                    id="dropdown",
-                    options=[
-                        {"label": str(i), "value": i} for i in range(nbr_clusters)
-                    ],
-                    value=0,
-                    clearable=False,
-                ),
-                md=12,
-            )
-        ]
-    )
-
-    # Adjusted callback structure
-    @app.callback(Output("graph", "figure"), [Input("dropdown", "value")])
-    def update_graph(selected_cluster):
-        # Add callback logic here
-        return display_topic_cluster(selected_cluster)
-
-    content_second_row = dbc.Row([dbc.Col(dcc.Graph(id="graph"), md=12)])
-
-    content_zero_row = dbc.Row(
-        [
-            dbc.Col(
-                dbc.Card(
-                    [
-                        dbc.CardBody(
-                            [
-                                html.H4(
-                                    id="dataset_title_1",
-                                    children=["Text Clustering Analysis"],
-                                    className="card-title",
-                                    style=CARD_TEXT_STYLE,
-                                ),
-                                html.P(
-                                    id="card_text_1",
-                                    children=["TITLE"],
-                                    style=CARD_TEXT_STYLE,
-                                ),
-                            ]
-                        )
-                    ]
-                ),
-                md=12,
-            )
-        ]
-    )
-
-    """content_third_row = dbc.Row(
-    [
-        dbc.Col(  
-            dcc.Graph(id="graph2", 
-                    figure = px.sunburst(df_group, path=['description_cluster'], values='tot',color='cluster')),md=6 ),
-        dbc.Col(  
-            dcc.Graph(id="graph3", figure =px.scatter(df_group, x="project", y="cluster", size="tot", color="description_cluster").update_layout(legend=dict(
-        orientation="h",
-        x=0,
-        y=1.2,
-        yanchor="bottom",
-        xanchor="right"
-    )) ), md=6)
-        ]
-    )"""
-
-    content = html.Div(
-        [
-            # html.H2('Text Analytics Dashboard', style=TEXT_STYLE),
-            # html.Hr(),
-            content_zero_row,
-            html.Br(),
-            content_first_row,
-            content_second_row,
-            # content_third_row,
-            html.Hr(),
-        ],
-        style=CONTENT_STYLE,
-    )
-
-    app.layout = html.Div([content])
-
-    app.run_server(debug=False)
-
-
-def plot_silhouette_and_sse(rank, data):
-    """print(silhouette_score_([i for i in range(2, rank)], data))
-    print(sse_scaler_([i for i in range(2, rank)], data))"""
-
-    return(silhouette_score_([i for i in range(2, rank)], data), sse_scaler_([i for i in range(2, rank)], data))
-
-
-def read(text):
-    return text.replace("_", " ")
 
 
 def visualize_main_words_in_clusters_TFIDF_streamlit(number_of_clusters, data, df_t):
     """
     Performs spectral clustering on the dataset and visualizes the main words in each cluster
-    using TF-IDF scores. This visualization is accomplished via a treemap and is interactive
-    through a Streamlit application. The main words are determined by their TF-IDF scores within
+    using TF-IDF scores. This visualization is accomplished via a treemap and is made interactive
+    through a Dash application. The main words are determined by their TF-IDF scores within
     the text data associated with each cluster.
 
     Parameters:
     - number_of_clusters (int): Number of clusters for the spectral clustering.
     - data (DataFrame or ndarray): Numerical data for clustering.
     - df_t (DataFrame): DataFrame containing text data corresponding to `data` for TF-IDF analysis.
+
+    The function clusters the `data`, applies PCA for dimensionality reduction, and then uses TF-IDF
+    to analyze the text data `df_t`. It visualizes significant words for each cluster in a treemap
+    and deploys a Dash app for interactive exploration.
     """
-
-    # Perform Spectral Clustering
-    model = SpectralClustering(n_clusters=number_of_clusters, assign_labels="discretize", random_state=0, affinity="nearest_neighbors", n_neighbors=10)
-    model.fit(data.astype("double"))
-
-    # Apply PCA for dimensionality reduction
-    pc = PCA(n_components=2).fit_transform(data)
-
-    # Combine PCA results and cluster labels with text data
-    df_pc = pd.DataFrame({
-        "pc1": pc[:, 0],
-        "pc2": pc[:, 1],
-        "cluster": model.labels_,
-        "text": df_t['text']
-    })
-
-    # Group data by cluster and concatenate texts
-    df_group = df_pc.groupby("cluster")['text'].apply(lambda texts: ' '.join(texts)).reset_index()
-    df_group.rename(columns={'text': 'concat_text'}, inplace=True)
-
-    # Using TF-IDF to find the most significant words in each cluster
-    vectorizer = TfidfVectorizer(ngram_range=(1, 2))
-    tfidf_matrix = vectorizer.fit_transform(df_group['concat_text'])
     
+    nbr_clusters = number_of_clusters
+    model = SpectralClustering(
+        n_clusters=nbr_clusters,
+        assign_labels="discretize",
+        random_state=0,
+        affinity="nearest_neighbors",
+        n_neighbors=10,
+    )
+    model.fit(data.astype("double"))
+    pc = PCA(n_components=2).fit_transform(data)
+    # pc = data#
+    # label = model.fit_predict(pc)
+    label = model.fit_predict(data.astype("double"))
+
+    df_pc = pd.DataFrame(
+        zip(
+            pc.T[0].tolist(), pc.T[1].tolist(), label, df_t["text"].apply(read).tolist()
+        )
+    )
+
+    # df_pc[3] = df_pc[3].apply(word_tokenize)
+    df_pc = df_pc.rename(columns={2: "cluster", 3: "text", 0: "pc1", 1: "pc2"})
+
+    df_group = df_pc.groupby(["cluster"]).sum()[["text"]]
+    df_group.reset_index(inplace=True)
+
+    conditions = []
+
+    for i in range(nbr_clusters):
+        conditions.append((df_group["cluster"] == i))
+
+    values = ["Cluster " + str(i) for i in range(nbr_clusters)]
+
+    df_group["description_cluster"] = np.select(conditions, values)
+
+    colors = [
+        "aggrnyl",
+        "agsunset",
+        "algae",
+        "amp",
+        "armyrose",
+        "balance",
+        "blackbody",
+        "bluered",
+        "blues",
+        "blugrn",
+        "bluyl",
+        "brbg",
+        "brwnyl",
+        "bugn",
+        "bupu",
+        "burg",
+        "burgyl",
+        "cividis",
+        "curl",
+        "darkmint",
+        "deep",
+        "delta",
+        "dense",
+        "earth",
+    ]
+
+    vectorizer = TfidfVectorizer(ngram_range=(2, 2))
+    tfidf_matrix = vectorizer.fit_transform(df_group["text"])
+
     def display_topic_cluster(n):
-        """ Extracts and displays the top 20 words from a selected cluster """
-        feature_array = np.array(vectorizer.get_feature_names())
-        tfidf_sorting = np.argsort(tfidf_matrix[n].toarray()).flatten()[::-1]
-        
-        top_n = feature_array[tfidf_sorting][:20]
-        scores = tfidf_matrix[n].toarray().flatten()[tfidf_sorting][:20]
-        
-        df_words = pd.DataFrame({
-            'word': top_n,
-            'score': scores
-        })
+        df_text_bow = tfidf_matrix.toarray()
+        bow_df = pd.DataFrame(df_text_bow)
+        bow_df.columns = vectorizer.get_feature_names_out()
+        word_freq = pd.DataFrame(
+            bow_df[bow_df.index == n].sum().sort_values(ascending=False)
+        )
+        word_freq.reset_index(level=0, inplace=True)
+        word_freq.columns = ["word", "frequency"]
 
-        fig = px.treemap(df_words, path=['word'], values='score', color='score', color_continuous_scale='Blues')
+        if n > 0:
+            word_freq.drop(index=[0], inplace=True)
+
+        fig = px.treemap(
+            word_freq[0:20],
+            path=[px.Constant(values[n]), "word"],
+            values="frequency",
+            color="frequency",
+            hover_data=["frequency"],
+            color_continuous_scale=colors[n],
+        )
+
+        fig.update_layout(autosize=False, width=1000, height=500)
+
         return fig
+    
+    figures = []
 
-    # Streamlit interface
-    st.write("Text Clustering Analysis")
-    selected_cluster = st.selectbox("Select Cluster", df_group['cluster'])
-    fig = display_topic_cluster(selected_cluster)
-    return fig
+    for cluster_number in range(number_of_clusters):
+        fig = display_topic_cluster(cluster_number)
+        figures.append(fig)
+    
+    return figures
 
+
+def plot_silhouette_and_sse(rank, data):
+    return(silhouette_score_([i for i in range(2, rank)], data), sse_scaler_([i for i in range(2, rank)], data))
+
+
+def read(text):
+    return text.replace("_", " ")

@@ -3,13 +3,13 @@ import numpy as np
 import plotly.figure_factory as ff
 import time
 import os
-from src.Axes.curves_plots import choose_projection_cos
+'''from src.Axes.curves_plots import choose_projection_cos
 from src.Polarization.polarization_plots import choose_pol
 from src.Polarization.cos_pol import draw_cos_pol
 from src.Word_analysis.words_variation import word_variations
 from src.Word_analysis.axis_variation import axis_variation
 from src.Word_analysis.cluster_words import *
-
+'''
 # Style improvements
 st.markdown("""
 <style>
@@ -32,12 +32,51 @@ analysis_type = st.sidebar.radio(
 )
 
 if analysis_type == 'Home':
-    st.title("Welcome to Our Data Visualization App")
+
+    st.title("Tools for anaylis of public opinion with a GloVe model")
+
     st.markdown("""
-    This app allows you to visualize and analyze data with interactive graphs and filters.
-    Explore data by selecting various analysis types from the sidebar. Enjoy a customized
-    visualization experience with powerful graphing tools.
-    """)
+    ## Project Overview
+
+    This project explores techniques described in recent scholarly papers and adapts them to analyze public opinion about BigTech companies in the UK. Our aim is to develop robust analysis tools tailored to this specific context.
+
+    ### Objective
+
+    The primary goal is to devise methods that can:
+    - Track positions of newspapers and political parties on specific issues.
+    - Identify words and phrases that are most indicative of their stance on BigTechs.
+
+    ### Data Sources
+
+    Our analysis tools are built upon a dense and balanced database of relevant texts, which includes:
+    - Speeches from the House of Commons related to BigTechs, spanning from 2010 to 2019.
+    - Articles from five major British newspapers covering the same theme from 2010 to 2023:
+        - The Guardian
+        - The Telegraph
+        - The Daily Mail
+        - The Daily Express
+        - Metro
+
+    ### Approach
+
+    We adapt methodologies from referenced papers to suit the topic of public opinion on BigTechs in the UK, enhancing our ability to derive insightful analytics from textual data.
+                
+    We trained a GloVe model on the database, and we defined simple and relevant axes in the embeddings space. The axes defined aim to have a global feel of the opinion from the media and the politicians regarding tech companies. 
+                
+    The two axes we work with are :
+    - Axis 1 : a positive pole formed of words describing economic technologic laisser-faire, and a negative pole formed of words describing more regulation. 
+    - Axis 2 : a positive pole with positive words, and a negative pole with negative words.
+                
+    ### The two main parts
+
+    #### Curves analysis 
+                
+    #### Words analysis
+                
+    
+                
+    """, unsafe_allow_html=True)
+
 
 # Curves Analysis Section
 elif analysis_type == 'Curves Analysis':
@@ -440,7 +479,12 @@ elif analysis_type == 'Word Analysis':
             default=None,
         )[0]
 
-        if st.button("Generate graph"):
+        if 'data' not in st.session_state or 'df_t' not in st.session_state:
+            st.session_state['data'] = None
+            st.session_state['df_t'] = None
+
+        # Button to generate silhouette and sse
+        if st.button("Generate silhouette and sse"):
             fig_1, fig_2, data, df_t = cluster_words_intermediate(
                 year=year,
                 axis=1,
@@ -453,14 +497,39 @@ elif analysis_type == 'Word Analysis':
                 tail=tail,
             )
 
+            st.session_state['data'] = data
+            st.session_state['df_t'] = df_t
+
             st.plotly_chart(fig_1, use_container_width=True)
             st.plotly_chart(fig_2, use_container_width=True)
 
-            n_clusters = st.number_input(
-                "Enter the number of clusters you want to use:", min_value=1, step=1
-            )
-            st.write(n_clusters)
+        # Input for number of clusters
+        n_clusters = st.number_input(
+            "Enter the number of clusters you want to use:", min_value=1, step=1, value=5
+        )
+        st.write(f'You chose {n_clusters} clusters.')
 
-            if st.button("View clusters"):
-                fig = display_clusters(n_clusters, data, df_t)
-                st.plotly_chart(fig, use_container_width=True)
+        if st.button("View clusters"):
+            if st.session_state.get('data') is not None and st.session_state.get('df_t') is not None:
+                fig_1, figures = display_clusters(n_clusters, st.session_state['data'], st.session_state['df_t'])
+                # Store figures in session state to avoid losing them on rerun
+                st.session_state['figures'] = figures
+                st.session_state['fig_1'] = fig_1
+            else:
+                st.error("Please generate the data first by clicking 'Generate silhouette and sse'")
+
+        # Tabs outside the button check to preserve the state
+        if 'figures' in st.session_state and 'fig_1' in st.session_state:
+            tab1, tab2 = st.tabs(["Most important words in clusters", "Plotting on the 3 first pc"])
+
+            with tab1:
+                # Default selection is the first cluster if available
+                cluster_number = st.multiselect('Select Cluster Number:', range(n_clusters), default=[0])
+                # Display plots for selected clusters
+                if cluster_number:
+                    for cn in cluster_number:
+                        fig = st.session_state['figures'][cn]
+                        st.plotly_chart(fig, use_container_width=True)
+
+            with tab2:
+                st.plotly_chart(st.session_state['fig_1'], use_container_width=True)

@@ -165,7 +165,6 @@ def visualize_top_variations(
         rows=2,
         cols=1,
         vertical_spacing=0.6,
-        vertical_spacing=0.6,
         subplot_titles=[
             f"Increasing Variation on Axis {axis_1}",
             f"Decreasing Variation on Axis {axis_2}",

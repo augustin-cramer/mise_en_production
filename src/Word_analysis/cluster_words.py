@@ -87,7 +87,9 @@ def cluster_words(
     embeds_list = [model_sentences[sentence] for sentence in df_t["text"]]
     data = np.array(embeds_list)
 
-    plot_silhouette_and_sse(11, data)
+    fig_1, fig_2 = plot_silhouette_and_sse(11, data)
+    fig_1.show()
+    fig_2.show()
 
     # Ask the user for the number of clusters
     try:
@@ -96,7 +98,7 @@ def cluster_words(
         print("Invalid number, using a default value of 5 clusters.")
         n_clusters = 5  # Default value if the user input is not valid
     
-    plot_clusters_on_pc_spectral_3d(n_clusters, data, marker_size=1.4)
+    plot_clusters_on_pc_spectral_3d(n_clusters, data, marker_size=1.4).show()
     visualize_main_words_in_clusters_TFIDF(n_clusters, data, df_t)
 
 
