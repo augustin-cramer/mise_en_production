@@ -1,6 +1,9 @@
 from ..GloVe.weights import *
 from ..Axes.projection_functions import *
 from ..Clustering.clustering_spectral import *
+from ..GloVe.weights import *
+from ..Axes.projection_functions import *
+from ..Clustering.clustering_spectral import *
 import matplotlib.pyplot as plt
 import os
 
@@ -92,7 +95,7 @@ def cluster_words(
     except ValueError:
         print("Invalid number, using a default value of 5 clusters.")
         n_clusters = 5  # Default value if the user input is not valid
-
+    
     plot_clusters_on_pc_spectral_3d(n_clusters, data, marker_size=1.4)
     visualize_main_words_in_clusters_TFIDF(n_clusters, data, df_t)
 

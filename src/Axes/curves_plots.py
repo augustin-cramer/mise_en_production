@@ -1,6 +1,7 @@
 import os
 from ..Axes.projection_functions import *
 from ..Axes.bootstraping import *
+from ..S3_Bucket_utils.read_data import read_csv_bucket
 import pandas as pd
 from matplotlib import pyplot as plt
 
@@ -151,6 +152,9 @@ def choose_projection_cos(
     focus_on_companies=None,
     curves_by_company=None,
     with_parliament=True,
+    ssp_cloud=False,
+    fs=None,
+    bucket=None
 ):
     """
     Chooses the projection of cosine similarity to plot, validates inputs,
@@ -161,20 +165,32 @@ def choose_projection_cos(
     - sources (list): A list of initial sources to include in the analysis.
     - focus_on_companies (list, optional): Specific companies to focus on.
     - curves_by_company (list, optional): Specific companies to generate curves for.
+    - ssp_cloud (bool) : boolean to decide if we retrieve data from SSP Cloud.
+    - fs (bucket object) : s3fs object linked to the S3 bucket, used is ssp_cloud=True.
+    - bucket (str): name of the bucket where data is stored
 
     Raises:
     - ValueError: If an invalid source or company is provided.
     """
     # Data loading
+    if ssp_cloud:
+        if with_parliament:
+            df = read_csv_bucket(fs, bucket+"/with_parliament/current_dataframes/df.csv")
+            df_BT = read_csv_bucket(fs, bucket+"/with_parliament/current_dataframes/df_BT.csv")
 
-    if with_parliament:
-        df = pd.read_csv("data/with parliament/current_dataframes/df.csv")
-        df_BT = pd.read_csv("data/with parliament/current_dataframes/df_BT.csv")
+        if not with_parliament:
+            df = read_csv_bucket(fs, bucket+"/without_parliament/current_dataframes/df.csv")
+            df_BT = read_csv_bucket(fs, bucket+"/without_parliament/current_dataframes/df_BT.csv")
 
-    if not with_parliament:
-        df = pd.read_csv("data/without parliament/current_dataframes/df.csv")
-        df_BT = pd.read_csv("data/without parliament/current_dataframes/df_BT.csv")
+    if not ssp_cloud:
+        if with_parliament:
+            df = pd.read_csv("data/with parliament/current_dataframes/df.csv")
+            df_BT = pd.read_csv("data/with parliament/current_dataframes/df_BT.csv")
 
+        if not with_parliament:
+            df = pd.read_csv("data/without parliament/current_dataframes/df.csv")
+            df_BT = pd.read_csv("data/without parliament/current_dataframes/df_BT.csv")
+            
     # Validate the sources parameter
     if sources is not None:
         for source in sources:

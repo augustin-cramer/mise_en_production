@@ -373,6 +373,7 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
         fig.update_layout(autosize=False, width=1000, height=500)
 
         st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True)
 
     app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
     # the style arguments for the sidebar.

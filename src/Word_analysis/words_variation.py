@@ -2,8 +2,17 @@ import json
 import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
+from ..Processing.text_cleaning import *
+from ..GloVe.weights import *
 from collections import Counter
+import warnings
 import streamlit as st
+
+warnings.filterwarnings("ignore")
+from ..Axes.projection_functions import *
+from ..Axes.models import *
+from ..Axes.filter_words import *
+from ..Processing.preprocess_parliament import *
 import os
 import plotly.graph_objects as go
 
@@ -156,6 +165,7 @@ def visualize_top_variations(
         rows=2,
         cols=1,
         vertical_spacing=0.6,
+        vertical_spacing=0.6,
         subplot_titles=[
             f"Increasing Variation on Axis {axis_1}",
             f"Decreasing Variation on Axis {axis_2}",
@@ -221,16 +231,19 @@ def word_variations(
     path_1 = f"word analysis values/processed yearly data ; year = {year}, model = {i}, with parliament = {with_parliament}"
     if not os.path.exists(path_1):
         st.write((f"processing year {year}"))
+        st.write((f"processing year {year}"))
         print(f"processing year {year}")
         current_df = process_year_data(year, models_w[i], with_parliament)
         current_df.to_csv(path_1, index=False)
     else:
+        st.write(f"{year} already processed")
         st.write(f"{year} already processed")
         print(f"{year} already processed")
         current_df = pd.read_csv(path_1)
 
     path_2 = f"word analysis values/processed yearly data ; year = {year-1}, model = {i-1}, with parliament = {with_parliament}"
     if not os.path.exists(path_2):
+        st.write(f"processing year {year-1}")
         st.write(f"processing year {year-1}")
         print(f"processing year {year-1}")
         previous_df = process_year_data(year - 1, models_w[i - 1], with_parliament)
@@ -242,7 +255,7 @@ def word_variations(
 
     path_3 = f"word analysis values/var embed real ; current year = {year}, previous year = {year-1}"
     if not os.path.exists(path_3):
-        st.write("computing...")
+        st.write('computing...')
         for cos_axe in ["cos axe 1", "cos axe 2"]:
             var_column_name = f"var {cos_axe}"
             print(f"comuting var embed for {cos_axe}")
@@ -257,7 +270,7 @@ def word_variations(
             index=False,
         )
     else:
-        st.write("All already computed..")
+        st.write('All already computed..')
         current_df = pd.read_csv(path_3)
 
     current_df = process_yearly_data(current_df, year, with_parliament)

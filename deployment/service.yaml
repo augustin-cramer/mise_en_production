@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mep-service
+spec:
+  selector:
+    app: mep
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8501
