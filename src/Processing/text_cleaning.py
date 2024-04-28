@@ -1,5 +1,8 @@
 import pandas as pd
 import string
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
 from nltk.tokenize import word_tokenize
 from nltk.stem.snowball import SnowballStemmer
 from nltk.stem import PorterStemmer
