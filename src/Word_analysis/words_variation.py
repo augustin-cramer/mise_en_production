@@ -230,19 +230,16 @@ def word_variations(
     path_1 = f"word analysis values/processed yearly data ; year = {year}, model = {i}, with parliament = {with_parliament}"
     if not os.path.exists(path_1):
         st.write((f"processing year {year}"))
-        st.write((f"processing year {year}"))
         print(f"processing year {year}")
         current_df = process_year_data(year, models_w[i], with_parliament)
         current_df.to_csv(path_1, index=False)
     else:
-        st.write(f"{year} already processed")
         st.write(f"{year} already processed")
         print(f"{year} already processed")
         current_df = pd.read_csv(path_1)
 
     path_2 = f"word analysis values/processed yearly data ; year = {year-1}, model = {i-1}, with parliament = {with_parliament}"
     if not os.path.exists(path_2):
-        st.write(f"processing year {year-1}")
         st.write(f"processing year {year-1}")
         print(f"processing year {year-1}")
         previous_df = process_year_data(year - 1, models_w[i - 1], with_parliament)
