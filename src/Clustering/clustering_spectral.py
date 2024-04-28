@@ -77,7 +77,9 @@ def sse_scaler_(k_rng, data):
     fig = go.Figure()
 
     # Add a line trace for the SSE values
-    fig.add_trace(go.Scatter(x=k_rng, y=sse_scaler, mode="lines+markers", name="SSE"))
+    fig.add_trace(
+        go.Scatter(x=k_rng, y=sse_scaler, mode="lines+markers", name="SSE")
+    )
 
     # Customize layout
     fig.update_layout(
@@ -226,7 +228,10 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
 
     df_pc = pd.DataFrame(
         zip(
-            pc.T[0].tolist(), pc.T[1].tolist(), label, df_t["text"].apply(read).tolist()
+            pc.T[0].tolist(),
+            pc.T[1].tolist(),
+            label,
+            df_t["text"].apply(read).tolist(),
         )
     )
 
@@ -306,7 +311,9 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
         fig.show()
 
 
-def visualize_main_words_in_clusters_TFIDF_streamlit(number_of_clusters, data, df_t):
+def visualize_main_words_in_clusters_TFIDF_streamlit(
+    number_of_clusters, data, df_t
+):
     """
     Performs spectral clustering on the dataset and visualizes the main words in each cluster
     using TF-IDF scores. This visualization is accomplished via a treemap and is made interactive
@@ -339,7 +346,10 @@ def visualize_main_words_in_clusters_TFIDF_streamlit(number_of_clusters, data, d
 
     df_pc = pd.DataFrame(
         zip(
-            pc.T[0].tolist(), pc.T[1].tolist(), label, df_t["text"].apply(read).tolist()
+            pc.T[0].tolist(),
+            pc.T[1].tolist(),
+            label,
+            df_t["text"].apply(read).tolist(),
         )
     )
 
