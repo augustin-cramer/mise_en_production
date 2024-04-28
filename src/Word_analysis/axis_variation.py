@@ -171,7 +171,6 @@ def project_variation_on_axis(
 
     # Display the figure
     return fig
-    return fig
 
 
 axes_words = clean(tech + reg + pos + neg, "unigram")
