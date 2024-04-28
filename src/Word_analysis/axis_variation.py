@@ -44,8 +44,7 @@ def give_embed_anyway(word, model_word, list_of_words):
 
 
 def see_variation_on_axis(year: int, df, source=None):
-    
-    st.write('Computing...')
+    st.write("Computing...")
 
     if source:
         df = df.loc[df["source"] == source]
@@ -56,7 +55,7 @@ def see_variation_on_axis(year: int, df, source=None):
         try:
             l.append(df[word].tolist()[0])
         except:
-            print(f'{word} not in the model')
+            print(f"{word} not in the model")
     var_tech = dict(zip(clean(tech, "unigram"), l))
     sorted_var_tech = sorted(var_tech.items(), key=lambda x: x[1], reverse=True)
 

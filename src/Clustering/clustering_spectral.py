@@ -168,7 +168,7 @@ def plot_clusters_on_pc_spectral_3d(number_of_clusters, data, marker_size=0.5):
     fig = px.scatter_3d(df_pc, x="x", y="y", z="z", color="label")
     fig.update_traces(marker=dict(size=marker_size))
     fig.update_layout(width=1000, height=800)
-    
+
     return fig
 
 
@@ -209,7 +209,7 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
     to analyze the text data `df_t`. It visualizes significant words for each cluster in a treemap
     and deploys a Dash app for interactive exploration.
     """
-    
+
     nbr_clusters = number_of_clusters
     model = SpectralClustering(
         n_clusters=nbr_clusters,
@@ -306,7 +306,6 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
         fig.show()
 
 
-
 def visualize_main_words_in_clusters_TFIDF_streamlit(number_of_clusters, data, df_t):
     """
     Performs spectral clustering on the dataset and visualizes the main words in each cluster
@@ -323,7 +322,7 @@ def visualize_main_words_in_clusters_TFIDF_streamlit(number_of_clusters, data, d
     to analyze the text data `df_t`. It visualizes significant words for each cluster in a treemap
     and deploys a Dash app for interactive exploration.
     """
-    
+
     nbr_clusters = number_of_clusters
     model = SpectralClustering(
         n_clusters=nbr_clusters,
@@ -414,18 +413,21 @@ def visualize_main_words_in_clusters_TFIDF_streamlit(number_of_clusters, data, d
         fig.update_layout(autosize=False, width=1000, height=500)
 
         return fig
-    
+
     figures = []
 
     for cluster_number in range(number_of_clusters):
         fig = display_topic_cluster(cluster_number)
         figures.append(fig)
-    
+
     return figures
 
 
 def plot_silhouette_and_sse(rank, data):
-    return(silhouette_score_([i for i in range(2, rank)], data), sse_scaler_([i for i in range(2, rank)], data))
+    return (
+        silhouette_score_([i for i in range(2, rank)], data),
+        sse_scaler_([i for i in range(2, rank)], data),
+    )
 
 
 def read(text):

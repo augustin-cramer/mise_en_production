@@ -17,6 +17,7 @@ import os
 import plotly.graph_objects as go
 
 import warnings
+
 warnings.filterwarnings("ignore")
 
 from ..Processing.text_cleaning import *
@@ -43,7 +44,7 @@ def process_year_data(year, model_words_year, with_parliament=True):
     Returns:
         pd.DataFrame: A DataFrame containing words, their embeddings, and cosine similarities with two axes.
     """
-     
+
     if with_parliament:
         with open(f"data/with parliament/words/Finalwords_{year}.json") as f:
             words_year = json.load(f)
@@ -60,7 +61,9 @@ def process_year_data(year, model_words_year, with_parliament=True):
         with open(f"data/without parliament/vocabs/vocab_{year}_WP.json") as f:
             vocab_year = json.load(f)
 
-    vocab_embed_year = [weights_year.get(word, 0) * model_words_year.get(word, 0) for word in vocab_year]
+    vocab_embed_year = [
+        weights_year.get(word, 0) * model_words_year.get(word, 0) for word in vocab_year
+    ]
 
     df_words_year = pd.DataFrame(
         zip(vocab_year, vocab_embed_year), columns=["text", "embedding"]
@@ -251,7 +254,7 @@ def word_variations(
 
     path_3 = f"word analysis values/var embed real ; current year = {year}, previous year = {year-1}"
     if not os.path.exists(path_3):
-        st.write('computing...')
+        st.write("computing...")
         for cos_axe in ["cos axe 1", "cos axe 2"]:
             var_column_name = f"var {cos_axe}"
             print(f"comuting var embed for {cos_axe}")
@@ -266,7 +269,7 @@ def word_variations(
             index=False,
         )
     else:
-        st.write('All already computed..')
+        st.write("All already computed..")
         current_df = pd.read_csv(path_3)
 
     current_df = process_yearly_data(current_df, year, with_parliament)

@@ -255,9 +255,7 @@ def choose_pol(
                 df["to join"] = df["text"].apply(to_phrase)
                 df_proj_year["to join"] = df_proj_year["text"]
 
-                df_proj_year = df_proj_year[
-                    ["cos axe 1", "cos axe 2", "to join"]
-                ]
+                df_proj_year = df_proj_year[["cos axe 1", "cos axe 2", "to join"]]
 
                 df = pd.merge(df_proj_year, df, on="to join", how="inner")
                 df["cos axe"] = df[f"cos axe {axis}"]
@@ -266,20 +264,14 @@ def choose_pol(
                 df["cos axe"] = 0  # Default to 0 if no axis specified
 
             # Filter data based on sources and party
-            df = df.loc[
-                df["source"].isin(sources) | df["party"].isin(sources)
-            ]
+            df = df.loc[df["source"].isin(sources) | df["party"].isin(sources)]
 
             # Additional processing for company-specific data
             if curves_by_company:
-                df = df_BT(
-                    df
-                )  # Presumably filters or processes data by company
+                df = df_BT(df)  # Presumably filters or processes data by company
                 df = df[df["class"] == company]
             else:
-                df[
-                    "class"
-                ] = 0  # Default class if not processing by company
+                df["class"] = 0  # Default class if not processing by company
 
             # Further refine the DataFrame structure for analysis
             df = df[
@@ -322,17 +314,12 @@ def choose_pol(
             # Filter data based on quantiles if axis and percentiles are specified
             if axis is not None:
                 quantiles = get_quantiles(df["cos axe"], percentiles)
-                df = df[
-                    (df["cos axe"] < quantiles[0])
-                    | (df["cos axe"] > quantiles[1])
-                ]
+                df = df[(df["cos axe"] < quantiles[0]) | (df["cos axe"] > quantiles[1])]
 
             df = df[["year", "party", "text", "Speaker"]]
 
             # Compute polarization and confidence intervals
-            values = compute_polarization_and_CI(
-                df, year, party_1, party_2
-            )
+            values = compute_polarization_and_CI(df, year, party_1, party_2)
 
             # Output polarization values for the current year
             print(values[0])
@@ -350,7 +337,7 @@ def choose_pol(
                 values_by_company[company][metric].append(value)
 
             # Informative print statement indicating completion of the current year's computation
-            progress = (i + 1)/i_limit
+            progress = (i + 1) / i_limit
             progress_bar.progress(progress)
             st.markdown(f"Year 201{i} computed")
 
@@ -359,14 +346,18 @@ def choose_pol(
             if i > 0:
                 avg_time_per_iteration = elapsed_time / (i + 1)
                 estimated_time_left = avg_time_per_iteration * iterations_left
-                time_left_display = f"Approximately {estimated_time_left:.2f} seconds remaining"
+                time_left_display = (
+                    f"Approximately {estimated_time_left:.2f} seconds remaining"
+                )
             else:
                 time_left_display = "Calculating time remaining..."
 
-            status_text.text(f"Year 201{i} computed, {iterations_left} iterations remaining. {time_left_display}")
+            status_text.text(
+                f"Year 201{i} computed, {iterations_left} iterations remaining. {time_left_display}"
+            )
 
     status_text.empty()
-    progress_bar.empty() 
+    progress_bar.empty()
 
     # Initialize a dictionary to store polarization DataFrames by company
     df_pol_BT = {}
@@ -388,12 +379,8 @@ def choose_pol(
         random_pol = np.array(values_by_company[company]["random_pol"])
         CI_lows_real = np.array(values_by_company[company]["CI_lows_real"])
         CI_high_real = np.array(values_by_company[company]["CI_high_real"])
-        CI_lows_random = np.array(
-            values_by_company[company]["CI_lows_random"]
-        )
-        CI_high_random = np.array(
-            values_by_company[company]["CI_high_random"]
-        )
+        CI_lows_random = np.array(values_by_company[company]["CI_lows_random"])
+        CI_high_random = np.array(values_by_company[company]["CI_high_random"])
         x = [2010 + i for i in range(len(real_pol))]
 
         # Plot real polarization with confidence intervals

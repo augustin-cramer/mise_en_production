@@ -97,7 +97,7 @@ def cluster_words(
     except ValueError:
         print("Invalid number, using a default value of 5 clusters.")
         n_clusters = 5  # Default value if the user input is not valid
-    
+
     plot_clusters_on_pc_spectral_3d(n_clusters, data, marker_size=1.4).show()
     visualize_main_words_in_clusters_TFIDF(n_clusters, data, df_t)
 
@@ -169,10 +169,10 @@ def cluster_words_intermediate(
     except ValueError:
         print("Invalid number, using a default value of 5 clusters.")
         n_clusters = 5  # Default value if the user input is not valid"""
-    
+
     fig_1, fig_2 = plot_silhouette_and_sse(11, data)
 
-    return  fig_1, fig_2, data, df_t
+    return fig_1, fig_2, data, df_t
 
 
 def display_clusters(n_clusters, data, df_t):

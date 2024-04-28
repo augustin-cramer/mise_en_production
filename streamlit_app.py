@@ -11,7 +11,8 @@ from src.Word_analysis.axis_variation import axis_variation
 from src.Word_analysis.cluster_words import *
 
 # Style improvements
-st.markdown("""
+st.markdown(
+    """
 <style>
 div.stButton > button {
     font-size: 16px;
@@ -23,19 +24,20 @@ div.st-cm {
     margin-bottom: 20px;
 }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # Sidebar for navigation
 analysis_type = st.sidebar.radio(
-    "Choose Analysis Type",
-    ('Home', 'Curves Analysis', 'Word Analysis')
+    "Choose Analysis Type", ("Home", "Curves Analysis", "Word Analysis")
 )
 
-if analysis_type == 'Home':
-
+if analysis_type == "Home":
     st.title("Tools for anaylis of public opinion with a GloVe model")
 
-    st.markdown("""
+    st.markdown(
+        """
     ## Project Overview
 
     This project explores techniques described in recent scholarly papers and adapts them to analyze public opinion about BigTech companies in the UK. Our aim is to develop robust analysis tools tailored to this specific context.
@@ -75,11 +77,13 @@ if analysis_type == 'Home':
                 
     
                 
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 
 # Curves Analysis Section
-elif analysis_type == 'Curves Analysis':
+elif analysis_type == "Curves Analysis":
     st.title("Curves Analysis")
     type_of_curve = st.multiselect(
         "Select the type of curve you want",
@@ -180,9 +184,7 @@ elif analysis_type == 'Curves Analysis':
             st.write("You entered:", upper_bound)
             percentiles = [int(lower_bound), int(upper_bound)]
 
-        curves_by_company = st.multiselect(
-            "Do you want to plot by company ?", ["Yes"]
-        )
+        curves_by_company = st.multiselect("Do you want to plot by company ?", ["Yes"])
         st.markdown("If none, we don't plot by company.")
         if not curves_by_company:
             curves_by_company = None
@@ -256,8 +258,7 @@ elif analysis_type == 'Curves Analysis':
             st.plotly_chart(fig, use_container_width=True)
 
 # Word Analysis Section
-elif analysis_type == 'Word Analysis':
-
+elif analysis_type == "Word Analysis":
     # Word analysis part
     ###################################################################################################
     st.title("Word Analysis")
@@ -479,9 +480,9 @@ elif analysis_type == 'Word Analysis':
             default=None,
         )[0]
 
-        if 'data' not in st.session_state or 'df_t' not in st.session_state:
-            st.session_state['data'] = None
-            st.session_state['df_t'] = None
+        if "data" not in st.session_state or "df_t" not in st.session_state:
+            st.session_state["data"] = None
+            st.session_state["df_t"] = None
 
         # Button to generate silhouette and sse
         if st.button("Generate silhouette and sse"):
@@ -497,39 +498,53 @@ elif analysis_type == 'Word Analysis':
                 tail=tail,
             )
 
-            st.session_state['data'] = data
-            st.session_state['df_t'] = df_t
+            st.session_state["data"] = data
+            st.session_state["df_t"] = df_t
 
             st.plotly_chart(fig_1, use_container_width=True)
             st.plotly_chart(fig_2, use_container_width=True)
 
         # Input for number of clusters
         n_clusters = st.number_input(
-            "Enter the number of clusters you want to use:", min_value=1, step=1, value=5
+            "Enter the number of clusters you want to use:",
+            min_value=1,
+            step=1,
+            value=5,
         )
-        st.write(f'You chose {n_clusters} clusters.')
+        st.write(f"You chose {n_clusters} clusters.")
 
         if st.button("View clusters"):
-            if st.session_state.get('data') is not None and st.session_state.get('df_t') is not None:
-                fig_1, figures = display_clusters(n_clusters, st.session_state['data'], st.session_state['df_t'])
+            if (
+                st.session_state.get("data") is not None
+                and st.session_state.get("df_t") is not None
+            ):
+                fig_1, figures = display_clusters(
+                    n_clusters, st.session_state["data"], st.session_state["df_t"]
+                )
                 # Store figures in session state to avoid losing them on rerun
-                st.session_state['figures'] = figures
-                st.session_state['fig_1'] = fig_1
+                st.session_state["figures"] = figures
+                st.session_state["fig_1"] = fig_1
             else:
-                st.error("Please generate the data first by clicking 'Generate silhouette and sse'")
+                st.error(
+                    "Please generate the data first by clicking 'Generate silhouette and sse'"
+                )
 
         # Tabs outside the button check to preserve the state
-        if 'figures' in st.session_state and 'fig_1' in st.session_state:
-            tab1, tab2 = st.tabs(["Most important words in clusters", "Plotting on the 3 first pc"])
+        if "figures" in st.session_state and "fig_1" in st.session_state:
+            tab1, tab2 = st.tabs(
+                ["Most important words in clusters", "Plotting on the 3 first pc"]
+            )
 
             with tab1:
                 # Default selection is the first cluster if available
-                cluster_number = st.multiselect('Select Cluster Number:', range(n_clusters), default=[0])
+                cluster_number = st.multiselect(
+                    "Select Cluster Number:", range(n_clusters), default=[0]
+                )
                 # Display plots for selected clusters
                 if cluster_number:
                     for cn in cluster_number:
-                        fig = st.session_state['figures'][cn]
+                        fig = st.session_state["figures"][cn]
                         st.plotly_chart(fig, use_container_width=True)
 
             with tab2:
-                st.plotly_chart(st.session_state['fig_1'], use_container_width=True)
+                st.plotly_chart(st.session_state["fig_1"], use_container_width=True)

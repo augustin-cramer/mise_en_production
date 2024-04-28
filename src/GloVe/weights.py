@@ -51,15 +51,11 @@ def get_sentence_embeddings(phrase, weights, model):
     sentence_embedding = 0
     for word in phrase:
         try:
-            sentence_embedding = sentence_embedding + (
-                weights[word] * model[word]
-            )
+            sentence_embedding = sentence_embedding + (weights[word] * model[word])
         except:
             sentence_embedding += 0
     try:
-        return [
-            embed / (len(phrase)) for embed in sentence_embedding.tolist()[0]
-        ]
+        return [embed / (len(phrase)) for embed in sentence_embedding.tolist()[0]]
     except:
         return None
 
