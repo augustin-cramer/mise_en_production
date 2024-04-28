@@ -1,4 +1,5 @@
-import pandas as pd
+"""Functions to perform bootstraping of values in dataframes"""
+
 import numpy as np
 
 

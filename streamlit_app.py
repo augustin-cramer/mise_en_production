@@ -1,8 +1,7 @@
+"""Streamlit app"""
+
 import streamlit as st
-import numpy as np
-import plotly.figure_factory as ff
-import time
-import os
+
 from src.Axes.curves_plots import choose_projection_cos
 from src.Polarization.polarization_plots import choose_pol
 from src.Polarization.cos_pol import draw_cos_pol

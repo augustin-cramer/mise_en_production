@@ -1,26 +1,65 @@
-from gensim.test.utils import datapath, get_tmpfile
+"""Functions to go from the texts embeddings to the 
+cosine similarities with the defined axes."""
+
+import ast
+import warnings
+
+from gensim.test.utils import get_tmpfile
 from gensim.models import KeyedVectors
 from gensim.scripts.glove2word2vec import glove2word2vec
+import pandas as pd
 import numpy as np
 from dask import dataframe as dd
-import ast
 from numpy.linalg import norm
-from ..GloVe.weights import *
-import warnings
-import os
 
 warnings.filterwarnings("ignore")
+
+from ..GloVe.weights import phrase
+
 
 #################################################
 # Transformation of the data for the projection #
 #################################################
 
+def tostring(l):
+    """
+    Converts a list to a string representation.
 
-def tostring(list):
-    return str(list)
+    Parameters:
+    - list (List): The list to be converted.
+
+    Returns:
+    - str: A string representation of the input list.
+    """
+    return str(l)
 
 
 def df_BT(df):
+    """
+    Process a dataframe to categorize and label rows based 
+    on thematic keywords related to major tech companies.
+
+    The function creates a subset of the original dataframe 
+    based on the presence of specific company themes in the 
+    'keywords' column. It assigns a class label to each row 
+    indicating the company theme, then concatenates all subsets 
+    into a single dataframe.
+
+    Parameters:
+    - df (pd.DataFrame): A pandas DataFrame containing a 
+    'keywords' column where each entry is a list of keywords.
+
+    Returns:
+    - pd.DataFrame: A DataFrame containing only the entries 
+    that match one of the specified themes, with an added 'class'
+      column indicating the theme.
+
+    Notes:
+    - The function modifies the input DataFrame in-place before 
+    making a copy to prevent changes to the original data.
+    - It assumes that the 'theme' function is defined to extract 
+    the relevant themes based on keywords.
+    """
     df_BT = df.copy()
     df_BT.reset_index(drop=True, inplace=True)
     df_BT["theme"] = df_BT["keywords"].apply(theme)
@@ -51,6 +90,23 @@ def df_BT(df):
 
 
 def theme(keywords):
+    """
+    Identify the major tech company themes associated with a 
+    list of keywords.
+
+    Parameters:
+    - keywords (list of str): A list of keyword strings.
+
+    Returns:
+    - list: A list of unique company themes associated with the
+      keywords provided. The themes include:
+        'amazon', 'facebook', 'apple', 'google', and 'microsoft'.
+
+    Each theme is determined by specific keywords that are 
+    associated with the respective company, including product
+    names, services, and key personnel. The function returns a 
+    list of all themes that match the input keywords.
+    """
     l = []
     for w in keywords:
         if w in [
@@ -217,7 +273,8 @@ def barycentre(list, model):
 
 
 def filter_model(list, model_words):
-    """Takes a list of words and a word2vec model, and removes the words from the list that do not appear in the model
+    """Takes a list of words and a word2vec model, and removes 
+    the words from the list that do not appear in the model
 
     Parameters:
     -----------
@@ -227,7 +284,7 @@ def filter_model(list, model_words):
 
     new_list = list.copy()
 
-    for i in range(10):
+    for _ in range(10):
         for word in new_list:
             try:
                 model_words[word]
@@ -237,15 +294,31 @@ def filter_model(list, model_words):
 
 
 def proj_embedding_1(Wp):
-    l = [[] for i in range(len(Wp))]
-    for i in range(len(Wp)):
-        for j in range(len(Wp[i])):
-            l[i].append(Wp[i][j])
+    """
+    Creates a copy of a nested list structure containing embeddings.
+
+    This function iterates through a list of lists (typically embeddings or similar data structures)
+    and duplicates its structure and contents. It is useful when a direct copy of the nested list's
+    contents is needed for operations that should not affect the original data.
+
+    Parameters:
+    - Wp (list of list of float): A nested list where each sub-list contains numerical data
+      (e.g., embeddings).
+
+    Returns:
+    - list of list of float: A new nested list with the same contents as the input.
+    """
+    l = [[] for _ in range(len(Wp))]  # Initialize a list of empty lists
+    for i, sublist in enumerate(Wp):
+        for item in sublist:
+            l[i].append(item)
     return l
 
 
 def projection_1D(pos_k: list, neg_k: list, model_words, model_sentences, df):
-    """Returns the 2D projection matrix (Wp) of the sentences in df on the axes defined, and a dataframe containing the coordinates of these projections
+    """Returns the 2D projection matrix (Wp) of the sentences in 
+    df on the axes defined, and a dataframe containing the 
+    coordinates of these projections
 
     Parameters:
     -----------
@@ -284,8 +357,6 @@ def projection_1D(pos_k: list, neg_k: list, model_words, model_sentences, df):
     Bii = np.matmul(Bi, B.T)
     Wp = np.matmul(Bii, W.T)
 
-    # df['proj_embedding_x'] = proj_embedding_1(Wp)[0][4:]
-
     return Wp
 
 
@@ -298,7 +369,9 @@ def projection_2D(
     model_sentences,
     df,
 ):
-    """Returns the 2D projection matrix (Wp) of the sentences in df on the axes defined, and a dataframe containing the coordinates of these projections
+    """Returns the 2D projection matrix (Wp) of the sentences in 
+    df on the axes defined, and a dataframe containing the 
+    coordinates of these projections
 
     Parameters:
     -----------
@@ -358,7 +431,9 @@ def projection_2D(
 def projection_3D(
     pos_k, neg_k, pos_l, neg_l, pos_m, neg_m, model_words, model_sentences, df
 ):
-    """Returns the 3D projection matrix (Wp) of the sentences in df on the axes defined, and a dataframe containing the coordinates of these projections
+    """Returns the 3D projection matrix (Wp) of the sentences in 
+    df on the axes defined, and a dataframe containing the
+      coordinates of these projections
 
     Parameters:
     -----------
@@ -456,6 +531,26 @@ def projection_3D(
 
 
 def axis_vector(pos_1, neg_1, model_words):
+    """
+    Computes the directional vector for a semantic axis in a word embedding space based on 
+    positive and negative word sets.
+
+    Parameters:
+    - pos_1 (list of str): A list of words representing the positive pole of the semantic axis.
+    - neg_1 (list of str): A list of words representing the negative pole of the semantic axis.
+    - model_words (Word2Vec or similar): A word embedding model that contains embeddings for the 
+      words specified in pos_1 and neg_1.
+
+    Returns:
+    - numpy.ndarray: A vector representing the semantic axis defined by the positive and negative
+      word sets.
+
+    Notes:
+    - The function relies on 'filter_model' to filter out words that do not exist in the model and 
+      'barycentre' to compute the centroid of the word embeddings.
+    - The resulting vector can be used to project other embeddings onto this axis to measure 
+      their semantic similarity or difference relative to the defined axis.
+    """
     pos_a = filter_model(pos_1, model_words)
     neg_a = filter_model(neg_1, model_words)
 
@@ -515,6 +610,23 @@ def intervals(t, digits=5):
 
 
 def source_to_color(text):
+    """
+    Converts a newspaper source abbreviation into a corresponding color.
+
+    Parameters:
+    - text (str): The abbreviation of the newspaper source.
+
+    Returns:
+    - str: The color associated with the given newspaper source.
+
+    Supported sources and their corresponding colors:
+    - "DE" -> "yellow"
+    - "DM" -> "green"
+    - "GUA" -> "blue"
+    - "MET" -> "pink"
+    - "TE" -> "red"
+    - "par" -> "grey"
+    """
     if text == "DE":
         return "yellow"
     if text == "DM":
@@ -530,6 +642,19 @@ def source_to_color(text):
 
 
 def party_to_size(text, size_list):
+    """
+    Determines the size representation for a political party based on a predefined list.
+
+    Parameters:
+    - text (str): The abbreviation of the political party.
+    - size_list (list of int): A list of sizes corresponding to each party.
+
+    Returns:
+    - int: The size corresponding to the given party from the size_list.
+
+    The function assumes the order of parties in size_list is:
+    Con, Lab, LibDem, SNP, DUP.
+    """
     if text == "Con":
         return size_list[0]
     if text == "Lab":
@@ -543,6 +668,22 @@ def party_to_size(text, size_list):
 
 
 def party_to_color(text):
+    """
+    Converts a political party abbreviation into a corresponding color.
+
+    Parameters:
+    - text (str): The abbreviation of the political party.
+
+    Returns:
+    - str: The color associated with the given political party.
+
+    Supported parties and their corresponding colors:
+    - "Con" -> "red"
+    - "Lab" -> "blue"
+    - "LibDem" -> "turquoise"
+    - "SNP" -> "pink"
+    - "DUP" -> "violet"
+    """
     if text == "Con":
         return "red"
     if text == "Lab":
@@ -556,6 +697,19 @@ def party_to_color(text):
 
 
 def change_format_year(year):
+    """
+    Corrects specific year representations that are incorrectly formatted.
+
+    Parameters:
+    - year (int): The year to be checked and potentially corrected.
+
+    Returns:
+    - int: The corrected year.
+
+    This function specifically addresses year formats from a data processing error,
+    where years were incorrectly recorded as 20110, 20111, 20112, 20113, which correspond
+    to the years 2020, 2021, 2022, and 2023 respectively.
+    """
     if year == 20110:
         year = 2020
     if year == 20111:

@@ -1,7 +1,9 @@
+"""Preprocessing parliament database"""
+
 import pandas as pd
 from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
-from ..Processing.text_cleaning import *
+from ..Processing.text_cleaning import clean
 
 stemmer = SnowballStemmer(language="english")
 english_stopwords = set(stopwords.words("english"))
@@ -13,6 +15,21 @@ english_stopwords = set(stopwords.words("english"))
 
 
 def read_input(path, encod, **kwargs):
+    """
+    Reads a CSV file from a given path and returns it as a DataFrame.
+
+    This function reads a CSV file using pandas, allowing for customizable delimiter,
+    encoding, and data type specifications.
+
+    Parameters:
+    - path (str): File path for the CSV file to be read.
+    - encod (str): Encoding type for the CSV file.
+    - **kwargs:
+        - dtype_values (dict, optional): Specifies data types for the columns.
+
+    Returns:
+    - DataFrame: A DataFrame containing the data read from the CSV file.
+    """
     dtype_values = kwargs.get("dtype_values", None)
     df = pd.read_csv(path, sep=";", encoding=encod, dtype=dtype_values)
     return df
@@ -25,7 +42,6 @@ dtypes = {
     "speechnumber": int,
     "speaker": object,
     "party": object,
-    "party.facts.id": object,
     "chair": bool,
     "terms": int,
     "text": object,
@@ -511,7 +527,8 @@ def process_list_BigTech_words(topics: list):
 
 def lines_to_keep(text: str, liste_big_tech: list):
     """
-    Takes the text of the speech as an input, and returns a bool saying if the speech is within the BigTech topic
+    Takes the text of the speech as an input, and returns a bool 
+    saying if the speech is within the BigTech topic
 
     Parameters:
     -----------
@@ -528,7 +545,8 @@ def lines_to_keep(text: str, liste_big_tech: list):
 
 def keep_Bigtech_speeches(df: pd.DataFrame, list_stem_topics: list):
     """
-    Takes a dataframe of speeches as an input, and returns only the speeches that have a link with the topics
+    Takes a dataframe of speeches as an input, and returns 
+    only the speeches that have a link with the topics
 
     Parameters:
     -----------

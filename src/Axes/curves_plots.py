@@ -1,9 +1,13 @@
-import os
-from ..Axes.projection_functions import *
-from ..Axes.bootstraping import *
-from ..S3_Bucket_utils.read_data import read_csv_bucket
+"""Builds the main function to plot the cosine between selected sources and axis, with multple parameters available."""
+
 import pandas as pd
 from matplotlib import pyplot as plt
+import plotly.graph_objects as go
+
+from ..S3_Bucket_utils.read_data import read_csv_bucket
+from ..Axes.projection_functions import *
+from ..Axes.bootstraping import *
+
 
 
 def format_year(integer):
@@ -87,9 +91,6 @@ def plot_from_sources(df_all_grouped, axis, sources):
     plt.show()
 
 
-import plotly.graph_objects as go
-
-
 def plot_from_sources_plotly(df_all_grouped, axis, sources):
     """
     Plots cosine similarity values from different sources over years,
@@ -121,7 +122,7 @@ def plot_from_sources_plotly(df_all_grouped, axis, sources):
                 y=y,
                 mode="lines",
                 name=f"Cosine similarity on axis {axis} of {source}",
-                line=dict(width=2),
+                line={'width' : 2},
             )
         )
 
@@ -132,7 +133,7 @@ def plot_from_sources_plotly(df_all_grouped, axis, sources):
                 y=list(ci_high) + list(ci_low)[::-1],
                 fill="toself",
                 fillcolor="rgba(0,100,80,0.2)",
-                line=dict(color="rgba(255,255,255,0)"),
+                line={"color" : "rgba(255,255,255,0)"},
                 showlegend=False,
                 name=f"Confidence Interval {source}",
             )

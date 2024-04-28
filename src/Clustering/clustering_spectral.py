@@ -1,19 +1,14 @@
-from sklearn.cluster import SpectralClustering
-import dash
-import dash_bootstrap_components as dbc
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output
+"""Main functions used to perform clustering on embeddings"""
 
-import plotly.express as px
-from sklearn.metrics import silhouette_score
 import pandas as pd
-from sklearn.cluster import KMeans
 import numpy as np
+from sklearn.cluster import SpectralClustering
+from sklearn.metrics import silhouette_score
+from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.feature_extraction.text import TfidfVectorizer
 import plotly.graph_objects as go
-import streamlit as st
+import plotly.express as px
 
 
 def silhouette_score_(k_rng, data):
@@ -124,6 +119,22 @@ def plot_clusters_on_pc_spectral(number_of_clusters, data):
 
 
 def plot_clusters_on_pc_kmeans(number_of_clusters, data):
+    """
+    Performs K-means clustering on the provided dataset and visualizes the clusters using PCA for dimension reduction.
+
+    This function applies K-means clustering to the dataset and reduces the dimensionality of the data to two principal components using PCA. It then plots the first two principal components and colors the points according to their cluster assignment.
+
+    Parameters:
+    - number_of_clusters (int): The number of clusters to form as well as the number of centroids to generate.
+    - data (np.ndarray or pd.DataFrame): Data on which clustering and PCA will be performed. Data should be numeric.
+
+    Returns:
+    - plotly.graph_objs._figure.Figure: A Plotly scatter plot figure with points colored based on their cluster assignments. The x and y axes represent the first and second principal components, respectively.
+
+    Notes:
+    - The function assumes data can be converted to type 'double' for numerical precision in calculations.
+    - 'n_init' parameter in KMeans is set to 4, which means the K-means algorithm will run with different centroid seeds four times, and the final results will be the best output of those runs in terms of inertia.
+    """
     nbr_clusters = number_of_clusters
     kmeans = KMeans(init="k-means++", n_clusters=nbr_clusters, n_init=4)
     kmeans.fit(data.astype("double"))
@@ -175,6 +186,14 @@ def plot_clusters_on_pc_spectral_3d(number_of_clusters, data, marker_size=0.5):
 
 
 def plot_clusters_on_pc_kmeans_3d(number_of_clusters, data, marker_size=0.5):
+    """
+    Same as the previous function but with K-means
+
+    Parameters:
+    - number_of_clusters (int): The number of clusters to generate.
+    - data (array-like): The dataset to be clustered and visualized.
+    - marker_size (float): Size of the markers in the scatter plot.
+    """
     nbr_clusters = number_of_clusters
     kmeans = KMeans(init="k-means++", n_clusters=nbr_clusters, n_init=4)
     kmeans.fit(data.astype("double"))
@@ -434,11 +453,31 @@ def visualize_main_words_in_clusters_TFIDF_streamlit(
 
 
 def plot_silhouette_and_sse(rank, data):
+    """
+    Calculates and returns both silhouette scores and SSE (Sum of Squared Errors) for a range of cluster sizes.
+
+    Parameters:
+    - rank (int): Upper limit (exclusive) to generate cluster sizes starting from 2.
+    - data (array-like or DataFrame): Dataset to be used for clustering calculations.
+
+    Returns:
+    - tuple: Containing two lists, the first with silhouette scores and the second with SSE values, 
+      for cluster sizes from 2 up to 'rank - 1'.
+    """
     return (
-        silhouette_score_([i for i in range(2, rank)], data),
-        sse_scaler_([i for i in range(2, rank)], data),
+        silhouette_score_(list(range(2, rank)), data),
+        sse_scaler_(list(range(2, rank)), data),
     )
 
 
 def read(text):
+    """
+    Replaces underscores with spaces in the given text.
+
+    Parameters:
+    - text (str): The text to be processed.
+
+    Returns:
+    - str: The processed text with underscores replaced by spaces.
+    """
     return text.replace("_", " ")

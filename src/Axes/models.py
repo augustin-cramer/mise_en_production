@@ -1,11 +1,10 @@
-from ..GloVe.weights import *
-import warnings
-import os
+"""This script loads the embeddings from text format 
+into word2vec format, which is much more manipulable."""
 
-warnings.filterwarnings("ignore")
 from ..Axes.projection_functions import *
-from ..Axes.axes_definition import *
 
+import warnings
+warnings.filterwarnings("ignore")
 
 # PART I: Generation of word2vec models for sentence and word embeddings
 
