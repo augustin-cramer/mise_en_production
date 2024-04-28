@@ -281,4 +281,3 @@ def draw_cos_pol(
 
     # Display the figure
     return fig
-    return fig
