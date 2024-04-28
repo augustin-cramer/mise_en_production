@@ -2,6 +2,7 @@ from ..Polarization.polarization_plots import *
 from ..Axes.bootstraping import *
 import os
 import plotly.graph_objects as go
+import streamlit as st
 
 
 def draw_cos_pol(
@@ -28,7 +29,8 @@ def draw_cos_pol(
     if not os.path.exists(
         f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.csv"
     ):
-        print("computin polarization")
+        print("computin polarization...")
+        st.write("computin polarization...")
         choose_pol(
             left_side=left_side,
             right_side=right_side,
@@ -42,7 +44,8 @@ def draw_cos_pol(
         )
 
     else:
-        print("polarization already computed")
+        st.write("polarization already computed...")
+        print("polarization already computed...")
 
     if with_parliament:
         df_proj = pd.read_csv("data/with parliament/current_dataframes/df.csv")
