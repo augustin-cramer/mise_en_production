@@ -536,7 +536,9 @@ def keep_Bigtech_speeches(df: pd.DataFrame, list_stem_topics: list):
     list_stem_topics : list of BigTech words
     """
     set_stem_topics = set(list_stem_topics)
-    df["lines_to_keep"] = df["text"].apply(lines_to_keep, args=(set_stem_topics,))
+    df["lines_to_keep"] = df["text"].apply(
+        lines_to_keep, args=(set_stem_topics,)
+    )
     df = df.loc[df["lines_to_keep"]]
     df.drop(columns=["agenda", "lines_to_keep"], inplace=True)
     return df

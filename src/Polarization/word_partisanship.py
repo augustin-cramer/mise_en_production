@@ -52,9 +52,9 @@ def log_odds(counts1, counts2, prior, zscore=True):
         l2 = float(counts2[word] + prior[word]) / (
             (n2 + nprior) - (counts2[word] + prior[word])
         )
-        sigmasquared[word] = 1 / (float(counts1[word]) + float(prior[word])) + 1 / (
-            float(counts2[word]) + float(prior[word])
-        )
+        sigmasquared[word] = 1 / (
+            float(counts1[word]) + float(prior[word])
+        ) + 1 / (float(counts2[word]) + float(prior[word]))
         sigma[word] = math.sqrt(sigmasquared[word])
         delta[word] = math.log(l1) - math.log(l2)
         if zscore:
@@ -94,7 +94,9 @@ def get_word_partisanship(
     df_speeches, year, party_1, party_2, bigram=False, with_parliament=True
 ):
     if with_parliament:
-        with open("data/with parliament/vocabs/vocab_" + str(year) + ".json") as f:
+        with open(
+            "data/with parliament/vocabs/vocab_" + str(year) + ".json"
+        ) as f:
             vocab = json.load(f)
     if not with_parliament:
         with open(
@@ -103,7 +105,9 @@ def get_word_partisanship(
             vocab = json.load(f)
 
     if bigram:
-        df_speeches["text"] = df_speeches["text"].apply(from_unigrams_to_bigrams)
+        df_speeches["text"] = df_speeches["text"].apply(
+            from_unigrams_to_bigrams
+        )
         vocab = [vocab[i] + " " + vocab[i + 1] for i in range(len(vocab) - 1)]
 
     words2idx = {w: i for i, w in enumerate(vocab)}
@@ -142,7 +146,9 @@ def get_word_partisanship(
     rep_t = get_token_user_counts(rep_counts)
     dem_not_t = dem_no - dem_t + 2  # because of add one smoothing
     rep_not_t = rep_no - rep_t + 2  # because of add one smoothing
-    mutual_info = mutual_information(dem_t, rep_t, dem_not_t, rep_not_t, dem_no, rep_no)
+    mutual_info = mutual_information(
+        dem_t, rep_t, dem_not_t, rep_not_t, dem_no, rep_no
+    )
     chi = chi_square(dem_t, rep_t, dem_not_t, rep_not_t, dem_no, rep_no)
 
     features = np.ndarray(
@@ -200,7 +206,8 @@ def filter_deltas(df, delta_low_percentile, delta_high_percentile):
     quantiles_deltas = get_quantiles(df["deltas"], delta_percentiles)
 
     df = df.loc[
-        (df["deltas"] < quantiles_deltas[0]) | (df["deltas"] > quantiles_deltas[1])
+        (df["deltas"] < quantiles_deltas[0])
+        | (df["deltas"] > quantiles_deltas[1])
     ]
 
     return df
@@ -241,9 +248,13 @@ def partizan_words(
         i = eval("1" + s[1])
 
     if with_parliament:
-        df_proj = pd.read_csv("data/with parliament/current_dataframes/df_BT.csv")
+        df_proj = pd.read_csv(
+            "data/with parliament/current_dataframes/df_BT.csv"
+        )
     if not with_parliament:
-        df_proj = pd.read_csv("data/without parliament/current_dataframes/df_BT.csv")
+        df_proj = pd.read_csv(
+            "data/without parliament/current_dataframes/df_BT.csv"
+        )
         df_proj["party"], df_proj["Speaker"] = 0, 0
 
     df_par = df_proj.loc[
@@ -325,7 +336,9 @@ def partizan_words(
         neg_a = filter_model(neg_1, m)
 
         b = barycentre(pos_a, m) - barycentre(neg_a, m)
-        df["cos"] = df["words"].apply(cosine_with_axis_bigram, b=b, model_words=m)
+        df["cos"] = df["words"].apply(
+            cosine_with_axis_bigram, b=b, model_words=m
+        )
         df_sorted_partisanships = df
         df = filter_deltas(df, percentiles_delta[0], percentiles_delta[1])
 
@@ -350,7 +363,9 @@ def partizan_words(
         neg_a = filter_model(neg_1, m)
 
         b = barycentre(pos_a, m) - barycentre(neg_a, m)
-        df["cos"] = df["words"].apply(cosine_with_axis_word, b=b, model_words=m)
+        df["cos"] = df["words"].apply(
+            cosine_with_axis_word, b=b, model_words=m
+        )
         df_sorted_partisanships = df
         df = filter_deltas(df, percentiles_delta[0], percentiles_delta[1])
 

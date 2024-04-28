@@ -40,7 +40,10 @@ def bootstrap(df_g_cos, df, source_column="source", axis=1):
         df_temp = df[df[source_column] == source]
         df_temp = df_temp[df_temp["year"] == year]
 
-        t = [bootstrap_mean(df_temp, "cos axe " + str(axis)) for i in range(1001)]
+        t = [
+            bootstrap_mean(df_temp, "cos axe " + str(axis))
+            for i in range(1001)
+        ]
         df_g_cos["CI_" + str(axis) + "_inf"][i] = intervals(t, digits=5)[0]
         df_g_cos["CI_" + str(axis) + "_sup"][i] = intervals(t, digits=5)[1]
 

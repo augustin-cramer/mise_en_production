@@ -184,7 +184,9 @@ elif analysis_type == "Curves Analysis":
             st.write("You entered:", upper_bound)
             percentiles = [int(lower_bound), int(upper_bound)]
 
-        curves_by_company = st.multiselect("Do you want to plot by company ?", ["Yes"])
+        curves_by_company = st.multiselect(
+            "Do you want to plot by company ?", ["Yes"]
+        )
         st.markdown("If none, we don't plot by company.")
         if not curves_by_company:
             curves_by_company = None
@@ -391,7 +393,8 @@ elif analysis_type == "Word Analysis":
             )
 
         axis = st.radio(
-            "Select the axis for which you want to do the analysis.", options=[1, 2]
+            "Select the axis for which you want to do the analysis.",
+            options=[1, 2],
         )
 
         method = st.radio(
@@ -519,7 +522,9 @@ elif analysis_type == "Word Analysis":
                 and st.session_state.get("df_t") is not None
             ):
                 fig_1, figures = display_clusters(
-                    n_clusters, st.session_state["data"], st.session_state["df_t"]
+                    n_clusters,
+                    st.session_state["data"],
+                    st.session_state["df_t"],
                 )
                 # Store figures in session state to avoid losing them on rerun
                 st.session_state["figures"] = figures
@@ -532,7 +537,10 @@ elif analysis_type == "Word Analysis":
         # Tabs outside the button check to preserve the state
         if "figures" in st.session_state and "fig_1" in st.session_state:
             tab1, tab2 = st.tabs(
-                ["Most important words in clusters", "Plotting on the 3 first pc"]
+                [
+                    "Most important words in clusters",
+                    "Plotting on the 3 first pc",
+                ]
             )
 
             with tab1:
@@ -547,4 +555,6 @@ elif analysis_type == "Word Analysis":
                         st.plotly_chart(fig, use_container_width=True)
 
             with tab2:
-                st.plotly_chart(st.session_state["fig_1"], use_container_width=True)
+                st.plotly_chart(
+                    st.session_state["fig_1"], use_container_width=True
+                )

@@ -375,18 +375,42 @@ def projection_3D(
 
     pos_a = filter_model(pos_k, model_words)
     neg_a = filter_model(neg_k, model_words)
-    pos_a = [model_words.most_similar(word)[i][0] for i in range(5) for word in pos_a]
-    neg_a = [model_words.most_similar(word)[i][0] for i in range(5) for word in neg_a]
+    pos_a = [
+        model_words.most_similar(word)[i][0]
+        for i in range(5)
+        for word in pos_a
+    ]
+    neg_a = [
+        model_words.most_similar(word)[i][0]
+        for i in range(5)
+        for word in neg_a
+    ]
 
     pos_b = filter_model(pos_l, model_words)
     neg_b = filter_model(neg_l, model_words)
-    pos_b = [model_words.most_similar(word)[i][0] for i in range(5) for word in pos_b]
-    neg_b = [model_words.most_similar(word)[i][0] for i in range(5) for word in neg_b]
+    pos_b = [
+        model_words.most_similar(word)[i][0]
+        for i in range(5)
+        for word in pos_b
+    ]
+    neg_b = [
+        model_words.most_similar(word)[i][0]
+        for i in range(5)
+        for word in neg_b
+    ]
 
     pos_c = filter_model(pos_m, model_words)
     neg_c = filter_model(neg_m, model_words)
-    pos_c = [model_words.most_similar(word)[i][0] for i in range(5) for word in pos_c]
-    neg_c = [model_words.most_similar(word)[i][0] for i in range(5) for word in neg_c]
+    pos_c = [
+        model_words.most_similar(word)[i][0]
+        for i in range(5)
+        for word in pos_c
+    ]
+    neg_c = [
+        model_words.most_similar(word)[i][0]
+        for i in range(5)
+        for word in neg_c
+    ]
 
     b1 = barycentre(pos_a, model_words) - barycentre(neg_a, model_words)
     b1 = b1 / np.linalg.norm(b1)

@@ -59,7 +59,9 @@ def both_cosines(df, pos_1, neg_1, pos_2, neg_2, model_words, model_sentences):
 
 # Apply the cosine similarity calculations for all prepared DataFrames
 for i in range(14):
-    dfs[i] = both_cosines(dfs[i], pos_1, neg_1, pos_2, neg_2, models_w[i], models_s[i])
+    dfs[i] = both_cosines(
+        dfs[i], pos_1, neg_1, pos_2, neg_2, models_w[i], models_s[i]
+    )
 
 # Combine all DataFrames into one for further analysis
 df = pd.concat(dfs)
@@ -111,4 +113,6 @@ df_BT = pd.concat(dfs_big_tech.values())
 
 # Saving the processed DataFrames for future use
 df.to_csv("data/without parliament/current_dataframes/df.csv", index=False)
-df_BT.to_csv("data/without parliament/current_dataframes/df_BT.csv", index=False)
+df_BT.to_csv(
+    "data/without parliament/current_dataframes/df_BT.csv", index=False
+)

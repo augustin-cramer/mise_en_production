@@ -49,7 +49,9 @@ def process_year_data(year, model_words_year, with_parliament=True):
         with open(f"data/with parliament/words/Finalwords_{year}.json") as f:
             words_year = json.load(f)
     else:
-        with open(f"data/without parliament/words/Finalwords_{year}_WP.json") as f:
+        with open(
+            f"data/without parliament/words/Finalwords_{year}_WP.json"
+        ) as f:
             words_year = json.load(f)
 
     weights_year = get_weights_word2vec(words_year, a=1e-3)
@@ -62,7 +64,8 @@ def process_year_data(year, model_words_year, with_parliament=True):
             vocab_year = json.load(f)
 
     vocab_embed_year = [
-        weights_year.get(word, 0) * model_words_year.get(word, 0) for word in vocab_year
+        weights_year.get(word, 0) * model_words_year.get(word, 0)
+        for word in vocab_year
     ]
 
     df_words_year = pd.DataFrame(
@@ -108,7 +111,9 @@ def process_yearly_data(df, year, with_parliament=True):
         with open(f"data/with parliament/words/Finalwords_{year}.json") as f:
             words = json.load(f)
     if not with_parliament:
-        with open(f"data/without parliament/words/Finalwords_{year}_WP.json") as f:
+        with open(
+            f"data/without parliament/words/Finalwords_{year}_WP.json"
+        ) as f:
             words = json.load(f)
 
     # Calculate word counts
@@ -131,12 +136,12 @@ def process_yearly_data(df, year, with_parliament=True):
 
 def get_top_variations(df_keywords, axis, number):
     """Sorts the dataframe by the specified axis and gets the top number variations."""
-    var_up = df_keywords.sort_values(by=[f"var cos axe {axis}"], ascending=False).head(
-        number
-    )[["text", "year", f"var cos axe {axis}"]]
-    var_down = df_keywords.sort_values(by=[f"var cos axe {axis}"], ascending=True).head(
-        number
-    )[["text", "year", f"var cos axe {axis}"]]
+    var_up = df_keywords.sort_values(
+        by=[f"var cos axe {axis}"], ascending=False
+    ).head(number)[["text", "year", f"var cos axe {axis}"]]
+    var_down = df_keywords.sort_values(
+        by=[f"var cos axe {axis}"], ascending=True
+    ).head(number)[["text", "year", f"var cos axe {axis}"]]
     return var_up, var_down
 
 
@@ -200,7 +205,9 @@ def visualize_top_variations(
     fig.update_layout(
         title=f"Extreme Embedding Variation on Axis {axis_1} and {axis_2}",
         showlegend=True,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        legend=dict(
+            orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+        ),
     )
     fig.update_xaxes(
         tickangle=45, tickmode="array", tickvals=var_up_1["text"], row=1, col=1
@@ -245,7 +252,9 @@ def word_variations(
     if not os.path.exists(path_2):
         st.write(f"processing year {year-1}")
         print(f"processing year {year-1}")
-        previous_df = process_year_data(year - 1, models_w[i - 1], with_parliament)
+        previous_df = process_year_data(
+            year - 1, models_w[i - 1], with_parliament
+        )
         previous_df.to_csv(path_2, index=False)
     else:
         st.write(f"{year-1} already processed")

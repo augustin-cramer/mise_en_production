@@ -78,7 +78,9 @@ def cluster_words(
         df_t = pd.concat([df1, df2])
 
     if percentiles:
-        quantiles = get_quantiles(df_t[f"cos axe {axis}"], percentiles=percentiles)
+        quantiles = get_quantiles(
+            df_t[f"cos axe {axis}"], percentiles=percentiles
+        )
         df_t = df_t.loc[
             (df_t[f"cos axe {axis}"] < quantiles[0])
             | (df_t[f"cos axe {axis}"] > quantiles[1])
@@ -93,7 +95,9 @@ def cluster_words(
 
     # Ask the user for the number of clusters
     try:
-        n_clusters = int(input("Enter the number of clusters you want to use: "))
+        n_clusters = int(
+            input("Enter the number of clusters you want to use: ")
+        )
     except ValueError:
         print("Invalid number, using a default value of 5 clusters.")
         n_clusters = 5  # Default value if the user input is not valid
@@ -152,7 +156,9 @@ def cluster_words_intermediate(
         df_t = pd.concat([df1, df2])
 
     if percentiles:
-        quantiles = get_quantiles(df_t[f"cos axe {axis}"], percentiles=percentiles)
+        quantiles = get_quantiles(
+            df_t[f"cos axe {axis}"], percentiles=percentiles
+        )
         df_t = df_t.loc[
             (df_t[f"cos axe {axis}"] < quantiles[0])
             | (df_t[f"cos axe {axis}"] > quantiles[1])
@@ -178,5 +184,7 @@ def cluster_words_intermediate(
 def display_clusters(n_clusters, data, df_t):
     return (
         plot_clusters_on_pc_spectral_3d(n_clusters, data, marker_size=1.4),
-        visualize_main_words_in_clusters_TFIDF_streamlit(n_clusters, data, df_t),
+        visualize_main_words_in_clusters_TFIDF_streamlit(
+            n_clusters, data, df_t
+        ),
     )

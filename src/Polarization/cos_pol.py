@@ -49,7 +49,9 @@ def draw_cos_pol(
     if with_parliament:
         df_proj = pd.read_csv("data/with parliament/current_dataframes/df.csv")
     if not with_parliament:
-        df_proj = pd.read_csv("data/without parliament/current_dataframes/df.csv")
+        df_proj = pd.read_csv(
+            "data/without parliament/current_dataframes/df.csv"
+        )
         df_proj["party"], df_proj["Speaker"] = 0, 0
 
     df_par = df_proj.loc[
@@ -113,7 +115,9 @@ def draw_cos_pol(
     df_par["year"] = df_par["year"].apply(change_year)
     df_par_grouped["year"] = df_par_grouped["year"].apply(change_year)
 
-    df_par_grouped = bootstrap(df_par_grouped, df_par, source_column="party", axis=axis)
+    df_par_grouped = bootstrap(
+        df_par_grouped, df_par, source_column="party", axis=axis
+    )
 
     df_par_grouped["cos axe"] = df_par_grouped[f"cos axe {axis}"]
 
@@ -128,7 +132,9 @@ def draw_cos_pol(
     CI_lows_random = np.array(df_pol["CI_lows_random"])
     CI_high_random = np.array(df_pol["CI_high_random"])
 
-    Con_cos = np.array(df_par_grouped[df_par_grouped["party"] == "Con"]["cos axe"])
+    Con_cos = np.array(
+        df_par_grouped[df_par_grouped["party"] == "Con"]["cos axe"]
+    )
     Con_CI_low = np.array(
         df_par_grouped[df_par_grouped["party"] == "Con"][f"CI_{axis}_inf"],
         dtype="float",
@@ -138,7 +144,9 @@ def draw_cos_pol(
         dtype="float",
     )
 
-    Lab_cos = np.array(df_par_grouped[df_par_grouped["party"] == "Lab"]["cos axe"])
+    Lab_cos = np.array(
+        df_par_grouped[df_par_grouped["party"] == "Lab"]["cos axe"]
+    )
     Lab_CI_low = np.array(
         df_par_grouped[df_par_grouped["party"] == "Lab"][f"CI_{axis}_inf"],
         dtype="float",

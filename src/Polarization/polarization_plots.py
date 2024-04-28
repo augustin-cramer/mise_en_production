@@ -205,9 +205,13 @@ def choose_pol(
     if axis:
         print(os.getcwd())
         if with_parliament:
-            df_proj = pd.read_csv("data/with parliament/current_dataframes/df.csv")
+            df_proj = pd.read_csv(
+                "data/with parliament/current_dataframes/df.csv"
+            )
         if not with_parliament:
-            df_proj = pd.read_csv("data/without parliament/current_dataframes/df.csv")
+            df_proj = pd.read_csv(
+                "data/without parliament/current_dataframes/df.csv"
+            )
 
     # Main loop over each company (or all companies together)
     for company in companies:
@@ -255,7 +259,9 @@ def choose_pol(
                 df["to join"] = df["text"].apply(to_phrase)
                 df_proj_year["to join"] = df_proj_year["text"]
 
-                df_proj_year = df_proj_year[["cos axe 1", "cos axe 2", "to join"]]
+                df_proj_year = df_proj_year[
+                    ["cos axe 1", "cos axe 2", "to join"]
+                ]
 
                 df = pd.merge(df_proj_year, df, on="to join", how="inner")
                 df["cos axe"] = df[f"cos axe {axis}"]
@@ -268,7 +274,9 @@ def choose_pol(
 
             # Additional processing for company-specific data
             if curves_by_company:
-                df = df_BT(df)  # Presumably filters or processes data by company
+                df = df_BT(
+                    df
+                )  # Presumably filters or processes data by company
                 df = df[df["class"] == company]
             else:
                 df["class"] = 0  # Default class if not processing by company
@@ -314,7 +322,10 @@ def choose_pol(
             # Filter data based on quantiles if axis and percentiles are specified
             if axis is not None:
                 quantiles = get_quantiles(df["cos axe"], percentiles)
-                df = df[(df["cos axe"] < quantiles[0]) | (df["cos axe"] > quantiles[1])]
+                df = df[
+                    (df["cos axe"] < quantiles[0])
+                    | (df["cos axe"] > quantiles[1])
+                ]
 
             df = df[["year", "party", "text", "Speaker"]]
 
@@ -346,9 +357,7 @@ def choose_pol(
             if i > 0:
                 avg_time_per_iteration = elapsed_time / (i + 1)
                 estimated_time_left = avg_time_per_iteration * iterations_left
-                time_left_display = (
-                    f"Approximately {estimated_time_left:.2f} seconds remaining"
-                )
+                time_left_display = f"Approximately {estimated_time_left:.2f} seconds remaining"
             else:
                 time_left_display = "Calculating time remaining..."
 

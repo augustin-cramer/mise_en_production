@@ -224,7 +224,9 @@ speakers = [i[1] for i in speakers]"""
 
 stemmer = PorterStemmer()
 
-english_stopwords_stem = [stemmer.stem(word.lower()) for word in english_stopwords]
+english_stopwords_stem = [
+    stemmer.stem(word.lower()) for word in english_stopwords
+]
 simple_britain_stopwords_stem = [
     stemmer.stem(word.lower()) for word in simple_britain_stopwords
 ]
