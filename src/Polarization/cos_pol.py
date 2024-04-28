@@ -21,7 +21,6 @@ def draw_cos_pol(
         raise ValueError("It only works on an axis")
 
     companies = "all"
-    companies = "all"
 
     sources = left_side + right_side
 
