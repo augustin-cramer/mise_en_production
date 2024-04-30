@@ -16,30 +16,20 @@ import os
 import matplotlib.image as mpimg
 from matplotlib import pyplot as plt
 import plotly.graph_objects as go
+from ..Load_Data.load_data import *
 
 
 events_keywordskeywords = list(set(clean(events_keywords, "unigram")))
 new_topics = list(set(clean(new_topics, "unigram")))
 
 
-def process_year_data(year, model_words_year, with_parliament=True):
-    if with_parliament:
-        with open(f"data/with parliament/words/Finalwords_{year}.json") as f:
-            words_year = json.load(f)
-    if not with_parliament:
-        with open(
-            f"data/without parliament/words/Finalwords_{year}_WP.json"
-        ) as f:
-            words_year = json.load(f)
+def process_year_data(year, model_words_year, with_parliament=True, ssp_cloud=False, fs=None, bucket=None):
+
+    words_year = load_words_year(with_parliament, year, ssp_cloud=False, fs=None, bucket=None)
 
     weights_year = get_weights_word2vec(words_year, a=1e-3)
 
-    if with_parliament:
-        with open(f"data/with parliament/vocabs/vocab_{year}.json") as f:
-            vocab_year = json.load(f)
-    if not with_parliament:
-        with open(f"data/without parliament/vocabs/vocab_{year}_WP.json") as f:
-            vocab_year = json.load(f)
+    vocab_year = load_vocab_year(with_parliament, year, ssp_cloud=False, fs=None, bucket=None)
 
     vocab_embed_year = [
         weights_year[i] * model_words_year[i] for i in vocab_year
@@ -84,16 +74,9 @@ def is_in_keywords(word):
     return False
 
 
-def process_yearly_data(df, year, with_parliament=True):
+def process_yearly_data(df, year, with_parliament=True, ssp_cloud=False, fs=None, bucket=None):
     # Load the words from the file
-    if with_parliament:
-        with open(f"data/with parliament/words/Finalwords_{year}.json") as f:
-            words = json.load(f)
-    if not with_parliament:
-        with open(
-            f"data/without parliament/words/Finalwords_{year}_WP.json"
-        ) as f:
-            words = json.load(f)
+    words = load_finalwords(with_parliament, year, ssp_cloud, fs, bucket)
 
     # Calculate word counts
     word_counts = Counter(words)
@@ -211,6 +194,9 @@ def word_variations(
     variation_2="down",
     with_parliament=True,
     number=20,
+    ssp_cloud=False,
+    fs=None,
+    bucket=None
 ):
     if year > 2019:
         year = year + 18090
@@ -220,7 +206,7 @@ def word_variations(
     path_1 = f"word analysis values/processed yearly data ; year = {year}, model = {i}, with parliament = {with_parliament}"
     if not os.path.exists(path_1):
         print(f"processing year {year}")
-        current_df = process_year_data(year, models_w[i], with_parliament)
+        current_df = process_year_data(year, models_w[i], with_parliament, ssp_cloud, fs, bucket)
         current_df.to_csv(path_1, index=False)
     else:
         print(f"{year} already processed")
@@ -230,7 +216,7 @@ def word_variations(
     if not os.path.exists(path_2):
         print(f"processing year {year-1}")
         previous_df = process_year_data(
-            year - 1, models_w[i - 1], with_parliament
+            year - 1, models_w[i - 1], with_parliament, ssp_cloud, fs, bucket
         )
         previous_df.to_csv(path_2, index=False)
     else:
@@ -255,7 +241,7 @@ def word_variations(
     else:
         current_df = pd.read_csv(path_3)
 
-    current_df = process_yearly_data(current_df, year, with_parliament)
+    current_df = process_yearly_data(current_df, year, with_parliament, ssp_cloud, fs, bucket)
 
     visualize_top_variations(
         current_df,

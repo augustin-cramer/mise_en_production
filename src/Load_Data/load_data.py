@@ -1,7 +1,9 @@
 from ..S3_Bucket_utils.read_data import *
+from ..GloVe.weights import standard_opening
 import pandas as pd
 import json
 from scipy import sparse
+
 
 def load_csv(filepath, ssp_cloud=False, fs=None, bucket=None):
     if ssp_cloud:
@@ -49,12 +51,38 @@ def load_current_year_data(with_parliament, year, ssp_cloud=False, fs=None, buck
         ).reset_index()
     if not with_parliament:
         df = standard_opening(
-            f"data/without parliament/FinalDataframes/FilteredFinalDataFrame_201{i}_WP.csv",
+            f"/without_parliament/FinalDataframes/FilteredFinalDataFrame_201{i}_WP.csv",
             True,  ssp_cloud, fs, bucket
         ).reset_index()
         df["party"], df["Speaker"] = 0, 0
     return df
 
+
+def load_words_year(with_parliament, year, ssp_cloud=False, fs=None, bucket=None):
+    if with_parliament:
+        filepath = f"/with_parliament/words/Finalwords_{year}.json"
+    if not with_parliament:
+        filepath = f"/without_parliament/words/Finalwords_{year}.json"
+    words_year = load_json(filepath, ssp_cloud, fs, bucket)
+    return words_year
+
+
+def load_vocab_year(with_parliament, year, ssp_cloud=False, fs=None, bucket=None):
+    if with_parliament:
+        filepath = f"/with_parliament/vocabs/vocab_{year}.json"
+    if not with_parliament:
+        filepath = f"/without_parliament/vocabs/vocab_{year}_WP.json"
+    vocab_year = load_json(filepath, ssp_cloud, fs, bucket)
+    return vocab_year
+
+
+def load_finalwords(with_parliament, year, ssp_cloud=False, fs=None, bucket=None):
+    if with_parliament:
+        filepath = f"/with_parliament/words/Finalwords_{year}.json"
+    if not with_parliament:
+        filepath = f"/without_parliament/words/Finalwords_{year}_WP.json"
+    words = load_json(filepath, ssp_cloud, fs, bucket)
+    return words
 
 def read_json_bucket(fs, FILE_PATH_S3):
     """
