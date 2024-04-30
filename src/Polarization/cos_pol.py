@@ -42,9 +42,9 @@ def draw_cos_pol(
             print_random_pol=print_random_pol,
             force_i_lim=force_i_lim,
             with_parliament=with_parliament,
-            ssp_cloud,
-            fs,
-            bucket
+            ssp_cloud=ssp_cloud,
+            fs=fs,
+            bucket=bucket
         )
 
     else:

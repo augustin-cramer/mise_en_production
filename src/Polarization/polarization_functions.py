@@ -320,9 +320,9 @@ def compute_polarization_and_CI(df, year, party_1, party_2, with_parliament, ssp
             leaveout=True,
             default_score=0.5,
             with_parliament=with_parliament,
-            ssp_cloud,
-            fs,
-            bucket
+            ssp_cloud=ssp_cloud,
+            fs=fs,
+            bucket=bucket
         )
         pol_k = values[0]
         random_pol = values[1]
