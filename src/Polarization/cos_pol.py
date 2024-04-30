@@ -15,6 +15,9 @@ def draw_cos_pol(
     print_random_pol=True,
     force_i_lim=None,
     with_parliament=True,
+    ssp_cloud=False, 
+    fs=None,
+    bucket=None
 ):
     if curves_by_company:
         raise ValueError("Not implemented with company curves yet")
@@ -39,6 +42,9 @@ def draw_cos_pol(
             print_random_pol=print_random_pol,
             force_i_lim=force_i_lim,
             with_parliament=with_parliament,
+            ssp_cloud,
+            fs,
+            bucket
         )
 
     else:

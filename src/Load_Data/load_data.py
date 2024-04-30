@@ -11,17 +11,34 @@ def load_csv(filepath, ssp_cloud=False, fs=None, bucket=None):
     return df
 
 
+def load_json(filepath, ssp_cloud=False, fs=None, bucket=None):
+    if ssp_cloud:
+        json_content = read_json_bucket(fs, bucket+filepath)
+    else:
+        with open("data"+filepath) as f:
+            json_content = json.load(f)
+    return json_content
+
+
 def load_df_and_df_BT(with_parliament, ssp_cloud=False, fs=None, bucket=None):
     if with_parliament:
-        filepath_df = "with_parliament/current_dataframes/df.csv"
-        filepath_df_BT = "with_parliament/current_dataframes/df_BT.csv"
+        filepath_df = "/with_parliament/current_dataframes/df.csv"
+        filepath_df_BT = "/with_parliament/current_dataframes/df_BT.csv"
     if not with_parliament:
-        filepath_df = "without_parliament/current_dataframes/df.csv"
-        filepath_df_BT = "without_parliament/current_dataframes/df.csv"
+        filepath_df = "/without_parliament/current_dataframes/df.csv"
+        filepath_df_BT = "/without_parliament/current_dataframes/df.csv"
     df = load_csv(filepath_df, ssp_cloud, fs, bucket)
     df_BT = load_csv(filepath_df_BT, ssp_cloud, fs, bucket)
     return df, df_BT
 
+
+def load_json_vocab(with_parliament, year, ssp_cloud=False, fs=None, bucket=None):
+    if with_parliament:
+        filepath = "/with_parliament/vocabs/vocab_" + str(year) + ".json"
+    if not with_parliament:
+        filepath = "/without_parliament/vocabs/vocab_" + str(year) + "_WP.json"
+    vocab = load_json(filepath, ssp_cloud, fs, bucket)
+    return vocab
 
 
 def read_json_bucket(fs, FILE_PATH_S3):

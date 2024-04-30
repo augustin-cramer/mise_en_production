@@ -51,6 +51,9 @@ def choose_pol(
     print_random_pol=True,
     force_i_lim=None,
     with_parliament=True,
+    ssp_cloud=False,
+    fs=None,
+    bucket=None
 ):
     """
     Analyzes and visualizes polarization based on political alignment, optionally segmented by company and axis.
@@ -324,7 +327,7 @@ def choose_pol(
 
                 # Compute polarization and confidence intervals
                 values = compute_polarization_and_CI(
-                    df, year, party_1, party_2
+                    df, year, party_1, party_2, with_parliament, ssp_cloud, fs, bucket
                 )
 
                 # Output polarization values for the current year
