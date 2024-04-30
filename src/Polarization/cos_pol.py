@@ -51,10 +51,12 @@ def draw_cos_pol(
         print("polarization already computed")
 
     if with_parliament:
-        df_proj = pd.read_csv("data/with parliament/current_dataframes/df.csv")
+        df_proj = load_csv(
+            "/with_parliament/current_dataframes/df.csv", ssp_cloud, fs, bucket
+        )
     if not with_parliament:
-        df_proj = pd.read_csv(
-            "data/without parliament/current_dataframes/df.csv"
+        df_proj = load_csv(
+            "/without_parliament/current_dataframes/df.csv", ssp_cloud, fs, bucket
         )
         df_proj["party"], df_proj["Speaker"] = 0, 0
 

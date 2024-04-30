@@ -41,6 +41,21 @@ def load_json_vocab(with_parliament, year, ssp_cloud=False, fs=None, bucket=None
     return vocab
 
 
+def load_current_year_data(with_parliament, year, ssp_cloud=False, fs=None, bucket=None):
+    if with_parliament:
+        df = standard_opening(
+            f"/with_parliament/FinalDataframes/FilteredFinalDataFrame_201{i}.csv",
+            True, ssp_cloud, fs, bucket
+        ).reset_index()
+    if not with_parliament:
+        df = standard_opening(
+            f"data/without parliament/FinalDataframes/FilteredFinalDataFrame_201{i}_WP.csv",
+            True,  ssp_cloud, fs, bucket
+        ).reset_index()
+        df["party"], df["Speaker"] = 0, 0
+    return df
+
+
 def read_json_bucket(fs, FILE_PATH_S3):
     """
     Reads a JSON file from an object storage system.

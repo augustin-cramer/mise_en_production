@@ -10,6 +10,7 @@ import datetime
 import matplotlib.image as mpimg
 import plotly.graph_objects as go
 from IPython.display import Image, display, HTML
+from ..Load_Data.load_data import *
 
 
 # DISCLAIMER : Axis visualization only works for the parliament for now.
@@ -199,12 +200,12 @@ def choose_pol(
         if axis:
             print(os.getcwd())
             if with_parliament:
-                df_proj = pd.read_csv(
-                    "data/with parliament/current_dataframes/df.csv"
+                df_proj = load_csv(
+                    "/with_parliament/current_dataframes/df.csv", ssp_cloud, fs, bucket
                 )
             if not with_parliament:
-                df_proj = pd.read_csv(
-                    "data/without parliament/current_dataframes/df.csv"
+                df_proj = load_csv(
+                    "/without_parliament/current_dataframes/df.csv", ssp_cloud, fs, bucket
                 )
 
         # Main loop over each company (or all companies together)
@@ -223,17 +224,7 @@ def choose_pol(
                 year = eval("201" + str(i))  # Dynamically generate year
 
                 # Load data for the current year, with preprocessing
-                if with_parliament:
-                    df = standard_opening(
-                        f"data/with parliament/FinalDataframes/FilteredFinalDataFrame_201{i}.csv",
-                        True,
-                    ).reset_index()
-                if not with_parliament:
-                    df = standard_opening(
-                        f"data/without parliament/FinalDataframes/FilteredFinalDataFrame_201{i}_WP.csv",
-                        True,
-                    ).reset_index()
-                    df["party"], df["Speaker"] = 0, 0
+                df = load_current_year_data(with_parliament, year, ssp_cloud, fs, bucket)
 
                 # Project data onto specified axis if applicable
                 if axis:

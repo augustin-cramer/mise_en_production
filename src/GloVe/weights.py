@@ -6,7 +6,7 @@ import ast
 import gc
 
 
-def standard_opening(fichier, agenda: bool):
+def standard_opening(fichier, agenda: bool, ssp_cloud=False, fs=None, bucket=None):
     """Standardizes the opening of dataframes that we use in the following of the study
 
     Parameters:
@@ -14,7 +14,11 @@ def standard_opening(fichier, agenda: bool):
     fichier : the dataframe to open
     agenda : says if the dataframe contains an agenda column (used for paliament)
     """
-    df = pd.read_csv(fichier, index_col=[0])
+    if ssp_cloud:
+        with fs.open(bucket+fichier, mode="r") as file_in:
+            df = pd.read_csv(file_in, index_col=[0])
+    else:
+        df = pd.read_csv("data"+fichier, index_col=[0])
     df["text"] = df["text"].map(ast.literal_eval)
     df["keywords"] = df["keywords"].map(ast.literal_eval)
     if agenda:
