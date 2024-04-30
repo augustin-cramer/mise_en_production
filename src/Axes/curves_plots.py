@@ -178,7 +178,7 @@ def choose_projection_cos(
     - ValueError: If an invalid source or company is provided.
     """
     # Data loading
-    df, df_BT = load_df_and_df_BT(with_parliament, ssp_cloud=False, fs=None, bucket=None)
+    df, df_BT = load_df_and_df_BT(with_parliament, ssp_cloud, fs, bucket)
     # Validate the sources parameter
     if sources is not None:
         for source in sources:
