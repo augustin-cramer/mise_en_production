@@ -385,7 +385,7 @@ def get_values(
     return actual_val, random_val, dem_user_len + rep_user_len
 
 
-def compute_polarization_and_CI(df, year, party_1, party_2):
+def compute_polarization_and_CI(df, year, party_1, party_2, with_parliament):
     """
     Computes polarization and confidence intervals for the given dataset and parties.
 
@@ -412,6 +412,7 @@ def compute_polarization_and_CI(df, year, party_1, party_2):
             token_partisanship_measure="posterior",
             leaveout=True,
             default_score=0.5,
+            with_parliament=with_parliament
         )
         pol_k = values[0]
         random_pol = values[1]
@@ -446,6 +447,7 @@ def compute_polarization_and_CI(df, year, party_1, party_2):
         token_partisanship_measure="posterior",
         leaveout=True,
         default_score=0.5,
+        with_parliament=with_parliament
     )
 
     real_pi = values[0]
