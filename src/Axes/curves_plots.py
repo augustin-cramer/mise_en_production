@@ -1,7 +1,7 @@
 import os
 from ..Axes.projection_functions import *
 from ..Axes.bootstraping import *
-from ..S3_Bucket_utils.read_data import read_csv_bucket
+from ..Load_Data.load_data import *
 import pandas as pd
 from matplotlib import pyplot as plt
 
@@ -178,24 +178,7 @@ def choose_projection_cos(
     - ValueError: If an invalid source or company is provided.
     """
     # Data loading
-    if ssp_cloud:
-        if with_parliament:
-            df = read_csv_bucket(fs, bucket+"/with_parliament/current_dataframes/df.csv")
-            df_BT = read_csv_bucket(fs, bucket+"/with_parliament/current_dataframes/df_BT.csv")
-
-        if not with_parliament:
-            df = read_csv_bucket(fs, bucket+"/without_parliament/current_dataframes/df.csv")
-            df_BT = read_csv_bucket(fs, bucket+"/without_parliament/current_dataframes/df_BT.csv")
-
-    if not ssp_cloud:
-        if with_parliament:
-            df = pd.read_csv("data/with parliament/current_dataframes/df.csv")
-            df_BT = pd.read_csv("data/with parliament/current_dataframes/df_BT.csv")
-
-        if not with_parliament:
-            df = pd.read_csv("data/without parliament/current_dataframes/df.csv")
-            df_BT = pd.read_csv("data/without parliament/current_dataframes/df_BT.csv")
-            
+    df, df_BT = load_df_and_df_BT(with_parliament, ssp_cloud=False, fs=None, bucket=None)
     # Validate the sources parameter
     if sources is not None:
         for source in sources:
