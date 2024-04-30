@@ -329,7 +329,7 @@ def choose_pol(
             df = df[["year", "party", "text", "Speaker"]]
 
             # Compute polarization and confidence intervals
-            values = compute_polarization_and_CI(df, year, party_1, party_2)
+            values = compute_polarization_and_CI(df, year, party_1, party_2, with_parliament=with_parliament)
 
             # Output polarization values for the current year
             print(values[0])
