@@ -1,9 +1,16 @@
-import pandas as pd
+"""The `clean()` function is called many times in the project 
+in order to clean uniformally newcoming texts"""
+
 import string
+import re
+import nltk
+import pandas as pd
+
+nltk.download("stopwords")
+nltk.download("punkt")
 from nltk.tokenize import word_tokenize
 from nltk.stem.snowball import SnowballStemmer
 from nltk.stem import PorterStemmer
-import re
 from nltk.corpus import stopwords
 
 stemmer = SnowballStemmer(language="english")
@@ -156,7 +163,6 @@ dtypes = {
     "speechnumber": int,
     "speaker": object,
     "party": object,
-    "party.facts.id": object,
     "chair": bool,
     "terms": int,
     "text": object,
@@ -229,8 +235,8 @@ simple_britain_stopwords_stem = [
 
 """speakers_stem = [stemmer.stem(word.lower()) for word in speakers]"""
 
-stopwords_stem = [word for word in english_stopwords_stem] + [
-    word for word in simple_britain_stopwords_stem
+stopwords_stem = list(english_stopwords_stem) + [
+    list(simple_britain_stopwords_stem)
 ]  # + [word for word in speakers_stem]
 
 #################
@@ -254,7 +260,8 @@ def extract_bigrams(n_grams: str):
 
 def clean(text: str, gram: str):
     """
-    This function does the main cleaning of the text, from characters removal to stemming and stopwords removal
+    This function does the main cleaning of the text,
+    from characters removal to stemming and stopwords removal
 
     Parameters:
     -----------

@@ -1,9 +1,12 @@
-import os
-from ..Axes.projection_functions import *
-from ..Axes.bootstraping import *
-from ..S3_Bucket_utils.read_data import read_csv_bucket
+"""Builds the main function to plot the cosine between selected sources and axis, with multple parameters available."""
+
 import pandas as pd
 from matplotlib import pyplot as plt
+import plotly.graph_objects as go
+
+from ..S3_Bucket_utils.read_data import read_csv_bucket
+from ..Axes.projection_functions import *
+from ..Axes.bootstraping import *
 
 
 def format_year(integer):
@@ -87,9 +90,6 @@ def plot_from_sources(df_all_grouped, axis, sources):
     plt.show()
 
 
-import plotly.graph_objects as go
-
-
 def plot_from_sources_plotly(df_all_grouped, axis, sources):
     """
     Plots cosine similarity values from different sources over years,
@@ -121,7 +121,7 @@ def plot_from_sources_plotly(df_all_grouped, axis, sources):
                 y=y,
                 mode="lines",
                 name=f"Cosine similarity on axis {axis} of {source}",
-                line=dict(width=2),
+                line={"width": 2},
             )
         )
 
@@ -132,7 +132,7 @@ def plot_from_sources_plotly(df_all_grouped, axis, sources):
                 y=list(ci_high) + list(ci_low)[::-1],
                 fill="toself",
                 fillcolor="rgba(0,100,80,0.2)",
-                line=dict(color="rgba(255,255,255,0)"),
+                line={"color": "rgba(255,255,255,0)"},
                 showlegend=False,
                 name=f"Confidence Interval {source}",
             )
@@ -159,7 +159,7 @@ def choose_projection_cos(
     with_parliament=True,
     ssp_cloud=False,
     fs=None,
-    bucket=None
+    bucket=None,
 ):
     """
     Chooses the projection of cosine similarity to plot, validates inputs,
@@ -180,22 +180,36 @@ def choose_projection_cos(
     # Data loading
     if ssp_cloud:
         if with_parliament:
-            df = read_csv_bucket(fs, bucket+"/with_parliament/current_dataframes/df.csv")
-            df_BT = read_csv_bucket(fs, bucket+"/with_parliament/current_dataframes/df_BT.csv")
+            df = read_csv_bucket(
+                fs, bucket + "/with_parliament/current_dataframes/df.csv"
+            )
+            df_BT = read_csv_bucket(
+                fs, bucket + "/with_parliament/current_dataframes/df_BT.csv"
+            )
 
         if not with_parliament:
-            df = read_csv_bucket(fs, bucket+"/without_parliament/current_dataframes/df.csv")
-            df_BT = read_csv_bucket(fs, bucket+"/without_parliament/current_dataframes/df_BT.csv")
+            df = read_csv_bucket(
+                fs, bucket + "/without_parliament/current_dataframes/df.csv"
+            )
+            df_BT = read_csv_bucket(
+                fs, bucket + "/without_parliament/current_dataframes/df_BT.csv"
+            )
 
     if not ssp_cloud:
         if with_parliament:
             df = pd.read_csv("data/with parliament/current_dataframes/df.csv")
-            df_BT = pd.read_csv("data/with parliament/current_dataframes/df_BT.csv")
+            df_BT = pd.read_csv(
+                "data/with parliament/current_dataframes/df_BT.csv"
+            )
 
         if not with_parliament:
-            df = pd.read_csv("data/without parliament/current_dataframes/df.csv")
-            df_BT = pd.read_csv("data/without parliament/current_dataframes/df_BT.csv")
-            
+            df = pd.read_csv(
+                "data/without parliament/current_dataframes/df.csv"
+            )
+            df_BT = pd.read_csv(
+                "data/without parliament/current_dataframes/df_BT.csv"
+            )
+
     # Validate the sources parameter
     if sources is not None:
         for source in sources:

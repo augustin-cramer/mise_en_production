@@ -1,19 +1,33 @@
+""" This script contains the functions to compute the 
+polarization of a corpus given two parties, following the 
+methods of Gentzkow and al."""
+
 from __future__ import division
 from collections import Counter
-import numpy as np
 import sys
 import gc
 import json
-import scipy.sparse as sp
 import random
 import math
+import scipy.sparse as sp
+import numpy as np
 
 sys.path.append("..")
 
-RNG = random.Random()  # make everything reproducible
+RNG = random.Random()
 
 
 def get_user_token_counts(df_speeches, vocab):
+    """
+    Generates a sparse matrix of token counts per user from speeches.
+
+    Parameters:
+    - df_speeches (DataFrame): DataFrame containing speeches with a 'Speaker' and 'text' columns.
+    - vocab (dict): Dictionary mapping words to indices.
+
+    Returns:
+    - csr_matrix: Sparse matrix of word counts per speaker.
+    """
     # user-based
     speakers = df_speeches.groupby("Speaker")
     row_idx = []
@@ -48,6 +62,16 @@ def get_user_token_counts(df_speeches, vocab):
 
 
 def get_party_q(party_counts, exclude_user_id=None):
+    """
+    Calculates the normalized token frequency for a party.
+
+    Parameters:
+    - party_counts (csr_matrix): Sparse matrix of token counts for a party.
+    - exclude_user_id (int, optional): User ID to exclude from calculations.
+
+    Returns:
+    - np.ndarray: Normalized token frequencies.
+    """
     user_sum = party_counts.sum(axis=0)
     if exclude_user_id:
         user_sum -= party_counts[exclude_user_id, :]
@@ -56,10 +80,29 @@ def get_party_q(party_counts, exclude_user_id=None):
 
 
 def get_rho(dem_q, rep_q):
+    """
+    Calculates the proportion of Republican tokens to the total tokens.
+
+    Parameters:
+    - dem_q (np.ndarray): Democratic token frequencies.
+    - rep_q (np.ndarray): Republican token frequencies.
+
+    Returns:
+    - np.ndarray: Proportion of Republican tokens.
+    """
     return (rep_q / (dem_q + rep_q)).transpose()
 
 
 def get_token_user_counts(party_counts):
+    """
+    Counts the number of users that use each token.
+
+    Parameters:
+    - party_counts (csr_matrix): Sparse matrix of token counts for a party.
+
+    Returns:
+    - np.ndarray: Count of users using each term, with smoothing.
+    """
     no_tokens = party_counts.shape[1]
     nonzero = sp.find(party_counts)[:2]
     user_t_counts = Counter(nonzero[1])  # number of users using each term
@@ -70,6 +113,16 @@ def get_token_user_counts(party_counts):
 
 
 def mutual_information(dem_t, rep_t, dem_not_t, rep_not_t, dem_no, rep_no):
+    """
+    Computes the mutual information between token usage and party affiliation.
+
+    Parameters:
+    - dem_t, rep_t, dem_not_t, rep_not_t (np.ndarray): Token counts for and against each party.
+    - dem_no, rep_no (int): Number of users in Democratic and Republican parties.
+
+    Returns:
+    - np.ndarray: Mutual information values for tokens.
+    """
     no_users = dem_no + rep_no
     print(no_users)
     all_t = dem_t + rep_t
@@ -88,6 +141,16 @@ def mutual_information(dem_t, rep_t, dem_not_t, rep_not_t, dem_no, rep_no):
 
 
 def chi_square(dem_t, rep_t, dem_not_t, rep_not_t, dem_no, rep_no):
+    """
+    Calculates the chi-square statistic for the association between tokens and party.
+
+    Parameters:
+    - dem_t, rep_t, dem_not_t, rep_not_t (np.ndarray): Token counts for and against each party.
+    - dem_no, rep_no (int): Number of users in Democratic and Republican parties.
+
+    Returns:
+    - np.ndarray: Chi-square values for tokens.
+    """
     no_users = dem_no + rep_no
     all_t = dem_t + rep_t
     all_not_t = no_users - all_t + 4
@@ -99,6 +162,17 @@ def chi_square(dem_t, rep_t, dem_not_t, rep_not_t, dem_no, rep_no):
 def calculate_polarization(
     dem_counts, rep_counts, measure="posterior", leaveout=True
 ):
+    """
+    Calculates polarization between two parties using specified statistical measures.
+
+    Parameters:
+    - dem_counts, rep_counts (csr_matrix): Token counts for Democratic and Republican parties.
+    - measure (str): Statistical measure to use ('posterior', 'mutual_information', or 'chi_square').
+    - leaveout (bool): Whether to use leave-one-out strategy for calculation.
+
+    Returns:
+    - float: Polarization score based on the specified measure.
+    """
     dem_user_total = dem_counts.sum(axis=1)
     rep_user_total = rep_counts.sum(axis=1)
 
@@ -189,14 +263,19 @@ def get_values(
     with_parliament=True,
 ):
     """
-    Measure polarization.
-    :param event: name of the event
-    :param data: dataframe with 'text' and 'user_id'
-    :param token_partisanship_measure: type of measure for calculating token partisanship based on user-token counts
-    :param leaveout: whether to use leave-out estimation
-    :param between_topic: whether the estimate is between topics or tokens
-    :param default_score: default token partisanship score
-    :return:
+    Computes polarization values for given parties within a specific dataset.
+
+    Parameters:
+    - df (DataFrame): Data containing parties' data.
+    - year (int): Year of data.
+    - party_1, party_2 (str): The parties to analyze.
+    - token_partisanship_measure (str): The method to measure token partisanship.
+    - leaveout (bool): Whether to use leave-out strategy in calculation.
+    - default_score (float): Default partisanship score if not enough data.
+    - with_parliament (bool): If the analysis includes parliament data.
+
+    Returns:
+    - tuple: Actual polarization value, random polarization value, and total user count.
     """
 
     dem_tweets, rep_tweets = (
@@ -307,13 +386,24 @@ def get_values(
     return actual_val, random_val, dem_user_len + rep_user_len
 
 
-def compute_polarization_and_CI(df, year, party_1, party_2):
+def compute_polarization_and_CI(df, year, party_1, party_2, with_parliament):
+    """
+    Computes polarization and confidence intervals for the given dataset and parties.
+
+    Parameters:
+    - df (DataFrame): Dataset to analyze.
+    - year (int): Year of the dataset.
+    - party_1, party_2 (str): Parties between which polarization is measured.
+
+    Returns:
+    - tuple: Real polarization value, random polarization, and confidence intervals.
+    """
     tau = len(df)
     pi_s = []
     sqrt_tau_s = []
     random_pi_s = []
 
-    for k in range(100):
+    for _ in range(100):
         sub_sample_k = df.sample(frac=0.1, replace=False, random_state=1)
         values = get_values(
             sub_sample_k,
@@ -323,6 +413,7 @@ def compute_polarization_and_CI(df, year, party_1, party_2):
             token_partisanship_measure="posterior",
             leaveout=True,
             default_score=0.5,
+            with_parliament=with_parliament,
         )
         pol_k = values[0]
         random_pol = values[1]
@@ -357,6 +448,7 @@ def compute_polarization_and_CI(df, year, party_1, party_2):
         token_partisanship_measure="posterior",
         leaveout=True,
         default_score=0.5,
+        with_parliament=with_parliament,
     )
 
     real_pi = values[0]

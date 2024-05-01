@@ -1,3 +1,5 @@
+"""Defines subjects for further corpus filtering"""
+
 technology = [
     "technology",
     "innovation",

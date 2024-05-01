@@ -1,25 +1,34 @@
-import os
-import pandas as pd
-from GloVe.weights import *
+"""This scripts takes the word2vec embeddings format and computes 
+the cosine of each document with the 2 axes defined. 
+It also filters the texts speaking of specific companies 
+thanks to the filtering words defined in `filter_words.py`"""
+
 import warnings
+import pandas as pd
+
+from ..Axes.projection_functions import (
+    open_to_project,
+    axis_vector,
+    cosine_with_axis,
+)
+from ..Axes.axes_definition import *
+from ..Axes.models import *
 
 warnings.filterwarnings("ignore")
-from Axes.projection_functions import *
-from Axes.axes_definition import *
-from Axes.models import *
-
-os.chdir("../")
-print(os.getcwd())
 
 # DataFrames Preparation and Processing
 
 dfs = []
 # Loop through a specified range to load and project sentence embeddings for each year
 for i in range(14):
+    if i < 10:
+        year = 2010 + i
+    else:
+        year = 20110 + (i - 10)
     dfs.append(
         open_to_project(
             f"data/without parliament/sentence_embeddings/sentence_embeddings_201{i}.csv",
-            eval(f"201{i}"),
+            year,
         )
     )
 
@@ -70,20 +79,6 @@ for i in range(14):
 df = pd.concat(dfs)
 
 # BigTech DataFrames Creation
-
-
-def tostring(list):
-    """
-    Converts a list to a string representation.
-
-    Parameters:
-    - list (List): The list to be converted.
-
-    Returns:
-    - str: A string representation of the input list.
-    """
-    return str(list)
-
 
 # Copying the main DataFrame to isolate Big Tech related entries
 df_BT = df.copy()

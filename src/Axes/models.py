@@ -1,14 +1,11 @@
-from GloVe.weights import *
+"""This script loads the embeddings from text format 
+into word2vec format, which is much more manipulable."""
+
+from ..Axes.projection_functions import *
+
 import warnings
-import os
 
 warnings.filterwarnings("ignore")
-from Axes.projection_functions import *
-from Axes.axes_definition import *
-
-os.chdir("../")
-print(os.getcwd())
-
 
 # PART I: Generation of word2vec models for sentence and word embeddings
 
@@ -27,6 +24,3 @@ for i in range(14):  # Loop through the same range for word embeddings
     file_path = f"data/without parliament/embeddings/embeddings_201{i}_WP.txt"
     # Load the text data and convert it into a word2vec model for words
     models_w.append(txt_to_model_words(file_path))
-
-# Change the directory back to 'src' to continue with script execution
-os.chdir(r"src")
