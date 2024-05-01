@@ -77,8 +77,7 @@ def draw_cos_pol(
     if not os.path.exists(
         f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.csv"
     ):
-        print("computin polarization...")
-        st.write("computin polarization...")
+        st.write("computing polarization...")
         choose_pol(
             left_side=left_side,
             right_side=right_side,
