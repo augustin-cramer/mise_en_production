@@ -1,19 +1,21 @@
-from Polarization.polarization_functions import *
-from Axes.projection_functions import *
-from GloVe.weights import *
-from tqdm import tqdm
-from matplotlib import pyplot as plt
-import pandas as pd
-import numpy as np
+"""This script defines the important function computing and 
+plotting polarization values given parties and multiple variables, 
+and storing the values and the plots in the `data` folder."""
+import time
 import os
 import datetime
-import matplotlib.image as mpimg
+
+from tqdm import tqdm
+import pandas as pd
+import numpy as np
 import plotly.graph_objects as go
-from IPython.display import Image, display, HTML
+import streamlit as st
+
+
+from ..Polarization.polarization_functions import compute_polarization_and_CI
+from ..Axes.projection_functions import df_BT
+from ..GloVe.weights import standard_opening
 from ..Load_Data.load_data import *
-
-
-# DISCLAIMER : Axis visualization only works for the parliament for now.
 
 
 def print_with_timestamp(message):
@@ -52,12 +54,14 @@ def choose_pol(
     print_random_pol=True,
     force_i_lim=None,
     with_parliament=True,
+    return_fig=True,
     ssp_cloud=False,
     fs=None,
     bucket=None
 ):
     """
-    Analyzes and visualizes polarization based on political alignment, optionally segmented by company and axis.
+    Analyzes and visualizes polarization based on political
+    alignment, optionally segmented by company and axis.
 
     :param left_side: List of sources considered to be on the left side of the political spectrum.
     :param right_side: List of sources considered to be on the right side of the political spectrum.
@@ -96,92 +100,94 @@ def choose_pol(
 
     for company in companies:
         if not os.path.exists(
-            f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.csv"
+            f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {company}, percentiles = {percentiles}, with parliament = {with_parliament}.csv"
         ):
             break
-        else:
-            fig = go.Figure()
 
-            # Convert the company's metrics into a DataFrame and save to CSV
-            df_pol = pd.read_csv(
-                f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {company}, percentiles = {percentiles}, with parliament = {with_parliament}.csv"
+        st.markdown("Polarization values already computed...")
+
+        fig = go.Figure()
+
+        # Convert the company's metrics into a DataFrame and save to CSV
+        df_pol = pd.read_csv(
+            f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {company}, percentiles = {percentiles}, with parliament = {with_parliament}.csv"
+        )
+
+        # Extract polarization metrics for plotting
+        real_pol = np.array(df_pol["real_pol"])
+        random_pol = np.array(df_pol["random_pol"])
+        CI_lows_real = np.array(df_pol["CI_lows_real"])
+        CI_high_real = np.array(df_pol["CI_high_real"])
+        CI_lows_random = np.array(df_pol["CI_lows_random"])
+        CI_high_random = np.array(df_pol["CI_high_random"])
+        x = [2010 + i for i in range(len(real_pol))]
+
+        # Plot real polarization with confidence intervals
+        fig.add_trace(
+            go.Scatter(
+                x=x,
+                y=real_pol,
+                mode="lines",
+                name=f"Real Polarization - {company}",
+                line={"color": "blue"},
             )
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=x,
+                y=CI_high_real,
+                mode="lines",
+                name="Upper CI Real",
+                line={"width": 0},
+                showlegend=False,
+            )
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=x,
+                y=CI_lows_real,
+                mode="lines",
+                fill="tonexty",
+                name="CI Real",
+                line={"width": 0},
+                fillcolor="rgba(0, 0, 255, 0.2)",
+                showlegend=False,
+            )
+        )
 
-            # Extract polarization metrics for plotting
-            real_pol = np.array(df_pol["real_pol"])
-            random_pol = np.array(df_pol["random_pol"])
-            CI_lows_real = np.array(df_pol["CI_lows_real"])
-            CI_high_real = np.array(df_pol["CI_high_real"])
-            CI_lows_random = np.array(df_pol["CI_lows_random"])
-            CI_high_random = np.array(df_pol["CI_high_random"])
-            x = [2010 + i for i in range(len(real_pol))]
-
-            # Plot real polarization with confidence intervals
+        # Optionally plot random polarization with confidence intervals
+        if print_random_pol:
             fig.add_trace(
                 go.Scatter(
                     x=x,
-                    y=real_pol,
+                    y=random_pol,
                     mode="lines",
-                    name=f"Real Polarization - {company}",
-                    line=dict(color="blue"),
+                    name=f"Random Polarization - {company}",
+                    line={"color": "red", "dash": "dash"},
                 )
             )
             fig.add_trace(
                 go.Scatter(
                     x=x,
-                    y=CI_high_real,
+                    y=CI_high_random,
                     mode="lines",
-                    name="Upper CI Real",
-                    line=dict(width=0),
+                    name="Upper CI Random",
+                    line={"width": 0},
                     showlegend=False,
                 )
             )
             fig.add_trace(
                 go.Scatter(
                     x=x,
-                    y=CI_lows_real,
+                    y=CI_lows_random,
                     mode="lines",
                     fill="tonexty",
-                    name="CI Real",
-                    line=dict(width=0),
-                    fillcolor="rgba(0, 0, 255, 0.2)",
+                    name="CI Random",
+                    line={"width": 0},
+                    fillcolor="rgba(255, 165, 0, 0.2)",
                     showlegend=False,
                 )
             )
-
-            # Optionally plot random polarization with confidence intervals
-            if print_random_pol:
-                fig.add_trace(
-                    go.Scatter(
-                        x=x,
-                        y=random_pol,
-                        mode="lines",
-                        name=f"Random Polarization - {company}",
-                        line=dict(color="red", dash="dash"),
-                    )
-                )
-                fig.add_trace(
-                    go.Scatter(
-                        x=x,
-                        y=CI_high_random,
-                        mode="lines",
-                        name="Upper CI Random",
-                        line=dict(width=0),
-                        showlegend=False,
-                    )
-                )
-                fig.add_trace(
-                    go.Scatter(
-                        x=x,
-                        y=CI_lows_random,
-                        mode="lines",
-                        fill="tonexty",
-                        name="CI Random",
-                        line=dict(width=0),
-                        fillcolor="rgba(255, 165, 0, 0.2)",
-                        showlegend=False,
-                    )
-                )
 
         fig.update_layout(
             title=f"Polarization between {left_side} vs {right_side}; Axis = {axis}, Companies = {companies}, Percentiles = {percentiles}, With Parliament = {with_parliament}",
@@ -192,256 +198,268 @@ def choose_pol(
         )
 
         # Show the figure
-        fig.show()
-        return
+        return fig
 
-    else:
-        # Load projection data if an axis is specified
-        if axis:
-            print(os.getcwd())
-            if with_parliament:
-                df_proj = load_csv(
-                    "/with_parliament/current_dataframes/df.csv", ssp_cloud, fs, bucket
-                )
-            if not with_parliament:
-                df_proj = load_csv(
-                    "/without_parliament/current_dataframes/df.csv", ssp_cloud, fs, bucket
-                )
+    st.markdown("Polarization values not computed, starting computation...")
+    # Load projection data if an axis is specified
+    if axis:
+        print(os.getcwd())
+        if with_parliament:
+            df_proj = load_csv(
+                "/with_parliament/current_dataframes/df.csv", ssp_cloud, fs, bucket
+            )
+        if not with_parliament:
+            df_proj = load_csv(
+                "/without_parliament/current_dataframes/df.csv", ssp_cloud, fs, bucket
+            )
 
-        # Main loop over each company (or all companies together)
-        for company in companies:
-            # Initialize data structures for storing various metrics
-            values_by_company[company] = {
-                "real_pol": [],
-                "random_pol": [],
-                "CI_lows_real": [],
-                "CI_high_real": [],
-                "CI_lows_random": [],
-                "CI_high_random": [],
-            }
+    # Main loop over each company (or all companies together)
+    for company in companies:
+        # Initialize data structures for storing various metrics
+        values_by_company[company] = {
+            "real_pol": [],
+            "random_pol": [],
+            "CI_lows_real": [],
+            "CI_high_real": [],
+            "CI_lows_random": [],
+            "CI_high_random": [],
+        }
 
-            for i in tqdm(range(i_limit)):  # Progress bar for iteration
-                year = eval("201" + str(i))  # Dynamically generate year
+        progress_bar = st.progress(0)
+        start_time = time.time()
+        status_text = st.empty()
+
+        for i in tqdm(range(i_limit)):  # Progress bar for iteration
+            if i < 10:
+                year = 2010 + i
+            else:
+                year = 20110 + (i - 10)  # Dynamically generate year
 
                 # Load data for the current year, with preprocessing
                 df = load_current_year_data(with_parliament, year, ssp_cloud, fs, bucket)
 
-                # Project data onto specified axis if applicable
-                if axis:
+            # Project data onto specified axis if applicable
+            if axis:
 
-                    def to_phrase(list_of_words):
-                        text = ""
-                        for word in list_of_words:
-                            text += word + "_"
-                        return text
+                def to_phrase(list_of_words):
+                    text = ""
+                    for word in list_of_words:
+                        text += word + "_"
+                    return text
 
-                    df_proj_year = df_proj[
-                        df_proj["year"] == year
-                    ].reset_index()
+                df_proj_year = df_proj[df_proj["year"] == year].reset_index()
 
-                    df["to join"] = df["text"].apply(to_phrase)
-                    df_proj_year["to join"] = df_proj_year["text"]
+                df["to join"] = df["text"].apply(to_phrase)
+                df_proj_year["to join"] = df_proj_year["text"]
 
-                    df_proj_year = df_proj_year[
-                        ["cos axe 1", "cos axe 2", "to join"]
-                    ]
-
-                    df = pd.merge(df_proj_year, df, on="to join", how="inner")
-                    df["cos axe"] = df[f"cos axe {axis}"]
-
-                else:
-                    df["cos axe"] = 0  # Default to 0 if no axis specified
-
-                # Filter data based on sources and party
-                df = df.loc[
-                    df["source"].isin(sources) | df["party"].isin(sources)
+                df_proj_year = df_proj_year[
+                    ["cos axe 1", "cos axe 2", "to join"]
                 ]
 
-                # Additional processing for company-specific data
-                if curves_by_company:
-                    df = df_BT(
-                        df
-                    )  # Presumably filters or processes data by company
-                    df = df[df["class"] == company]
-                else:
-                    df[
-                        "class"
-                    ] = 0  # Default class if not processing by company
+                df = pd.merge(df_proj_year, df, on="to join", how="inner")
+                df["cos axe"] = df[f"cos axe {axis}"]
 
-                # Further refine the DataFrame structure for analysis
+            else:
+                df["cos axe"] = 0  # Default to 0 if no axis specified
+
+            # Filter data based on sources and party
+            df = df.loc[df["source"].isin(sources) | df["party"].isin(sources)]
+
+            # Additional processing for company-specific data
+            if curves_by_company:
+                df = df_BT(
+                    df
+                )  # Presumably filters or processes data by company
+                df = df[df["class"] == company]
+            else:
+                df["class"] = 0  # Default class if not processing by company
+
+            # Further refine the DataFrame structure for analysis
+            df = df[
+                [
+                    "year",
+                    "party",
+                    "text",
+                    "source",
+                    "keywords",
+                    "Speaker",
+                    "class",
+                    "cos axe",
+                ]
+            ]
+
+            # Split the data into two DataFrames based on a specific source criterion
+            df1 = df[df["source"] == "par"]
+            df2 = df[df["source"] != "par"]
+
+            # Define a function to translate newspaper source to party
+            def translate_party(newspaper):
+                """
+                Translates newspaper sources to their corresponding political party.
+
+                :param newspaper: The source to be translated.
+                :return: The political party corresponding to the source.
+                """
+                if newspaper in left_side:
+                    return "Lab"
+                if newspaper in right_side:
+                    return "Con"
+
+            # Apply the translation function to assign parties based on sources
+            df2["party"] = df2["source"].apply(translate_party)
+            df2["Speaker"] = range(len(df2))
+
+            # Combine the two DataFrames and reset index for continuity
+            df = pd.concat([df1, df2]).reset_index(drop=True)
+
+            # Filter data based on quantiles if axis and percentiles are specified
+            if axis is not None:
+                quantiles = get_quantiles(df["cos axe"], percentiles)
                 df = df[
-                    [
-                        "year",
-                        "party",
-                        "text",
-                        "source",
-                        "keywords",
-                        "Speaker",
-                        "class",
-                        "cos axe",
-                    ]
+                    (df["cos axe"] < quantiles[0])
+                    | (df["cos axe"] > quantiles[1])
                 ]
 
-                # Split the data into two DataFrames based on a specific source criterion
-                df1 = df[df["source"] == "par"]
-                df2 = df[df["source"] != "par"]
+            df = df[["year", "party", "text", "Speaker"]]
 
-                # Define a function to translate newspaper source to party
-                def translate_party(newspaper):
-                    """
-                    Translates newspaper sources to their corresponding political party.
-
-                    :param newspaper: The source to be translated.
-                    :return: The political party corresponding to the source.
-                    """
-                    if newspaper in left_side:
-                        return "Lab"
-                    if newspaper in right_side:
-                        return "Con"
-
-                # Apply the translation function to assign parties based on sources
-                df2["party"] = df2["source"].apply(translate_party)
-                df2["Speaker"] = range(len(df2))
-
-                # Combine the two DataFrames and reset index for continuity
-                df = pd.concat([df1, df2]).reset_index(drop=True)
-
-                # Filter data based on quantiles if axis and percentiles are specified
-                if axis is not None:
-                    quantiles = get_quantiles(df["cos axe"], percentiles)
-                    df = df[
-                        (df["cos axe"] < quantiles[0])
-                        | (df["cos axe"] > quantiles[1])
-                    ]
-
-                df = df[["year", "party", "text", "Speaker"]]
-
-                # Compute polarization and confidence intervals
-                values = compute_polarization_and_CI(
-                    df, year, party_1, party_2, with_parliament, ssp_cloud, fs, bucket
-                )
-
-                # Output polarization values for the current year
-                print(values[0])
-
-                # Store computed metrics in the respective lists within values_by_company
-                metrics = [
-                    "real_pol",
-                    "random_pol",
-                    "CI_lows_real",
-                    "CI_high_real",
-                    "CI_lows_random",
-                    "CI_high_random",
-                ]
-                for metric, value in zip(metrics, values):
-                    values_by_company[company][metric].append(value)
-
-                # Informative print statement indicating completion of the current year's computation
-                print(f"Year 201{i} computed")
-
-        # Initialize a dictionary to store polarization DataFrames by company
-        df_pol_BT = {}
-
-        # Set up the plotting figure with a specified size
-        fig = go.Figure()
-
-        # Loop over each company to plot polarization metrics
-        for company in companies:
-            # Convert the company's metrics into a DataFrame and save to CSV
-            df_pol_BT[company] = pd.DataFrame(values_by_company[company])
-            df_pol_BT[company].to_csv(
-                f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {company}, percentiles = {percentiles}, with parliament = {with_parliament}.csv",
-                index=False,
+            # Compute polarization and confidence intervals
+            values = compute_polarization_and_CI(
+                df, year, party_1, party_2, with_parliament, ssp_cloud, fs, bucket
             )
 
-            # Extract polarization metrics for plotting
-            real_pol = np.array(values_by_company[company]["real_pol"])
-            random_pol = np.array(values_by_company[company]["random_pol"])
-            CI_lows_real = np.array(values_by_company[company]["CI_lows_real"])
-            CI_high_real = np.array(values_by_company[company]["CI_high_real"])
-            CI_lows_random = np.array(
-                values_by_company[company]["CI_lows_random"]
-            )
-            CI_high_random = np.array(
-                values_by_company[company]["CI_high_random"]
-            )
-            x = [2010 + i for i in range(len(real_pol))]
+            # Output polarization values for the current year
+            print(values[0])
 
-            # Plot real polarization with confidence intervals
-            fig.add_trace(
-                go.Scatter(
-                    x=x,
-                    y=real_pol,
-                    mode="lines",
-                    name=f"Real Polarization - {company}",
-                    line=dict(color="blue"),
-                )
-            )
-            fig.add_trace(
-                go.Scatter(
-                    x=x,
-                    y=CI_high_real,
-                    mode="lines",
-                    name="Upper CI Real",
-                    line=dict(width=0),
-                    showlegend=False,
-                )
-            )
-            fig.add_trace(
-                go.Scatter(
-                    x=x,
-                    y=CI_lows_real,
-                    mode="lines",
-                    fill="tonexty",
-                    name="CI Real",
-                    line=dict(width=0),
-                    fillcolor="rgba(0, 0, 255, 0.2)",
-                    showlegend=False,
-                )
+            # Store computed metrics in the respective lists within values_by_company
+            metrics = [
+                "real_pol",
+                "random_pol",
+                "CI_lows_real",
+                "CI_high_real",
+                "CI_lows_random",
+                "CI_high_random",
+            ]
+            for metric, value in zip(metrics, values):
+                values_by_company[company][metric].append(value)
+
+            # Informative print statement indicating completion of the current year's computation
+            progress = (i + 1) / i_limit
+            progress_bar.progress(progress)
+            st.markdown(f"Year 201{i} computed")
+
+            elapsed_time = time.time() - start_time
+            iterations_left = i_limit - (i + 1)
+            if i > 0:
+                avg_time_per_iteration = elapsed_time / (i + 1)
+                estimated_time_left = avg_time_per_iteration * iterations_left
+                time_left_display = f"Approximately {estimated_time_left:.2f} seconds remaining"
+            else:
+                time_left_display = "Calculating time remaining..."
+
+            status_text.text(
+                f"Year 201{i} computed, {iterations_left} iterations remaining. {time_left_display}"
             )
 
-            # Optionally plot random polarization with confidence intervals
-            if print_random_pol:
-                fig.add_trace(
-                    go.Scatter(
-                        x=x,
-                        y=random_pol,
-                        mode="lines",
-                        name=f"Random Polarization - {company}",
-                        line=dict(color="red", dash="dash"),
-                    )
-                )
-                fig.add_trace(
-                    go.Scatter(
-                        x=x,
-                        y=CI_high_random,
-                        mode="lines",
-                        name="Upper CI Random",
-                        line=dict(width=0),
-                        showlegend=False,
-                    )
-                )
-                fig.add_trace(
-                    go.Scatter(
-                        x=x,
-                        y=CI_lows_random,
-                        mode="lines",
-                        fill="tonexty",
-                        name="CI Random",
-                        line=dict(width=0),
-                        fillcolor="rgba(255, 165, 0, 0.2)",
-                        showlegend=False,
-                    )
-                )
+    status_text.empty()
+    progress_bar.empty()
 
-        fig.update_layout(
-            title=f"Polarization between {left_side} vs {right_side}; Axis = {axis}, Companies = {companies}, Percentiles = {percentiles}, With Parliament = {with_parliament}",
-            xaxis_title="Year",
-            yaxis_title="Polarization",
-            legend_title="Metric",
-            template="plotly_white",
+    # Initialize a dictionary to store polarization DataFrames by company
+    df_pol_BT = {}
+
+    # Set up the plotting figure with a specified size
+    fig = go.Figure()
+
+    # Loop over each company to plot polarization metrics
+    for company in companies:
+        # Convert the company's metrics into a DataFrame and save to CSV
+        df_pol_BT[company] = pd.DataFrame(values_by_company[company])
+        df_pol_BT[company].to_csv(
+            f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {company}, percentiles = {percentiles}, with parliament = {with_parliament}.csv",
+            index=False,
         )
 
-        # Show the figure
-        # fig.write_image(f"plots/Polarization/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.png")
-        fig.show()
+        # Extract polarization metrics for plotting
+        real_pol = np.array(values_by_company[company]["real_pol"])
+        random_pol = np.array(values_by_company[company]["random_pol"])
+        CI_lows_real = np.array(values_by_company[company]["CI_lows_real"])
+        CI_high_real = np.array(values_by_company[company]["CI_high_real"])
+        CI_lows_random = np.array(values_by_company[company]["CI_lows_random"])
+        CI_high_random = np.array(values_by_company[company]["CI_high_random"])
+        x = [2010 + i for i in range(len(real_pol))]
+
+        # Plot real polarization with confidence intervals
+        fig.add_trace(
+            go.Scatter(
+                x=x,
+                y=real_pol,
+                mode="lines",
+                name=f"Real Polarization - {company}",
+                line={"color": "blue"},
+            )
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=x,
+                y=CI_high_real,
+                mode="lines",
+                name="Upper CI Real",
+                line={"width": 0},
+                showlegend=False,
+            )
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=x,
+                y=CI_lows_real,
+                mode="lines",
+                fill="tonexty",
+                name="CI Real",
+                line={"width": 0},
+                fillcolor="rgba(0, 0, 255, 0.2)",
+                showlegend=False,
+            )
+        )
+
+        # Optionally plot random polarization with confidence intervals
+        if print_random_pol:
+            fig.add_trace(
+                go.Scatter(
+                    x=x,
+                    y=random_pol,
+                    mode="lines",
+                    name=f"Random Polarization - {company}",
+                    line={"color": "red", "dash": "dash"},
+                )
+            )
+            fig.add_trace(
+                go.Scatter(
+                    x=x,
+                    y=CI_high_random,
+                    mode="lines",
+                    name="Upper CI Random",
+                    line={"width": 0},
+                    showlegend=False,
+                )
+            )
+            fig.add_trace(
+                go.Scatter(
+                    x=x,
+                    y=CI_lows_random,
+                    mode="lines",
+                    fill="tonexty",
+                    name="CI Random",
+                    line={"width": 0},
+                    fillcolor="rgba(255, 165, 0, 0.2)",
+                    showlegend=False,
+                )
+            )
+
+    fig.update_layout(
+        title=f"Polarization between {left_side} vs {right_side}; Axis = {axis}, Companies = {companies}, Percentiles = {percentiles}, With Parliament = {with_parliament}",
+        xaxis_title="Year",
+        yaxis_title="Polarization",
+        legend_title="Metric",
+        template="plotly_white",
+    )
+    if return_fig is True:
+        return fig

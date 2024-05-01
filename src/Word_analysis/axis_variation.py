@@ -1,20 +1,32 @@
-import pandas as pd
+"""Functions to look at the biggest variations for words 
+in embedding between two years"""
+
+import warnings
 import numpy as np
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
-from Processing.text_cleaning import *
-from GloVe.weights import *
-import warnings
+import streamlit as st
+import pandas as pd
+
+from ..GloVe.weights import standard_opening
+from ..Axes.projection_functions import filter_model
+from ..Processing.text_cleaning import clean
+from ..Axes.axes_definition import *
+from ..Axes.models import *
 
 warnings.filterwarnings("ignore")
-from Axes.projection_functions import *
-from Axes.models import *
-from Processing.preprocess_parliament import *
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 
 
 def process_embeddings(file_path, ssp_cloud=False, fs=None, bucket=None):
+    """
+    Processes embedding data from a specified file, normalizing by source counts.
+
+    Parameters:
+    - file_path (str): The path to the file containing the embeddings data.
+
+    Returns:
+    - DataFrame: Processed DataFrame with normalized sentence embeddings.
+    """
     # Load the data
     df = standard_opening(file_path, False, ssp_cloud, fs, bucket)
     # Transform the 'sentence_embedding' column
@@ -36,6 +48,17 @@ def process_embeddings(file_path, ssp_cloud=False, fs=None, bucket=None):
 
 
 def give_embed_anyway(word, model_word, list_of_words):
+    """
+    Retrieves the embedding for a given word or returns a zero vector if the word is not present.
+
+    Parameters:
+    - word (str): The word to find the embedding for.
+    - model_word (dict): The model containing word embeddings.
+    - list_of_words (list): A list of words to filter from the model.
+
+    Returns:
+    - np.array: The embedding of the word or a zero vector.
+    """
     if word in filter_model(list_of_words, model_word):
         return model_word[word]
     else:
@@ -43,6 +66,19 @@ def give_embed_anyway(word, model_word, list_of_words):
 
 
 def see_variation_on_axis(year: int, df, source=None):
+    """
+    Computes and sorts word variations based on embeddings from a specific year and source.
+
+    Parameters:
+    - year (int): The year to filter the dataframe on.
+    - df (DataFrame): The dataframe containing word embedding data.
+    - source (str, optional): Specific source to filter the dataframe.
+
+    Returns:
+    - tuple: A tuple of sorted dictionaries containing word variations for different categories.
+    """
+    st.write("Computing...")
+
     if source:
         df = df.loc[df["source"] == source]
     df = df.loc[df["year"] == year]
@@ -52,7 +88,7 @@ def see_variation_on_axis(year: int, df, source=None):
         try:
             l.append(df[word].tolist()[0])
         except:
-            print(word)
+            print(f"{word} not in the model")
     var_tech = dict(zip(clean(tech, "unigram"), l))
     sorted_var_tech = sorted(
         var_tech.items(), key=lambda x: x[1], reverse=True
@@ -91,6 +127,20 @@ def see_variation_on_axis(year: int, df, source=None):
 def project_variation_on_axis(
     axis, source: str, year: int, df, number_of_words, with_parliament
 ):
+    """
+    Projects and visualizes the top word variations along a specified axis.
+
+    Parameters:
+    - axis (int): The axis index for projection.
+    - source (str): Source to filter the data.
+    - year (int): Year of the data.
+    - df (DataFrame): The dataframe containing word variations.
+    - number_of_words (int): Number of top words to display.
+    - with_parliament (bool): Flag to include parliament data.
+
+    Returns:
+    - plotly.graph_objs._figure.Figure: A Plotly figure object with the visualization.
+    """
     # Fetching data for the plots
 
     if axis == 1:
@@ -153,14 +203,17 @@ def project_variation_on_axis(
     fig.update_layout(
         title_text=f"{number_of_words} words most responsible for the move of {source} towards the respective poles between year {year} and {year + 1}; axis = {axis}",
         showlegend=True,
-        legend=dict(
-            orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
-        ),
+        legend={
+            "orientation": "h",
+            "yanchor": "bottom",
+            "y": 1.02,
+            "xanchor": "right",
+        },
     )
 
     # Customize x-axis properties
-    fig.update_xaxes(tickangle=45, tickfont=dict(size=12), row=1, col=1)
-    fig.update_xaxes(tickangle=45, tickfont=dict(size=12), row=2, col=1)
+    fig.update_xaxes(tickangle=45, tickfont={"size": 12}, row=1, col=1)
+    fig.update_xaxes(tickangle=45, tickfont={"size": 12}, row=2, col=1)
 
     # Customize y-axis properties for clarity
     fig.update_yaxes(title_text="Count", row=1, col=1)
@@ -170,7 +223,7 @@ def project_variation_on_axis(
     fig.update_yaxes(showgrid=True, gridwidth=0.5, gridcolor="gray")
 
     # Display the figure
-    fig.show()
+    return fig
 
 
 axes_words = clean(tech + reg + pos + neg, "unigram")
@@ -180,6 +233,20 @@ def axis_variation(
     axis, source=None, year=2013, number_of_words=30, 
     with_parliament=True, ssp_cloud=False, fs=None, bucket=None
 ):
+    """
+    Computes and visualizes the words that define the poles of the axes most responsible for
+    attracting the corpus towards them between two consecutive years.
+
+    Parameters:
+    - axis (int): The axis to analyze.
+    - source (str, optional): Source filter for the data.
+    - year (int): Starting year for the analysis.
+    - number_of_words (int): Number of words to analyze.
+    - with_parliament (bool): Flag to include parliament data.
+
+    Returns:
+    - plotly.graph_objs._figure.Figure: A figure visualizing the word variations along the specified axis.
+    """
     print("computing")
 
     if year > 2019:
@@ -252,7 +319,7 @@ def axis_variation(
 
     df = pd.concat([dataframes[0], dataframes[1]])
 
-    project_variation_on_axis(
+    return project_variation_on_axis(
         axis=axis,
         source=source,
         year=year,

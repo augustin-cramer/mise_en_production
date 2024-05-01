@@ -1,4 +1,6 @@
-from Processing.text_cleaning import clean
+"""Define the words forming the poles of the axes"""
+
+from ..Processing.text_cleaning import clean
 
 tech = [
     "chrome",

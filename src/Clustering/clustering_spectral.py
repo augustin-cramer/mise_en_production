@@ -1,20 +1,14 @@
-from sklearn.cluster import SpectralClustering
-import matplotlib.pyplot as plt
-import dash
-import dash_bootstrap_components as dbc
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output
+"""Main functions used to perform clustering on embeddings"""
 
-import plotly.express as px
-from sklearn.metrics import silhouette_score
 import pandas as pd
-import joblib
-from sklearn.cluster import KMeans
 import numpy as np
+from sklearn.cluster import SpectralClustering
+from sklearn.metrics import silhouette_score
+from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.feature_extraction.text import TfidfVectorizer
 import plotly.graph_objects as go
+import plotly.express as px
 
 
 def silhouette_score_(k_rng, data):
@@ -52,7 +46,7 @@ def silhouette_score_(k_rng, data):
     )
 
     # Show the plot
-    fig.show()
+    return fig
 
 
 def sse_scaler_(k_rng, data):
@@ -93,7 +87,7 @@ def sse_scaler_(k_rng, data):
     )
 
     # Show the plot
-    fig.show()
+    return fig
 
 
 def plot_clusters_on_pc_spectral(number_of_clusters, data):
@@ -121,10 +115,26 @@ def plot_clusters_on_pc_spectral(number_of_clusters, data):
 
     df_pc = pd.DataFrame(zip(pc.T[0].tolist(), pc.T[1].tolist(), label))
     fig = px.scatter(df_pc, x=0, y=1, color=2)
-    fig.show()
+    return fig
 
 
 def plot_clusters_on_pc_kmeans(number_of_clusters, data):
+    """
+    Performs K-means clustering on the provided dataset and visualizes the clusters using PCA for dimension reduction.
+
+    This function applies K-means clustering to the dataset and reduces the dimensionality of the data to two principal components using PCA. It then plots the first two principal components and colors the points according to their cluster assignment.
+
+    Parameters:
+    - number_of_clusters (int): The number of clusters to form as well as the number of centroids to generate.
+    - data (np.ndarray or pd.DataFrame): Data on which clustering and PCA will be performed. Data should be numeric.
+
+    Returns:
+    - plotly.graph_objs._figure.Figure: A Plotly scatter plot figure with points colored based on their cluster assignments. The x and y axes represent the first and second principal components, respectively.
+
+    Notes:
+    - The function assumes data can be converted to type 'double' for numerical precision in calculations.
+    - 'n_init' parameter in KMeans is set to 4, which means the K-means algorithm will run with different centroid seeds four times, and the final results will be the best output of those runs in terms of inertia.
+    """
     nbr_clusters = number_of_clusters
     kmeans = KMeans(init="k-means++", n_clusters=nbr_clusters, n_init=4)
     kmeans.fit(data.astype("double"))
@@ -136,7 +146,7 @@ def plot_clusters_on_pc_kmeans(number_of_clusters, data):
     df_pc = pd.DataFrame(zip(pc.T[0].tolist(), pc.T[1].tolist(), label))
 
     fig = px.scatter(df_pc, x=0, y=1, color=2)
-    fig.show()
+    return fig
 
 
 def plot_clusters_on_pc_spectral_3d(number_of_clusters, data, marker_size=0.5):
@@ -171,10 +181,19 @@ def plot_clusters_on_pc_spectral_3d(number_of_clusters, data, marker_size=0.5):
     fig = px.scatter_3d(df_pc, x="x", y="y", z="z", color="label")
     fig.update_traces(marker=dict(size=marker_size))
     fig.update_layout(width=1000, height=800)
-    fig.show()
+
+    return fig
 
 
 def plot_clusters_on_pc_kmeans_3d(number_of_clusters, data, marker_size=0.5):
+    """
+    Same as the previous function but with K-means
+
+    Parameters:
+    - number_of_clusters (int): The number of clusters to generate.
+    - data (array-like): The dataset to be clustered and visualized.
+    - marker_size (float): Size of the markers in the scatter plot.
+    """
     nbr_clusters = number_of_clusters
     kmeans = KMeans(init="k-means++", n_clusters=nbr_clusters, n_init=4)
     kmeans.fit(data.astype("double"))
@@ -192,7 +211,7 @@ def plot_clusters_on_pc_kmeans_3d(number_of_clusters, data, marker_size=0.5):
     fig = px.scatter_3d(df_pc, x="x", y="y", z="z", color="label")
     fig.update_traces(marker=dict(size=marker_size))
     fig.update_layout(width=1000, height=800)
-    fig.show()
+    return fig
 
 
 def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
@@ -275,76 +294,6 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
         "delta",
         "dense",
         "earth",
-        "edge",
-        "electric",
-        "emrld",
-        "fall",
-        "geyser",
-        "gnbu",
-        "gray",
-        "greens",
-        "greys",
-        "haline",
-        "hot",
-        "hsv",
-        "ice",
-        "icefire",
-        "inferno",
-        "jet",
-        "magenta",
-        "magma",
-        "matter",
-        "mint",
-        "mrybm",
-        "mygbm",
-        "oranges",
-        "orrd",
-        "oryel",
-        "oxy",
-        "peach",
-        "phase",
-        "picnic",
-        "pinkyl",
-        "piyg",
-        "plasma",
-        "plotly3",
-        "portland",
-        "prgn",
-        "pubu",
-        "pubugn",
-        "puor",
-        "purd",
-        "purp",
-        "purples",
-        "purpor",
-        "rainbow",
-        "rdbu",
-        "rdgy",
-        "rdpu",
-        "rdylbu",
-        "rdylgn",
-        "redor",
-        "reds",
-        "solar",
-        "spectral",
-        "speed",
-        "sunset",
-        "sunsetdark",
-        "teal",
-        "tealgrn",
-        "tealrose",
-        "tempo",
-        "temps",
-        "thermal",
-        "tropic",
-        "turbid",
-        "turbo",
-        "twilight",
-        "viridis",
-        "ylgn",
-        "ylgnbu",
-        "ylorbr",
-        "ylorrd",
     ]
 
     vectorizer = TfidfVectorizer(ngram_range=(2, 2))
@@ -376,120 +325,159 @@ def visualize_main_words_in_clusters_TFIDF(number_of_clusters, data, df_t):
 
         return fig
 
-    app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
-    # the style arguments for the sidebar.
-    SIDEBAR_STYLE = {
-        "position": "fixed",
-        "top": 0,
-        "left": 0,
-        "bottom": 0,
-        "width": "10%",
-        "padding": "20px 10px",
-        "background-color": "#f8f9fa",
-    }
+    for cluster_number in range(number_of_clusters):
+        fig = display_topic_cluster(cluster_number)
+        fig.show()
 
-    # the style arguments for the main content page.
-    CONTENT_STYLE = {
-        "margin-left": "5%",
-        "margin-right": "5%",
-        "padding": "20px 10p",
-    }
 
-    TEXT_STYLE = {"textAlign": "center", "color": "#191970"}
+def visualize_main_words_in_clusters_TFIDF_streamlit(
+    number_of_clusters, data, df_t
+):
+    """
+    Performs spectral clustering on the dataset and visualizes the main words in each cluster
+    using TF-IDF scores. This visualization is accomplished via a treemap and is made interactive
+    through a Dash application. The main words are determined by their TF-IDF scores within
+    the text data associated with each cluster.
 
-    CARD_TEXT_STYLE = {"textAlign": "center", "color": "#0074D9"}
+    Parameters:
+    - number_of_clusters (int): Number of clusters for the spectral clustering.
+    - data (DataFrame or ndarray): Numerical data for clustering.
+    - df_t (DataFrame): DataFrame containing text data corresponding to `data` for TF-IDF analysis.
 
-    content_first_row = dbc.Row(
-        [
-            dbc.Col(
-                dcc.Dropdown(
-                    id="dropdown",
-                    options=[
-                        {"label": str(i), "value": i}
-                        for i in range(nbr_clusters)
-                    ],
-                    value=0,
-                    clearable=False,
-                ),
-                md=12,
-            )
-        ]
+    The function clusters the `data`, applies PCA for dimensionality reduction, and then uses TF-IDF
+    to analyze the text data `df_t`. It visualizes significant words for each cluster in a treemap
+    and deploys a Dash app for interactive exploration.
+    """
+
+    nbr_clusters = number_of_clusters
+    model = SpectralClustering(
+        n_clusters=nbr_clusters,
+        assign_labels="discretize",
+        random_state=0,
+        affinity="nearest_neighbors",
+        n_neighbors=10,
+    )
+    model.fit(data.astype("double"))
+    pc = PCA(n_components=2).fit_transform(data)
+    # pc = data#
+    # label = model.fit_predict(pc)
+    label = model.fit_predict(data.astype("double"))
+
+    df_pc = pd.DataFrame(
+        zip(
+            pc.T[0].tolist(),
+            pc.T[1].tolist(),
+            label,
+            df_t["text"].apply(read).tolist(),
+        )
     )
 
-    # Adjusted callback structure
-    @app.callback(Output("graph", "figure"), [Input("dropdown", "value")])
-    def update_graph(selected_cluster):
-        # Add callback logic here
-        return display_topic_cluster(selected_cluster)
+    # df_pc[3] = df_pc[3].apply(word_tokenize)
+    df_pc = df_pc.rename(columns={2: "cluster", 3: "text", 0: "pc1", 1: "pc2"})
 
-    content_second_row = dbc.Row([dbc.Col(dcc.Graph(id="graph"), md=12)])
+    df_group = df_pc.groupby(["cluster"]).sum()[["text"]]
+    df_group.reset_index(inplace=True)
 
-    content_zero_row = dbc.Row(
-        [
-            dbc.Col(
-                dbc.Card(
-                    [
-                        dbc.CardBody(
-                            [
-                                html.H4(
-                                    id="dataset_title_1",
-                                    children=["Text Clustering Analysis"],
-                                    className="card-title",
-                                    style=CARD_TEXT_STYLE,
-                                ),
-                                html.P(
-                                    id="card_text_1",
-                                    children=["TITLE"],
-                                    style=CARD_TEXT_STYLE,
-                                ),
-                            ]
-                        )
-                    ]
-                ),
-                md=12,
-            )
-        ]
-    )
+    conditions = []
 
-    """content_third_row = dbc.Row(
-    [
-        dbc.Col(  
-            dcc.Graph(id="graph2", 
-                    figure = px.sunburst(df_group, path=['description_cluster'], values='tot',color='cluster')),md=6 ),
-        dbc.Col(  
-            dcc.Graph(id="graph3", figure =px.scatter(df_group, x="project", y="cluster", size="tot", color="description_cluster").update_layout(legend=dict(
-        orientation="h",
-        x=0,
-        y=1.2,
-        yanchor="bottom",
-        xanchor="right"
-    )) ), md=6)
-        ]
-    )"""
+    for i in range(nbr_clusters):
+        conditions.append((df_group["cluster"] == i))
 
-    content = html.Div(
-        [
-            # html.H2('Text Analytics Dashboard', style=TEXT_STYLE),
-            # html.Hr(),
-            content_zero_row,
-            html.Br(),
-            content_first_row,
-            content_second_row,
-            # content_third_row,
-            html.Hr(),
-        ],
-        style=CONTENT_STYLE,
-    )
+    values = ["Cluster " + str(i) for i in range(nbr_clusters)]
 
-    app.layout = html.Div([content])
+    df_group["description_cluster"] = np.select(conditions, values)
 
-    app.run_server(debug=False)
+    colors = [
+        "aggrnyl",
+        "agsunset",
+        "algae",
+        "amp",
+        "armyrose",
+        "balance",
+        "blackbody",
+        "bluered",
+        "blues",
+        "blugrn",
+        "bluyl",
+        "brbg",
+        "brwnyl",
+        "bugn",
+        "bupu",
+        "burg",
+        "burgyl",
+        "cividis",
+        "curl",
+        "darkmint",
+        "deep",
+        "delta",
+        "dense",
+        "earth",
+    ]
+
+    vectorizer = TfidfVectorizer(ngram_range=(2, 2))
+    tfidf_matrix = vectorizer.fit_transform(df_group["text"])
+
+    def display_topic_cluster(n):
+        df_text_bow = tfidf_matrix.toarray()
+        bow_df = pd.DataFrame(df_text_bow)
+        bow_df.columns = vectorizer.get_feature_names_out()
+        word_freq = pd.DataFrame(
+            bow_df[bow_df.index == n].sum().sort_values(ascending=False)
+        )
+        word_freq.reset_index(level=0, inplace=True)
+        word_freq.columns = ["word", "frequency"]
+
+        if n > 0:
+            word_freq.drop(index=[0], inplace=True)
+
+        fig = px.treemap(
+            word_freq[0:20],
+            path=[px.Constant(values[n]), "word"],
+            values="frequency",
+            color="frequency",
+            hover_data=["frequency"],
+            color_continuous_scale=colors[n],
+        )
+
+        fig.update_layout(autosize=False, width=1000, height=500)
+
+        return fig
+
+    figures = []
+
+    for cluster_number in range(number_of_clusters):
+        fig = display_topic_cluster(cluster_number)
+        figures.append(fig)
+
+    return figures
 
 
 def plot_silhouette_and_sse(rank, data):
-    print(silhouette_score_([i for i in range(2, rank)], data))
-    print(sse_scaler_([i for i in range(2, rank)], data))
+    """
+    Calculates and returns both silhouette scores and SSE (Sum of Squared Errors) for a range of cluster sizes.
+
+    Parameters:
+    - rank (int): Upper limit (exclusive) to generate cluster sizes starting from 2.
+    - data (array-like or DataFrame): Dataset to be used for clustering calculations.
+
+    Returns:
+    - tuple: Containing two lists, the first with silhouette scores and the second with SSE values,
+      for cluster sizes from 2 up to 'rank - 1'.
+    """
+    return (
+        silhouette_score_(list(range(2, rank)), data),
+        sse_scaler_(list(range(2, rank)), data),
+    )
 
 
 def read(text):
+    """
+    Replaces underscores with spaces in the given text.
+
+    Parameters:
+    - text (str): The text to be processed.
+
+    Returns:
+    - str: The processed text with underscores replaced by spaces.
+    """
     return text.replace("_", " ")

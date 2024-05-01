@@ -1,17 +1,15 @@
-from GloVe.weights import *
+"""This script loads the embeddings from text format 
+into word2vec format, which is much more manipulable."""
+
+from ..Axes.projection_functions import *
+
 import warnings
-import os
 
 warnings.filterwarnings("ignore")
-from Axes.projection_functions import *
-from Axes.axes_definition import *
+ssp_cloud = False
+fs = None
+bucket = None
 
-os.chdir("../")
-print(os.getcwd())
-
-ssp_cloud=False
-fs=None
-bucket=None
 
 # PART I: Generation of word2vec models for sentence and word embeddings
 
@@ -31,5 +29,3 @@ for i in range(14):  # Loop through the same range for word embeddings
     # Load the text data and convert it into a word2vec model for words
     models_w.append(txt_to_model_words(file_path, ssp_cloud, fs, bucket))
 
-# Change the directory back to 'src' to continue with script execution
-os.chdir(r"src")

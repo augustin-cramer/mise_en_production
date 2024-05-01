@@ -1,19 +1,22 @@
 from __future__ import division
-from collections import Counter
-import json
-from scipy import sparse
-import numpy as np
-from scipy.sparse import dok_matrix
-from mittens import Mittens
-import json
-import numpy as np
+
+"""Contains the main functions to perform the computation of 
+the cooccurrence matric then the training of the GloVe model."""
+
 import os
 import csv
-from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
-import os, psutil
+
+from collections import Counter
+import json
+import numpy as np
+from scipy import sparse
+from scipy.sparse import dok_matrix
+from mittens import Mittens
+import psutil
 from tqdm import tqdm
-from Processing.text_cleaning import *
+
+from ..Processing.text_cleaning import clean
 
 
 def vocab_dic(fichier):
@@ -55,7 +58,7 @@ def inter_coocc(items, word2idx):
                             count1 * count2
                         )
                 except:
-                    coocc = coocc
+                    continue
         if j % 10000 == 0:
             print(t)
             print(j)
@@ -89,6 +92,24 @@ def glove2dict(glove_filename):
 
 
 def process_iteration(i, original_embedding):
+    """
+    Processes a single iteration of embedding updates using the Mittens model on GloVe co-occurrences.
+
+    This function updates embeddings using the Mittens model based on co-occurrence data,
+    tracks memory usage, and logs the progress with timestamps.
+
+    Parameters:
+    - i (int): The current iteration index, used to manage file naming and logging.
+    - original_embedding (dict): The initial embedding dictionary used as a starting point for the Mittens model.
+
+    Returns:
+    - str: The file path where the updated embeddings are saved.
+
+    Notes:
+    - The function assumes that data directories and vocab files follow a specific naming pattern that includes the iteration index.
+    - Memory usage before and after the operation is logged to monitor the impact of the operation.
+    - The function logs the start time, end time, and duration of the operation for performance tracking.
+    """
     start_time = datetime.now()
     print(
         f"Starting iteration {i} at {start_time.strftime('%Y-%m-%d %H:%M:%S')}"
@@ -141,13 +162,31 @@ def process_iteration(i, original_embedding):
 
 
 def parallel_process():
+    """
+    Processes a series of embedding updates iteratively across a specified range of iterations.
+
+    This function begins with an initial set of GloVe embeddings and sequentially updates these
+    embeddings over multiple iterations. Each iteration updates the embeddings based on the
+    previous iteration's output, ensuring continuity and incremental improvement in the embeddings.
+
+    The function currently runs iterations sequentially, but it's structured to potentially
+    support parallel processing, where each iteration could theoretically be dispatched concurrently.
+
+    Notes:
+    - The initial embeddings are loaded from a predefined GloVe file.
+    - Each iteration's updated embeddings are expected to be written to and read from a structured
+      file path that incorporates the iteration index.
+    - The function assumes the availability of the `process_iteration` function and the `glove2dict`
+      utility, which converts GloVe formatted data into a Python dictionary.
+    - This function is particularly useful for large-scale embedding updates where initial embeddings
+      need to be refined or adapted based on new data across multiple cycles.
+    """
     original_embedding = glove2dict("data/glove.6B/glove.6B.50d.txt")
     # original_embedding = glove2dict('data/without parliament/embeddings/embeddings_201'+str(3)+'_WP.txt')
     for i in tqdm(range(14)):
         # future = executor.submit(process_iteration(i, original_embedding)
         # futures.append(future)
         process_iteration(i, original_embedding)
-        print(os.getcwd())
         # Wait for the current iteration to complete before moving to the next
         # This is necessary because each iteration's output is the input for the next
         original_embedding = glove2dict(

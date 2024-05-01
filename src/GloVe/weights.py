@@ -1,9 +1,12 @@
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.decomposition import TruncatedSVD
-import numpy as np
-import pandas as pd
+"""Contains the functions to compute the weighting of embeddings 
+inside a document in order to get the document general embedding."""
+
 import ast
 import gc
+import numpy as np
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.decomposition import TruncatedSVD
 
 
 def standard_opening(fichier, agenda: bool, ssp_cloud=False, fs=None, bucket=None):
@@ -27,8 +30,9 @@ def standard_opening(fichier, agenda: bool, ssp_cloud=False, fs=None, bucket=Non
 
 
 def get_weights_word2vec(words, a=1e-3):
-    """Determines the weights that we will attribute to each word in our model to compute sentence embeddings.
-        The weights formula comes from a MLE -> Demander ou trouver de la doc pour le rapport
+    """Determines the weights that we will attribute to each
+    word in our model to compute sentence embeddings.
+    The weights formula comes from a MLE
 
     Parameters:
     -----------
@@ -69,7 +73,8 @@ def get_sentence_embeddings(phrase, weights, model):
 
 
 def phrase(list):
-    """Creates a sentence linked with '_' from a list of words. Used for sentence recognition in word2vec models
+    """Creates a sentence linked with '_' from a list of words.
+    Used for sentence recognition in word2vec models
 
     Parameters:
     -----------
@@ -82,7 +87,8 @@ def phrase(list):
 
 
 def barycentre(list, model):
-    """Computes the embdeddings barycenter from a list of words or sentences
+    """Computes the embdeddings barycenter from a list of words
+    or sentences
 
     Parameters:
     -----------
@@ -97,7 +103,8 @@ def barycentre(list, model):
 
 def compute_pc(X, npc=1):
     """
-    Compute the principal components of X. DO NOT MAKE THE DATA ZERO MEAN!
+    Compute the principal components of X. DO NOT MAKE THE DATA
+    ZERO MEAN!
 
     Parameters:
     -----------
