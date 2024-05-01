@@ -2,6 +2,7 @@
 into word2vec format, which is much more manipulable."""
 
 from ..Axes.projection_functions import *
+from ..Load_Data.load_data import *
 
 import warnings
 
