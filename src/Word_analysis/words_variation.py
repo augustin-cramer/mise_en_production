@@ -26,7 +26,7 @@ new_topics = list(set(clean(new_topics, "unigram")))
 
 def process_year_data(year, model_words_year, with_parliament=True):
     """
-    Processes and computes word embeddings and their cosine 
+    Processes and computes word embeddings and their cosine
     similarities with axes for a specified year.
 
     Args:
@@ -35,7 +35,7 @@ def process_year_data(year, model_words_year, with_parliament=True):
         with_parliament (bool): Whether to include parliament session data.
 
     Returns:
-        pd.DataFrame: A DataFrame containing words, their embeddings, 
+        pd.DataFrame: A DataFrame containing words, their embeddings,
         and cosine similarities with predefined axes.
     """
 
@@ -83,14 +83,14 @@ def process_year_data(year, model_words_year, with_parliament=True):
 
 def var_embed_real(word: str, df1, df2, cos_axe: str):
     """
-    Calculates the variation in embeddings between two dataframes 
+    Calculates the variation in embeddings between two dataframes
     for a given word along a specified axis.
 
     Args:
         word (str): The word to compute variations for.
         df1 (pd.DataFrame): DataFrame containing earlier year data.
         df2 (pd.DataFrame): DataFrame containing later year data.
-        cos_axe (str): The axis ('cos axe 1' or 'cos axe 2') to 
+        cos_axe (str): The axis ('cos axe 1' or 'cos axe 2') to
         compute the variation.
 
     Returns:
@@ -114,7 +114,7 @@ def is_in_keywords(word):
         word (str): The word to check.
 
     Returns:
-        bool: True if the word is in either 'new_topics' or 
+        bool: True if the word is in either 'new_topics' or
         'events_keywords', False otherwise.
     """
     if word in new_topics:
@@ -126,17 +126,17 @@ def is_in_keywords(word):
 
 def process_yearly_data(df, year, with_parliament=True):
     """
-    Processes yearly data by loading specific word data and 
+    Processes yearly data by loading specific word data and
     applying keyword filters.
 
     Args:
         df (pd.DataFrame): The DataFrame to process.
         year (int): Year of data to process.
-        with_parliament (bool): Whether to process data including 
+        with_parliament (bool): Whether to process data including
         parliament data.
 
     Returns:
-        pd.DataFrame: The processed DataFrame filtered by keywords 
+        pd.DataFrame: The processed DataFrame filtered by keywords
         and word counts.
     """
     # Load the words from the file
@@ -177,7 +177,7 @@ def get_top_variations(df_keywords, axis, number):
         number (int): Number of top variations to retrieve.
 
     Returns:
-        tuple: Two DataFrames containing the top increasing 
+        tuple: Two DataFrames containing the top increasing
         and decreasing variations.
     """
     var_up = df_keywords.sort_values(
@@ -199,7 +199,7 @@ def visualize_top_variations(
     number=20,
 ):
     """
-    Visualizes top variations of word embeddings on specified 
+    Visualizes top variations of word embeddings on specified
     axes using bar charts.
 
     Args:
@@ -265,7 +265,12 @@ def visualize_top_variations(
     fig.update_layout(
         title=f"Extreme Embedding Variation on Axis {axis_1} and {axis_2}",
         showlegend=True,
-        legend={"orientation": 'h', "yanchor": 'bottom', "y": 1.02, "xanchor": 'right'},
+        legend={
+            "orientation": "h",
+            "yanchor": "bottom",
+            "y": 1.02,
+            "xanchor": "right",
+        },
     )
     fig.update_xaxes(
         tickangle=45, tickmode="array", tickvals=var_up_1["text"], row=1, col=1
@@ -292,19 +297,19 @@ def word_variations(
     number=20,
 ):
     """
-    Processes and visualizes the top word variations between 
+    Processes and visualizes the top word variations between
     two consecutive years on specified axes.
 
     Args:
         year (int): Base year for analysis.
         axis_1 (int): The primary axis for variation analysis.
-        axis_2 (int, optional): The secondary axis for variation 
+        axis_2 (int, optional): The secondary axis for variation
         analysis, defaults to the same as axis_1.
-        variation_1 (str): The type of variation on the primary 
+        variation_1 (str): The type of variation on the primary
         axis ('up' or 'down').
-        variation_2 (str, optional): The type of variation on the 
+        variation_2 (str, optional): The type of variation on the
         secondary axis ('up' or 'down').
-        with_parliament (bool): Whether to include parliament session data in the 
+        with_parliament (bool): Whether to include parliament session data in the
         analysis.
         number (int): Number of words to analyze for variations.
 

@@ -22,46 +22,46 @@ def draw_cos_pol(
     with_parliament=True,
 ):
     """
-    Generates a plotly visualization comparing polarization and 
-    cosine similarity metrics between two political or thematic 
+    Generates a plotly visualization comparing polarization and
+    cosine similarity metrics between two political or thematic
     sides over time.
 
-    This function evaluates and plots the real and random 
-    polarization between the specified groups, 
-    alongside their cosine similarities to a specified semantic 
+    This function evaluates and plots the real and random
+    polarization between the specified groups,
+    alongside their cosine similarities to a specified semantic
     axis. It handles data organization,
-    calculates necessary statistics, and dynamically builds a 
+    calculates necessary statistics, and dynamically builds a
     comprehensive visualization.
 
     Parameters:
-    - left_side (list of str): Identifiers for the sources or 
+    - left_side (list of str): Identifiers for the sources or
     parties on the left side of the analysis.
-    - right_side (list of str): Identifiers for the sources or 
+    - right_side (list of str): Identifiers for the sources or
     parties on the right side.
-    - curves_by_company (bool, optional): If True, individual 
+    - curves_by_company (bool, optional): If True, individual
     company curves will be considered. Not implemented yet.
-    - axis (int): The axis index for which the cosine similarities 
+    - axis (int): The axis index for which the cosine similarities
     are calculated.
-    - percentiles (list of int): Percentile thresholds for 
+    - percentiles (list of int): Percentile thresholds for
     filtering significant cosine values.
-    - print_random_pol (bool): Flag to determine whether random 
+    - print_random_pol (bool): Flag to determine whether random
     polarization values are printed.
-    - force_i_lim (tuple, optional): Forces the plot's x-axis 
+    - force_i_lim (tuple, optional): Forces the plot's x-axis
     limits if specified.
-    - with_parliament (bool): Flag to indicate whether the 
+    - with_parliament (bool): Flag to indicate whether the
     analysis includes parliament data.
 
     Returns:
-    - plotly.graph_objs._figure.Figure: A Plotly figure object 
-    containing the generated visualization of polarization 
+    - plotly.graph_objs._figure.Figure: A Plotly figure object
+    containing the generated visualization of polarization
     and cosine similarities.
 
     Raises:
-    - ValueError: If 'axis' is not specified or if curves by 
+    - ValueError: If 'axis' is not specified or if curves by
     company are requested but not implemented.
 
-    The function reads and writes intermediate CSV files to 
-    cache polarization calculations, and retrieves them if 
+    The function reads and writes intermediate CSV files to
+    cache polarization calculations, and retrieves them if
     already computed, optimizing reprocessing for repeated analyses.
     """
     if curves_by_company:
@@ -221,7 +221,7 @@ def draw_cos_pol(
             x=x,
             y=real_pol,
             name="Polarisation réelle",
-            line={"color": 'blue', "width": 2},
+            line={"color": "blue", "width": 2},
         )
     )
     fig.add_trace(
@@ -251,7 +251,7 @@ def draw_cos_pol(
             x=x,
             y=Con_cos,
             name=f"Cosine similarity of {left_side}",
-            line={"color": 'green', "dash": 'dash', "width": 2},
+            line={"color": "green", "dash": "dash", "width": 2},
             yaxis="y2",
         )
     )
@@ -284,7 +284,7 @@ def draw_cos_pol(
             x=x,
             y=Lab_cos,
             name=f"Cosine similarity of {right_side}",
-            line={"color": 'red', "dash": 'dash', "width": 2},
+            line={"color": "red", "dash": "dash", "width": 2},
             yaxis="y2",
         )
     )
@@ -315,9 +315,24 @@ def draw_cos_pol(
     fig.update_layout(
         title=f"Polarization and cosine similarity between {left_side} vs {right_side}; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}",
         xaxis_title="Année",
-        yaxis={"title": 'Polarisation', "side": 'left', "rangemode": 'nonnegative'},
-        yaxis2={"title": 'Cosine similarity', "side": 'right', "overlaying": 'y', "rangemode":"tozero", "showgrid":False},
-        legend={"x": 0.01, "y": 0.99, "bordercolor": 'Black', "borderwidth": 1},
+        yaxis={
+            "title": "Polarisation",
+            "side": "left",
+            "rangemode": "nonnegative",
+        },
+        yaxis2={
+            "title": "Cosine similarity",
+            "side": "right",
+            "overlaying": "y",
+            "rangemode": "tozero",
+            "showgrid": False,
+        },
+        legend={
+            "x": 0.01,
+            "y": 0.99,
+            "bordercolor": "Black",
+            "borderwidth": 1,
+        },
         width=1200,
         height=700,
     )
@@ -326,7 +341,7 @@ def draw_cos_pol(
     for year in x:
         fig.add_vline(
             x=year,
-            line={"color": 'gray', "dash": 'dash', "width": 1},
+            line={"color": "gray", "dash": "dash", "width": 1},
             line_width=0.5,
         )
 

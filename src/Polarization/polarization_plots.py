@@ -56,7 +56,7 @@ def choose_pol(
     return_fig=True,
 ):
     """
-    Analyzes and visualizes polarization based on political 
+    Analyzes and visualizes polarization based on political
     alignment, optionally segmented by company and axis.
 
     :param left_side: List of sources considered to be on the left side of the political spectrum.
@@ -99,7 +99,7 @@ def choose_pol(
             f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {company}, percentiles = {percentiles}, with parliament = {with_parliament}.csv"
         ):
             break
-        
+
         st.markdown("Polarization values already computed...")
 
         fig = go.Figure()
@@ -125,7 +125,7 @@ def choose_pol(
                 y=real_pol,
                 mode="lines",
                 name=f"Real Polarization - {company}",
-                line={"color": 'blue'},
+                line={"color": "blue"},
             )
         )
         fig.add_trace(
@@ -159,7 +159,7 @@ def choose_pol(
                     y=random_pol,
                     mode="lines",
                     name=f"Random Polarization - {company}",
-                    line={"color": 'red', "dash": 'dash'},
+                    line={"color": "red", "dash": "dash"},
                 )
             )
             fig.add_trace(
@@ -230,7 +230,7 @@ def choose_pol(
                 year = 2010 + i
             else:
                 year = 20110 + (i - 10)  # Dynamically generate year
-                
+
             # Load data for the current year, with preprocessing
             if with_parliament:
                 df = standard_opening(
@@ -329,7 +329,9 @@ def choose_pol(
             df = df[["year", "party", "text", "Speaker"]]
 
             # Compute polarization and confidence intervals
-            values = compute_polarization_and_CI(df, year, party_1, party_2, with_parliament=with_parliament)
+            values = compute_polarization_and_CI(
+                df, year, party_1, party_2, with_parliament=with_parliament
+            )
 
             # Output polarization values for the current year
             print(values[0])
@@ -398,7 +400,7 @@ def choose_pol(
                 y=real_pol,
                 mode="lines",
                 name=f"Real Polarization - {company}",
-                line={"color": 'blue'},
+                line={"color": "blue"},
             )
         )
         fig.add_trace(
@@ -432,7 +434,7 @@ def choose_pol(
                     y=random_pol,
                     mode="lines",
                     name=f"Random Polarization - {company}",
-                    line={"color": 'red', "dash": 'dash'},
+                    line={"color": "red", "dash": "dash"},
                 )
             )
             fig.add_trace(

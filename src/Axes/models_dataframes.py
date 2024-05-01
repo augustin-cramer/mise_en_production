@@ -6,7 +6,11 @@ thanks to the filtering words defined in `filter_words.py`"""
 import warnings
 import pandas as pd
 
-from ..Axes.projection_functions import open_to_project, axis_vector, cosine_with_axis
+from ..Axes.projection_functions import (
+    open_to_project,
+    axis_vector,
+    cosine_with_axis,
+)
 from ..Axes.axes_definition import *
 from ..Axes.models import *
 

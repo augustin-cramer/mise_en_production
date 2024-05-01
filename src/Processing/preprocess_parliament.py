@@ -527,7 +527,7 @@ def process_list_BigTech_words(topics: list):
 
 def lines_to_keep(text: str, liste_big_tech: list):
     """
-    Takes the text of the speech as an input, and returns a bool 
+    Takes the text of the speech as an input, and returns a bool
     saying if the speech is within the BigTech topic
 
     Parameters:
@@ -545,7 +545,7 @@ def lines_to_keep(text: str, liste_big_tech: list):
 
 def keep_Bigtech_speeches(df: pd.DataFrame, list_stem_topics: list):
     """
-    Takes a dataframe of speeches as an input, and returns 
+    Takes a dataframe of speeches as an input, and returns
     only the speeches that have a link with the topics
 
     Parameters:

@@ -16,6 +16,7 @@ from ..Axes.models import *
 
 warnings.filterwarnings("ignore")
 
+
 def process_embeddings(file_path):
     """
     Processes embedding data from a specified file, normalizing by source counts.
@@ -202,7 +203,12 @@ def project_variation_on_axis(
     fig.update_layout(
         title_text=f"{number_of_words} words most responsible for the move of {source} towards the respective poles between year {year} and {year + 1}; axis = {axis}",
         showlegend=True,
-        legend={"orientation": 'h', "yanchor": 'bottom', "y": 1.02, "xanchor": 'right'},
+        legend={
+            "orientation": "h",
+            "yanchor": "bottom",
+            "y": 1.02,
+            "xanchor": "right",
+        },
     )
 
     # Customize x-axis properties

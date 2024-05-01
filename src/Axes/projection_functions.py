@@ -21,6 +21,7 @@ from ..GloVe.weights import phrase
 # Transformation of the data for the projection #
 #################################################
 
+
 def tostring(l):
     """
     Converts a list to a string representation.
@@ -36,28 +37,28 @@ def tostring(l):
 
 def df_BT(df):
     """
-    Process a dataframe to categorize and label rows based 
+    Process a dataframe to categorize and label rows based
     on thematic keywords related to major tech companies.
 
-    The function creates a subset of the original dataframe 
-    based on the presence of specific company themes in the 
-    'keywords' column. It assigns a class label to each row 
-    indicating the company theme, then concatenates all subsets 
+    The function creates a subset of the original dataframe
+    based on the presence of specific company themes in the
+    'keywords' column. It assigns a class label to each row
+    indicating the company theme, then concatenates all subsets
     into a single dataframe.
 
     Parameters:
-    - df (pd.DataFrame): A pandas DataFrame containing a 
+    - df (pd.DataFrame): A pandas DataFrame containing a
     'keywords' column where each entry is a list of keywords.
 
     Returns:
-    - pd.DataFrame: A DataFrame containing only the entries 
+    - pd.DataFrame: A DataFrame containing only the entries
     that match one of the specified themes, with an added 'class'
       column indicating the theme.
 
     Notes:
-    - The function modifies the input DataFrame in-place before 
+    - The function modifies the input DataFrame in-place before
     making a copy to prevent changes to the original data.
-    - It assumes that the 'theme' function is defined to extract 
+    - It assumes that the 'theme' function is defined to extract
     the relevant themes based on keywords.
     """
     df_BT = df.copy()
@@ -91,7 +92,7 @@ def df_BT(df):
 
 def theme(keywords):
     """
-    Identify the major tech company themes associated with a 
+    Identify the major tech company themes associated with a
     list of keywords.
 
     Parameters:
@@ -102,9 +103,9 @@ def theme(keywords):
       keywords provided. The themes include:
         'amazon', 'facebook', 'apple', 'google', and 'microsoft'.
 
-    Each theme is determined by specific keywords that are 
+    Each theme is determined by specific keywords that are
     associated with the respective company, including product
-    names, services, and key personnel. The function returns a 
+    names, services, and key personnel. The function returns a
     list of all themes that match the input keywords.
     """
     l = []
@@ -273,7 +274,7 @@ def barycentre(list, model):
 
 
 def filter_model(list, model_words):
-    """Takes a list of words and a word2vec model, and removes 
+    """Takes a list of words and a word2vec model, and removes
     the words from the list that do not appear in the model
 
     Parameters:
@@ -316,8 +317,8 @@ def proj_embedding_1(Wp):
 
 
 def projection_1D(pos_k: list, neg_k: list, model_words, model_sentences, df):
-    """Returns the 2D projection matrix (Wp) of the sentences in 
-    df on the axes defined, and a dataframe containing the 
+    """Returns the 2D projection matrix (Wp) of the sentences in
+    df on the axes defined, and a dataframe containing the
     coordinates of these projections
 
     Parameters:
@@ -369,8 +370,8 @@ def projection_2D(
     model_sentences,
     df,
 ):
-    """Returns the 2D projection matrix (Wp) of the sentences in 
-    df on the axes defined, and a dataframe containing the 
+    """Returns the 2D projection matrix (Wp) of the sentences in
+    df on the axes defined, and a dataframe containing the
     coordinates of these projections
 
     Parameters:
@@ -431,7 +432,7 @@ def projection_2D(
 def projection_3D(
     pos_k, neg_k, pos_l, neg_l, pos_m, neg_m, model_words, model_sentences, df
 ):
-    """Returns the 3D projection matrix (Wp) of the sentences in 
+    """Returns the 3D projection matrix (Wp) of the sentences in
     df on the axes defined, and a dataframe containing the
       coordinates of these projections
 
@@ -532,13 +533,13 @@ def projection_3D(
 
 def axis_vector(pos_1, neg_1, model_words):
     """
-    Computes the directional vector for a semantic axis in a word embedding space based on 
+    Computes the directional vector for a semantic axis in a word embedding space based on
     positive and negative word sets.
 
     Parameters:
     - pos_1 (list of str): A list of words representing the positive pole of the semantic axis.
     - neg_1 (list of str): A list of words representing the negative pole of the semantic axis.
-    - model_words (Word2Vec or similar): A word embedding model that contains embeddings for the 
+    - model_words (Word2Vec or similar): A word embedding model that contains embeddings for the
       words specified in pos_1 and neg_1.
 
     Returns:
@@ -546,9 +547,9 @@ def axis_vector(pos_1, neg_1, model_words):
       word sets.
 
     Notes:
-    - The function relies on 'filter_model' to filter out words that do not exist in the model and 
+    - The function relies on 'filter_model' to filter out words that do not exist in the model and
       'barycentre' to compute the centroid of the word embeddings.
-    - The resulting vector can be used to project other embeddings onto this axis to measure 
+    - The resulting vector can be used to project other embeddings onto this axis to measure
       their semantic similarity or difference relative to the defined axis.
     """
     pos_a = filter_model(pos_1, model_words)

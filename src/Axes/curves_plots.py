@@ -9,7 +9,6 @@ from ..Axes.projection_functions import *
 from ..Axes.bootstraping import *
 
 
-
 def format_year(integer):
     """
     Format a year integer to ensure it is a valid four-digit year.
@@ -122,7 +121,7 @@ def plot_from_sources_plotly(df_all_grouped, axis, sources):
                 y=y,
                 mode="lines",
                 name=f"Cosine similarity on axis {axis} of {source}",
-                line={'width' : 2},
+                line={"width": 2},
             )
         )
 
@@ -133,7 +132,7 @@ def plot_from_sources_plotly(df_all_grouped, axis, sources):
                 y=list(ci_high) + list(ci_low)[::-1],
                 fill="toself",
                 fillcolor="rgba(0,100,80,0.2)",
-                line={"color" : "rgba(255,255,255,0)"},
+                line={"color": "rgba(255,255,255,0)"},
                 showlegend=False,
                 name=f"Confidence Interval {source}",
             )

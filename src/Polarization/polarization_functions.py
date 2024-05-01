@@ -14,7 +14,8 @@ import numpy as np
 
 sys.path.append("..")
 
-RNG = random.Random() 
+RNG = random.Random()
+
 
 def get_user_token_counts(df_speeches, vocab):
     """
@@ -412,7 +413,7 @@ def compute_polarization_and_CI(df, year, party_1, party_2, with_parliament):
             token_partisanship_measure="posterior",
             leaveout=True,
             default_score=0.5,
-            with_parliament=with_parliament
+            with_parliament=with_parliament,
         )
         pol_k = values[0]
         random_pol = values[1]
@@ -447,7 +448,7 @@ def compute_polarization_and_CI(df, year, party_1, party_2, with_parliament):
         token_partisanship_measure="posterior",
         leaveout=True,
         default_score=0.5,
-        with_parliament=with_parliament
+        with_parliament=with_parliament,
     )
 
     real_pi = values[0]

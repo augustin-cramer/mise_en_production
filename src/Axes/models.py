@@ -4,6 +4,7 @@ into word2vec format, which is much more manipulable."""
 from ..Axes.projection_functions import *
 
 import warnings
+
 warnings.filterwarnings("ignore")
 
 # PART I: Generation of word2vec models for sentence and word embeddings

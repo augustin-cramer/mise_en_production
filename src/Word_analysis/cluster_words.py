@@ -49,7 +49,7 @@ def cluster_words(
     Parameters:
     - year (int): The year of the dataset to process.
     - axis (int): The axis on which to project the data.
-    - left_threshold, right_threshold (float, optional): 
+    - left_threshold, right_threshold (float, optional):
     Thresholds for filtering cosine axes values.
     - head, tail (int, optional): Number of items to take from the head or tail of the dataset.
     - with_parliament (bool): Flag to use parliament data.
@@ -57,7 +57,7 @@ def cluster_words(
     - company (str, optional): Specific company to focus on.
 
     Displays:
-    - Plots the silhouette and SSE plots, and asks for number 
+    - Plots the silhouette and SSE plots, and asks for number
     of clusters to further visualize clustering.
     """
     if year > 2019:
@@ -150,7 +150,7 @@ def cluster_words_intermediate(
     - company (str, optional): Company-specific data to include.
 
     Returns:
-    - tuple: Returns silhouette and SSE plots, along with the 
+    - tuple: Returns silhouette and SSE plots, along with the
     processed data and DataFrame for further analysis.
     """
     if year > 2019:

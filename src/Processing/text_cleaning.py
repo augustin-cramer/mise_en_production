@@ -260,7 +260,7 @@ def extract_bigrams(n_grams: str):
 
 def clean(text: str, gram: str):
     """
-    This function does the main cleaning of the text, 
+    This function does the main cleaning of the text,
     from characters removal to stemming and stopwords removal
 
     Parameters:

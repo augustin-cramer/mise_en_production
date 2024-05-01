@@ -461,7 +461,7 @@ def plot_silhouette_and_sse(rank, data):
     - data (array-like or DataFrame): Dataset to be used for clustering calculations.
 
     Returns:
-    - tuple: Containing two lists, the first with silhouette scores and the second with SSE values, 
+    - tuple: Containing two lists, the first with silhouette scores and the second with SSE values,
       for cluster sizes from 2 up to 'rank - 1'.
     """
     return (
