@@ -7,9 +7,22 @@ from ..Load_Data.load_data import *
 import warnings
 
 warnings.filterwarnings("ignore")
-ssp_cloud = False
-fs = None
-bucket = None
+import s3fs
+import yaml
+import os
+
+project_root = os.path.dirname(os.path.abspath(os.getcwd()))
+yaml_file_path = os.path.join(project_root, "mise_en_production", "S3_config.yml")
+s3_config = yaml.safe_load(open(yaml_file_path))
+#s3_config = yaml.safe_load(open("S3_config.yml"))
+ssp_cloud = True
+fs = s3fs.S3FileSystem(
+    client_kwargs={"endpoint_url": s3_config["endpoint_url"]},
+    key=s3_config["key"],
+    secret=s3_config["secret"],
+    token=s3_config["token"],
+)
+bucket = "nfarhan/diffusion/mise_en_production"
 
 
 # PART I: Generation of word2vec models for sentence and word embeddings
