@@ -3,6 +3,7 @@ from ..GloVe.weights import standard_opening
 import pandas as pd
 import json
 from scipy import sparse
+from ..Axes.projection_functions import *
 
 
 def load_csv(filepath, ssp_cloud=False, fs=None, bucket=None):
@@ -10,6 +11,15 @@ def load_csv(filepath, ssp_cloud=False, fs=None, bucket=None):
         df = read_csv_bucket(fs, bucket+filepath)
     else:
         df = pd.read_csv("data"+filepath)
+    return df
+
+
+def load_csv_index_col(filepath, ssp_cloud=False, fs=None, bucket=None):
+    if ssp_cloud:
+        with fs.open(bucket+filepath, mode="r") as file_in:
+            df = pd.read_csv(file_in, index_col=[0])
+    else:
+        df = pd.read_csv("data"+filepath, index_col=[0])
     return df
 
 
@@ -83,6 +93,27 @@ def load_finalwords(with_parliament, year, ssp_cloud=False, fs=None, bucket=None
         filepath = f"/without_parliament/words/Finalwords_{year}_WP.json"
     words = load_json(filepath, ssp_cloud, fs, bucket)
     return words
+
+
+def load_txt_model_sentence(filepath, ssp_cloud=False, fs=None, bucket=None):
+    if ssp_cloud:
+        with fs.open(bucket+filepath, mode='r') as f:
+            text_content = f.read()
+
+        local_file_path = 'local_file.txt' 
+        with open(local_file_path, mode="w") as file_out:
+            file_out.write(text_content)
+        model_sentences = txt_to_model_sentences(
+            local_file_path
+        )
+        os.remove(local_file_path)
+        
+    if not ssp_cloud:
+        model_sentences = txt_to_model_sentences(
+            "data" + filepath
+        )
+    return model_sentences
+
 
 def read_json_bucket(fs, FILE_PATH_S3):
     """

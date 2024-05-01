@@ -3,15 +3,16 @@ from Axes.projection_functions import *
 from Clustering.clustering_spectral import *
 import matplotlib.pyplot as plt
 import os
+from ..Load_Data.load_data import *
 
 os.chdir("../")
 
-df_BT_p = pd.read_csv(
-    "data/with parliament/current_dataframes/df_BT.csv", index_col=[0]
-).reset_index()
-df_BT_wp = pd.read_csv(
-    "data/without parliament/current_dataframes/df_BT.csv", index_col=[0]
-).reset_index()
+ssp_cloud = False
+
+df_BT_p = load_csv_index_col("/with_parliament/current_dataframes/df_BT.csv")
+df_BT_p = df_BT_p.reset_index()
+df_BT_wp = load_csv_index_col("/without_parliament/current_dataframes/df_BT.csv")
+df_BT_wp = df_BT_wp.reset_index()
 
 os.chdir(r"src")
 
@@ -39,6 +40,9 @@ def cluster_words(
     with_parliament=True,
     percentiles=None,
     company=None,
+    ssp_cloud=False,
+    fs=None,
+    bucket=None
 ):
     if year > 2019:
         year = year + 18090
@@ -46,17 +50,15 @@ def cluster_words(
 
     if with_parliament:
         df_BT = df_BT_p
-        model_sentences = txt_to_model_sentences(
-            "data/with parliament/sentence_embeddings/sentence_embeddings_"
-            + str(year)
-            + ".txt"
+        model_sentences = load_txt_model_sentence(
+            "/with_parliament/sentence_embeddings/sentence_embeddings_"+str(year)+".txt",
+            ssp_cloud, fs, bucket
         )
     if not with_parliament:
         df_BT = df_BT_wp
-        model_sentences = txt_to_model_sentences(
-            "data/without parliament/sentence_embeddings/sentence_embeddings_"
-            + str(year)
-            + ".txt"
+        model_sentences = load_txt_model_sentence(
+            "/without_parliament/sentence_embeddings/sentence_embeddings_"+str(year)+".txt",
+            ssp_cloud, fs, bucket
         )
 
     df_t = df_BT.loc[df_BT["year"] == year]
