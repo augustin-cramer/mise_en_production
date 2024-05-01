@@ -4,6 +4,7 @@ import pandas as pd
 import json
 from scipy import sparse
 from ..Axes.projection_functions import *
+import os
 
 
 def load_csv(filepath, ssp_cloud=False, fs=None, bucket=None):
