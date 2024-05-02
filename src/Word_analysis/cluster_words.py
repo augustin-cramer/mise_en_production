@@ -8,14 +8,19 @@ import numpy as np
 from ..Axes.projection_functions import txt_to_model_sentences
 from ..Clustering.clustering_spectral import *
 
-df_BT_p = pd.read_csv(
-    "data/with parliament/current_dataframes/df_BT.csv", index_col=[0]
-).reset_index()
-df_BT_wp = pd.read_csv(
-    "data/without parliament/current_dataframes/df_BT.csv", index_col=[0]
-).reset_index()
+# to clean out
+def load_df_BT_p():
+    df_BT_p = pd.read_csv(
+        "data/with parliament/current_dataframes/df_BT.csv", index_col=[0]
+    ).reset_index()
+    return df_BT_p
 
-print(os.getcwd())
+# to clean out
+def load_df_BT_wp():
+    df_BT_wp = pd.read_csv(
+        "data/without parliament/current_dataframes/df_BT.csv", index_col=[0]
+    ).reset_index()
+    return df_BT_wp
 
 
 def get_quantiles(data, percentiles):
@@ -65,14 +70,14 @@ def cluster_words(
     i = eval(str(year)[-1:])
 
     if with_parliament:
-        df_BT = df_BT_p
+        df_BT = load_df_BT_p()
         model_sentences = txt_to_model_sentences(
             "data/with parliament/sentence_embeddings/sentence_embeddings_"
             + str(year)
             + ".txt"
         )
     if not with_parliament:
-        df_BT = df_BT_wp
+        df_BT = load_df_BT_wp()
         model_sentences = txt_to_model_sentences(
             "data/without parliament/sentence_embeddings/sentence_embeddings_"
             + str(year)
@@ -158,14 +163,14 @@ def cluster_words_intermediate(
     i = eval(str(year)[-1:])
 
     if with_parliament:
-        df_BT = df_BT_p
+        df_BT = load_df_BT_p()
         model_sentences = txt_to_model_sentences(
             "data/with parliament/sentence_embeddings/sentence_embeddings_"
             + str(year)
             + ".txt"
         )
     if not with_parliament:
-        df_BT = df_BT_wp
+        df_BT = load_df_BT_wp()
         model_sentences = txt_to_model_sentences(
             "data/without parliament/sentence_embeddings/sentence_embeddings_"
             + str(year)

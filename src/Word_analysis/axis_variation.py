@@ -12,7 +12,7 @@ from ..GloVe.weights import standard_opening
 from ..Axes.projection_functions import filter_model
 from ..Processing.text_cleaning import clean
 from ..Axes.axes_definition import *
-from ..Axes.models import *
+from ..Axes.models import instatiate_models_w
 
 warnings.filterwarnings("ignore")
 
@@ -270,6 +270,7 @@ def axis_variation(
     dataframes.append(process_embeddings(file_path_1))
     dataframes.append(process_embeddings(file_path_2))
 
+    models_w = instatiate_models_w()
     axes_words_embeddings = [
         [
             give_embed_anyway(word, models_w[i], axes_words)

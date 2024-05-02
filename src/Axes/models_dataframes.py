@@ -11,8 +11,8 @@ from ..Axes.projection_functions import (
     axis_vector,
     cosine_with_axis,
 )
-from ..Axes.axes_definition import *
-from ..Axes.models import *
+from ..Axes.axes_definition import pos_1, neg_1, pos_2, neg_2
+from ..Axes.models import instatiate_models_s, instatiate_models_w
 
 warnings.filterwarnings("ignore")
 
@@ -68,6 +68,8 @@ def both_cosines(df, pos_1, neg_1, pos_2, neg_2, model_words, model_sentences):
     )
     return df
 
+models_w = instatiate_models_w()
+models_s = instatiate_models_s()
 
 # Apply the cosine similarity calculations for all prepared DataFrames
 for i in range(14):
