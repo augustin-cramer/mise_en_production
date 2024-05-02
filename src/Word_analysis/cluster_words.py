@@ -7,13 +7,32 @@ import numpy as np
 
 from ..Axes.projection_functions import txt_to_model_sentences
 from ..Clustering.clustering_spectral import *
+from ..Load_Data.load_data import *
 
-df_BT_p = pd.read_csv(
-    "data/with parliament/current_dataframes/df_BT.csv", index_col=[0]
-).reset_index()
-df_BT_wp = pd.read_csv(
-    "data/without parliament/current_dataframes/df_BT.csv", index_col=[0]
-).reset_index()
+
+import s3fs
+import yaml
+import os
+
+project_root = os.path.dirname(os.path.abspath(os.getcwd()))
+yaml_file_path = os.path.join(project_root, "mise_en_production", "S3_config.yml")
+s3_config = yaml.safe_load(open(yaml_file_path))
+#s3_config = yaml.safe_load(open("S3_config.yml"))
+ssp_cloud = True
+fs = s3fs.S3FileSystem(
+    client_kwargs={"endpoint_url": s3_config["endpoint_url"]},
+    key=s3_config["key"],
+    secret=s3_config["secret"],
+    token=s3_config["token"],
+)
+bucket = "nfarhan/diffusion/mise_en_production"
+
+df_BT_p = load_csv_index_col("/with_parliament/current_dataframes/df_BT.csv", ssp_cloud, fs, bucket)
+df_BT_p = df_BT_p.reset_index()
+df_BT_wp = load_csv_index_col("/without_parliament/current_dataframes/df_BT.csv", ssp_cloud, fs, bucket)
+df_BT_wp = df_BT_wp.reset_index()
+
+os.chdir(r"src")
 
 print(os.getcwd())
 
@@ -42,6 +61,9 @@ def cluster_words(
     with_parliament=True,
     percentiles=None,
     company=None,
+    ssp_cloud=False,
+    fs=None,
+    bucket=None
 ):
     """
     Clusters words from sentence embeddings and displays variation and clustering results.
@@ -66,17 +88,15 @@ def cluster_words(
 
     if with_parliament:
         df_BT = df_BT_p
-        model_sentences = txt_to_model_sentences(
-            "data/with parliament/sentence_embeddings/sentence_embeddings_"
-            + str(year)
-            + ".txt"
+        model_sentences = load_txt_model_sentence(
+            "/with_parliament/sentence_embeddings/sentence_embeddings_"+str(year)+".txt",
+            ssp_cloud, fs, bucket
         )
     if not with_parliament:
         df_BT = df_BT_wp
-        model_sentences = txt_to_model_sentences(
-            "data/without parliament/sentence_embeddings/sentence_embeddings_"
-            + str(year)
-            + ".txt"
+        model_sentences = load_txt_model_sentence(
+            "/without_parliament/sentence_embeddings/sentence_embeddings_"+str(year)+".txt",
+            ssp_cloud, fs, bucket
         )
 
     df_t = df_BT.loc[df_BT["year"] == year]
@@ -137,6 +157,9 @@ def cluster_words_intermediate(
     with_parliament=True,
     percentiles=None,
     company=None,
+    ssp_cloud=False,
+    fs=None,
+    bucket=None
 ):
     """
     Prepares data and intermediate outputs for detailed cluster analysis.
@@ -159,17 +182,105 @@ def cluster_words_intermediate(
 
     if with_parliament:
         df_BT = df_BT_p
-        model_sentences = txt_to_model_sentences(
-            "data/with parliament/sentence_embeddings/sentence_embeddings_"
-            + str(year)
-            + ".txt"
+        model_sentences = load_txt_model_sentence(
+            "/with_parliament/sentence_embeddings/sentence_embeddings_"+str(year)+".txt",
+            ssp_cloud, fs, bucket
         )
     if not with_parliament:
         df_BT = df_BT_wp
-        model_sentences = txt_to_model_sentences(
-            "data/without parliament/sentence_embeddings/sentence_embeddings_"
-            + str(year)
-            + ".txt"
+        model_sentences = load_txt_model_sentence(
+            "/without_parliament/sentence_embeddings/sentence_embeddings_"+str(year)+".txt",
+            ssp_cloud, fs, bucket
+        )
+
+    df_t = df_BT.loc[df_BT["year"] == year]
+
+    if company:
+        df_t = df_t.loc[df_t["class"] == company]
+
+    if company:
+        df_t = df_t.loc[df_t["class"] == company]
+
+    if left_threshold or right_threshold:
+        df_t = df_t.loc[
+            (df_t[f"cos axe {axis}"] < left_threshold)
+            | (df_t[f"cos axe {axis}"] > right_threshold)
+        ]
+
+    if head or tail:
+        df1 = df_t.head(head)
+        df2 = df_t.tail(tail)
+        df_t = pd.concat([df1, df2])
+
+    if percentiles:
+        quantiles = get_quantiles(
+            df_t[f"cos axe {axis}"], percentiles=percentiles
+        )
+        df_t = df_t.loc[
+            (df_t[f"cos axe {axis}"] < quantiles[0])
+            | (df_t[f"cos axe {axis}"] > quantiles[1])
+        ]
+
+    embeds_list = [model_sentences[sentence] for sentence in df_t["text"]]
+    data = np.array(embeds_list)
+
+    # Ask the user for the number of clusters
+    """try:
+        n_clusters = int(
+            input("Enter the number of clusters you want to use: ")
+        )
+    except ValueError:
+        print("Invalid number, using a default value of 5 clusters.")
+        n_clusters = 5  # Default value if the user input is not valid"""
+
+    plot_clusters_on_pc_spectral_3d(n_clusters, data, marker_size=1.4)
+    visualize_main_words_in_clusters_TFIDF(n_clusters, data, df_t)
+
+
+def cluster_words_intermediate(
+    year,
+    axis,
+    left_threshold=None,
+    right_threshold=None,
+    head=None,
+    tail=None,
+    with_parliament=True,
+    percentiles=None,
+    company=None,
+    ssp_cloud=False,
+    fs=None,
+    bucket=None
+):
+    """
+    Prepares data and intermediate outputs for detailed cluster analysis.
+
+    Parameters:
+    - year (int), axis (int): Parameters defining the subset of data to use.
+    - left_threshold, right_threshold (float, optional): Thresholds for filtering data.
+    - head, tail (int, optional): Parameters to select data extremes.
+    - with_parliament (bool): Whether to include parliament-related data.
+    - percentiles (list of int, optional): Percentiles for quantile calculation.
+    - company (str, optional): Company-specific data to include.
+
+    Returns:
+    - tuple: Returns silhouette and SSE plots, along with the
+    processed data and DataFrame for further analysis.
+    """
+    if year > 2019:
+        year = year + 18090
+    i = eval(str(year)[-1:])
+
+    if with_parliament:
+        df_BT = df_BT_p
+        model_sentences = load_txt_model_sentence(
+            "/with_parliament/sentence_embeddings/sentence_embeddings_"+str(year)+".txt",
+            ssp_cloud, fs, bucket
+        )
+    if not with_parliament:
+        df_BT = df_BT_wp
+        model_sentences = load_txt_model_sentence(
+            "/without_parliament/sentence_embeddings/sentence_embeddings_"+str(year)+".txt",
+            ssp_cloud, fs, bucket
         )
 
     df_t = df_BT.loc[df_BT["year"] == year]

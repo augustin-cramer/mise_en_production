@@ -11,6 +11,7 @@ import random
 import math
 import scipy.sparse as sp
 import numpy as np
+from ..Load_Data.load_data import load_json_vocab
 
 sys.path.append("..")
 
@@ -261,6 +262,9 @@ def get_values(
     leaveout=True,
     default_score=0.5,
     with_parliament=True,
+    ssp_cloud=False,
+    fs=None,
+    bucket=None
 ):
     """
     Computes polarization values for given parties within a specific dataset.
@@ -283,16 +287,8 @@ def get_values(
         df[df["party"] == party_2],
     )  # get partisan tweets
 
-    if with_parliament:
-        with open(
-            "data/with parliament/vocabs/vocab_" + str(year) + ".json"
-        ) as f:
-            vocab = json.load(f)
-    if not with_parliament:
-        with open(
-            "data/without parliament/vocabs/vocab_" + str(year) + "_WP.json"
-        ) as f:
-            vocab = json.load(f)
+    # load vocab
+    vocab = load_json_vocab(with_parliament, year, ssp_cloud=False, fs=None, bucket=None)
 
     # get vocab
     vocab = {w: i for i, w in enumerate(vocab)}
@@ -386,7 +382,7 @@ def get_values(
     return actual_val, random_val, dem_user_len + rep_user_len
 
 
-def compute_polarization_and_CI(df, year, party_1, party_2, with_parliament):
+def compute_polarization_and_CI(df, year, party_1, party_2, with_parliament, ssp_cloud=False, fs=None, bucket=None):
     """
     Computes polarization and confidence intervals for the given dataset and parties.
 
@@ -414,6 +410,9 @@ def compute_polarization_and_CI(df, year, party_1, party_2, with_parliament):
             leaveout=True,
             default_score=0.5,
             with_parliament=with_parliament,
+            ssp_cloud=ssp_cloud,
+            fs=fs,
+            bucket=bucket
         )
         pol_k = values[0]
         random_pol = values[1]
@@ -449,6 +448,9 @@ def compute_polarization_and_CI(df, year, party_1, party_2, with_parliament):
         leaveout=True,
         default_score=0.5,
         with_parliament=with_parliament,
+        ssp_cloud=ssp_cloud,
+        fs=fs,
+        bucket=bucket
     )
 
     real_pi = values[0]

@@ -9,6 +9,19 @@ from src.Word_analysis.words_variation import word_variations
 from src.Word_analysis.axis_variation import axis_variation
 from src.Word_analysis.cluster_words import *
 
+import s3fs
+import yaml
+
+s3_config = yaml.safe_load(open("mise_en_production/S3_config.yml"))
+ssp_cloud = True
+fs = s3fs.S3FileSystem(
+    client_kwargs={"endpoint_url": s3_config["endpoint_url"]},
+    key=s3_config["key"],
+    secret=s3_config["secret"],
+    token=s3_config["token"],
+)
+bucket = "nfarhan/diffusion/mise_en_production"
+
 # Style improvements
 st.markdown(
     """
@@ -346,6 +359,9 @@ elif analysis_type == "Curves Analysis":
                 focus_on_companies,
                 curves_by_company,
                 with_parliament,
+                ssp_cloud,
+                fs,
+                bucket
             )
             st.plotly_chart(fig, use_container_width=True)
 
@@ -411,6 +427,9 @@ elif analysis_type == "Curves Analysis":
                 axis=axis,
                 percentiles=percentiles,
                 with_parliament=with_parliament,
+                ssp_cloud=ssp_cloud,
+                fs=fs,
+                bucket=bucket
             )
             st.plotly_chart(fig, use_container_width=True)
 
@@ -466,6 +485,9 @@ elif analysis_type == "Curves Analysis":
                 axis=axis,
                 percentiles=percentiles,
                 with_parliament=with_parliament,
+                ssp_cloud=ssp_cloud,
+                fs=fs,
+                bucket=bucket
             )
             st.plotly_chart(fig, use_container_width=True)
 
@@ -538,6 +560,9 @@ elif analysis_type == "Word Analysis":
                 variation_2=variation_2,
                 with_parliament=with_parliament,
                 number=number,
+                ssp_cloud=ssp_cloud,
+                fs=fs,
+                bucket=bucket
             )
             st.plotly_chart(fig, use_container_width=True)
 
@@ -584,6 +609,9 @@ elif analysis_type == "Word Analysis":
                 year=year,
                 number_of_words=number,
                 with_parliament=with_parliament,
+                ssp_cloud=ssp_cloud,
+                fs=fs,
+                bucket=bucket
             )
             st.plotly_chart(fig, use_container_width=True)
 
@@ -709,6 +737,9 @@ elif analysis_type == "Word Analysis":
                 left_threshold=left_threshold,
                 head=head,
                 tail=tail,
+                ssp_cloud=ssp_cloud,
+                fs=fs,
+                bucket=bucket
             )
 
             st.session_state["data"] = data

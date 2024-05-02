@@ -1,5 +1,5 @@
-"""Functions to look at the words in the poles which are 
-the most responsible for the movement of the corpus towards 
+"""Functions to look at the words in the poles which are
+the most responsible for the movement of the corpus towards
 their respective pole"""
 
 import json
@@ -16,6 +16,8 @@ from ..Axes.filter_words import *
 from ..GloVe.weights import get_weights_word2vec
 from ..Axes.projection_functions import axis_vector, cosine_with_axis
 from ..Axes.models import *
+from ..Load_Data.load_data import *
+
 
 warnings.filterwarnings("ignore")
 
@@ -24,7 +26,7 @@ events_keywordskeywords = list(set(clean(events_keywords, "unigram")))
 new_topics = list(set(clean(new_topics, "unigram")))
 
 
-def process_year_data(year, model_words_year, with_parliament=True):
+def process_year_data(year, model_words_year, with_parliament=True, ssp_cloud=False, fs=None, bucket=None):
     """
     Processes and computes word embeddings and their cosine
     similarities with axes for a specified year.
@@ -38,24 +40,11 @@ def process_year_data(year, model_words_year, with_parliament=True):
         pd.DataFrame: A DataFrame containing words, their embeddings,
         and cosine similarities with predefined axes.
     """
-
-    if with_parliament:
-        with open(f"data/with parliament/words/Finalwords_{year}.json") as f:
-            words_year = json.load(f)
-    else:
-        with open(
-            f"data/without parliament/words/Finalwords_{year}_WP.json"
-        ) as f:
-            words_year = json.load(f)
+    words_year = load_words_year(with_parliament, year, ssp_cloud=False, fs=None, bucket=None)
 
     weights_year = get_weights_word2vec(words_year, a=1e-3)
 
-    if with_parliament:
-        with open(f"data/with parliament/vocabs/vocab_{year}.json") as f:
-            vocab_year = json.load(f)
-    else:
-        with open(f"data/without parliament/vocabs/vocab_{year}_WP.json") as f:
-            vocab_year = json.load(f)
+    vocab_year = load_vocab_year(with_parliament, year, ssp_cloud=False, fs=None, bucket=None)
 
     vocab_embed_year = [
         weights_year.get(word, 0) * model_words_year.get(word, 0)
@@ -124,7 +113,7 @@ def is_in_keywords(word):
     return False
 
 
-def process_yearly_data(df, year, with_parliament=True):
+def process_yearly_data(df, year, with_parliament=True, ssp_cloud=False, fs=None, bucket=None):
     """
     Processes yearly data by loading specific word data and
     applying keyword filters.
@@ -140,14 +129,7 @@ def process_yearly_data(df, year, with_parliament=True):
         and word counts.
     """
     # Load the words from the file
-    if with_parliament:
-        with open(f"data/with parliament/words/Finalwords_{year}.json") as f:
-            words = json.load(f)
-    if not with_parliament:
-        with open(
-            f"data/without parliament/words/Finalwords_{year}_WP.json"
-        ) as f:
-            words = json.load(f)
+    words = load_finalwords(with_parliament, year, ssp_cloud, fs, bucket)
 
     # Calculate word counts
     word_counts = Counter(words)
@@ -295,6 +277,9 @@ def word_variations(
     variation_2="down",
     with_parliament=True,
     number=20,
+    ssp_cloud=False,
+    fs=None,
+    bucket=None
 ):
     """
     Processes and visualizes the top word variations between
@@ -324,7 +309,7 @@ def word_variations(
     if not os.path.exists(path_1):
         st.write((f"processing year {year}"))
         print(f"processing year {year}")
-        current_df = process_year_data(year, models_w[i], with_parliament)
+        current_df = process_year_data(year, models_w[i], with_parliament, ssp_cloud, fs, bucket)
         current_df.to_csv(path_1, index=False)
     else:
         st.write(f"{year} already processed")
@@ -336,7 +321,7 @@ def word_variations(
         st.write(f"processing year {year-1}")
         print(f"processing year {year-1}")
         previous_df = process_year_data(
-            year - 1, models_w[i - 1], with_parliament
+            year - 1, models_w[i - 1], with_parliament, ssp_cloud, fs, bucket
         )
         previous_df.to_csv(path_2, index=False)
     else:
@@ -364,7 +349,7 @@ def word_variations(
         st.write("All already computed..")
         current_df = pd.read_csv(path_3)
 
-    current_df = process_yearly_data(current_df, year, with_parliament)
+    current_df = process_yearly_data(current_df, year, with_parliament, ssp_cloud, fs, bucket)
 
     return visualize_top_variations(
         current_df,

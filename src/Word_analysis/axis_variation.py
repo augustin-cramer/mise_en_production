@@ -17,7 +17,7 @@ from ..Axes.models import *
 warnings.filterwarnings("ignore")
 
 
-def process_embeddings(file_path):
+def process_embeddings(file_path, ssp_cloud=False, fs=None, bucket=None):
     """
     Processes embedding data from a specified file, normalizing by source counts.
 
@@ -28,7 +28,7 @@ def process_embeddings(file_path):
     - DataFrame: Processed DataFrame with normalized sentence embeddings.
     """
     # Load the data
-    df = standard_opening(file_path, False)
+    df = standard_opening(file_path, False, ssp_cloud, fs, bucket)
     # Transform the 'sentence_embedding' column
     df["sentence_embedding"] = (
         df["sentence_embedding"].apply(eval).apply(np.array, args=(float,))
@@ -230,7 +230,8 @@ axes_words = clean(tech + reg + pos + neg, "unigram")
 
 
 def axis_variation(
-    axis, source=None, year=2013, number_of_words=30, with_parliament=True
+    axis, source=None, year=2013, number_of_words=30, 
+    with_parliament=True, ssp_cloud=False, fs=None, bucket=None
 ):
     """
     Computes and visualizes the words that define the poles of the axes most responsible for
@@ -259,16 +260,16 @@ def axis_variation(
         year = 2019
 
     if with_parliament:
-        file_path_1 = f"data/with parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
-        file_path_2 = f"data/with parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
+        file_path_1 = f"/with_parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
+        file_path_2 = f"/with_parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
 
     if not with_parliament:
-        file_path_1 = f"data/without parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
-        file_path_2 = f"data/without parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
+        file_path_1 = f"/without_parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
+        file_path_2 = f"/without_parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
 
     dataframes = []
-    dataframes.append(process_embeddings(file_path_1))
-    dataframes.append(process_embeddings(file_path_2))
+    dataframes.append(process_embeddings(file_path_1, ssp_cloud, fs, bucket))
+    dataframes.append(process_embeddings(file_path_2, ssp_cloud, fs, bucket))
 
     axes_words_embeddings = [
         [

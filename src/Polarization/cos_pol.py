@@ -9,6 +9,7 @@ import pandas as pd
 
 from ..Polarization.polarization_plots import choose_pol
 from ..Axes.bootstraping import bootstrap
+from ..Load_Data.load_data import *
 
 
 def draw_cos_pol(
@@ -20,6 +21,9 @@ def draw_cos_pol(
     print_random_pol=True,
     force_i_lim=None,
     with_parliament=True,
+    ssp_cloud=False,
+    fs=None,
+    bucket=None
 ):
     """
     Generates a plotly visualization comparing polarization and
@@ -88,6 +92,9 @@ def draw_cos_pol(
             force_i_lim=force_i_lim,
             with_parliament=with_parliament,
             return_fig=False,
+            ssp_cloud=ssp_cloud,
+            fs=fs,
+            bucket=bucket
         )
 
     else:
@@ -95,10 +102,12 @@ def draw_cos_pol(
         print("polarization already computed...")
 
     if with_parliament:
-        df_proj = pd.read_csv("data/with parliament/current_dataframes/df.csv")
+        df_proj = load_csv(
+            "/with_parliament/current_dataframes/df.csv", ssp_cloud, fs, bucket
+        )
     if not with_parliament:
-        df_proj = pd.read_csv(
-            "data/without parliament/current_dataframes/df.csv"
+        df_proj = load_csv(
+            "/without_parliament/current_dataframes/df.csv", ssp_cloud, fs, bucket
         )
         df_proj["party"], df_proj["Speaker"] = 0, 0
 

@@ -15,6 +15,7 @@ import streamlit as st
 from ..Polarization.polarization_functions import compute_polarization_and_CI
 from ..Axes.projection_functions import df_BT
 from ..GloVe.weights import standard_opening
+from ..Load_Data.load_data import *
 
 
 def print_with_timestamp(message):
@@ -54,6 +55,9 @@ def choose_pol(
     force_i_lim=None,
     with_parliament=True,
     return_fig=True,
+    ssp_cloud=False,
+    fs=None,
+    bucket=None
 ):
     """
     Analyzes and visualizes polarization based on political
@@ -201,12 +205,12 @@ def choose_pol(
     if axis:
         print(os.getcwd())
         if with_parliament:
-            df_proj = pd.read_csv(
-                "data/with parliament/current_dataframes/df.csv"
+            df_proj = load_csv(
+                "/with_parliament/current_dataframes/df.csv", ssp_cloud, fs, bucket
             )
         if not with_parliament:
-            df_proj = pd.read_csv(
-                "data/without parliament/current_dataframes/df.csv"
+            df_proj = load_csv(
+                "/without_parliament/current_dataframes/df.csv", ssp_cloud, fs, bucket
             )
 
     # Main loop over each company (or all companies together)
@@ -231,18 +235,8 @@ def choose_pol(
             else:
                 year = 20110 + (i - 10)  # Dynamically generate year
 
-            # Load data for the current year, with preprocessing
-            if with_parliament:
-                df = standard_opening(
-                    f"data/with parliament/FinalDataframes/FilteredFinalDataFrame_201{i}.csv",
-                    True,
-                ).reset_index()
-            if not with_parliament:
-                df = standard_opening(
-                    f"data/without parliament/FinalDataframes/FilteredFinalDataFrame_201{i}_WP.csv",
-                    True,
-                ).reset_index()
-                df["party"], df["Speaker"] = 0, 0
+                # Load data for the current year, with preprocessing
+                df = load_current_year_data(with_parliament, year, ssp_cloud, fs, bucket)
 
             # Project data onto specified axis if applicable
             if axis:
@@ -330,7 +324,7 @@ def choose_pol(
 
             # Compute polarization and confidence intervals
             values = compute_polarization_and_CI(
-                df, year, party_1, party_2, with_parliament=with_parliament
+                df, year, party_1, party_2, with_parliament, ssp_cloud, fs, bucket
             )
 
             # Output polarization values for the current year
