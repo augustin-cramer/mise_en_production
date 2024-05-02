@@ -9,7 +9,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import TruncatedSVD
 
 
-def standard_opening(fichier, agenda: bool):
+def standard_opening(data_loader, fichier, agenda: bool):
     """Standardizes the opening of dataframes that we use in
     the following of the study
 
@@ -18,7 +18,7 @@ def standard_opening(fichier, agenda: bool):
     fichier : the dataframe to open
     agenda : says if the dataframe contains an agenda column (used for paliament)
     """
-    df = pd.read_csv(fichier, index_col=[0])
+    df = data_loader.read_csv(fichier, index_col=[0])
     df["text"] = df["text"].map(ast.literal_eval)
     df["keywords"] = df["keywords"].map(ast.literal_eval)
     if agenda:

@@ -47,6 +47,7 @@ def get_quantiles(data, percentiles):
 def choose_pol(
     left_side,
     right_side,
+    data_loader,
     curves_by_company=None,
     axis=None,
     percentiles=[10, 90],
@@ -67,6 +68,7 @@ def choose_pol(
     :param print_random_pol: Whether to print random polarization values.
     :param force_i_lim: Overrides the default limit for iterations if specified.
     """
+    str_parliament = "with" if with_parliament else "without"
 
     # Merge left and right sources into a single list for easier handling
     sources = left_side + right_side
@@ -95,7 +97,7 @@ def choose_pol(
         companies = ["all"]
 
     for company in companies:
-        if not os.path.exists(
+        if not data_loader.exists(
             f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {company}, percentiles = {percentiles}, with parliament = {with_parliament}.csv"
         ):
             break
@@ -105,7 +107,7 @@ def choose_pol(
         fig = go.Figure()
 
         # Convert the company's metrics into a DataFrame and save to CSV
-        df_pol = pd.read_csv(
+        df_pol = data_loader.read_csv(
             f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {company}, percentiles = {percentiles}, with parliament = {with_parliament}.csv"
         )
 
@@ -199,15 +201,7 @@ def choose_pol(
     st.markdown("Polarization values not computed, starting computation...")
     # Load projection data if an axis is specified
     if axis:
-        print(os.getcwd())
-        if with_parliament:
-            df_proj = pd.read_csv(
-                "data/with parliament/current_dataframes/df.csv"
-            )
-        if not with_parliament:
-            df_proj = pd.read_csv(
-                "data/without parliament/current_dataframes/df.csv"
-            )
+        df_proj = data_loader.read_csv(f"{str_parliament}_parliament/current_dataframes/df.csv")
 
     # Main loop over each company (or all companies together)
     for company in companies:
@@ -234,14 +228,16 @@ def choose_pol(
             # Load data for the current year, with preprocessing
             if with_parliament:
                 df = standard_opening(
-                    f"data/with parliament/FinalDataframes/FilteredFinalDataFrame_201{i}.csv",
-                    True,
-                ).reset_index()
+                        data_loader,
+                        f"{str_parliament}_parliament/FinalDataframes/FilteredFinalDataFrame_201{i}.csv",
+                        True,
+                    ).reset_index()
             if not with_parliament:
                 df = standard_opening(
-                    f"data/without parliament/FinalDataframes/FilteredFinalDataFrame_201{i}_WP.csv",
-                    True,
-                ).reset_index()
+                        data_loader,
+                        f"{str_parliament}_parliament/FinalDataframes/FilteredFinalDataFrame_201{i}_WP.csv",
+                        True,
+                    ).reset_index()
                 df["party"], df["Speaker"] = 0, 0
 
             # Project data onto specified axis if applicable
@@ -330,11 +326,8 @@ def choose_pol(
 
             # Compute polarization and confidence intervals
             values = compute_polarization_and_CI(
-                df, year, party_1, party_2, with_parliament=with_parliament
+                df, year, party_1, party_2, with_parliament=with_parliament, data_loader=data_loader
             )
-
-            # Output polarization values for the current year
-            print(values[0])
 
             # Store computed metrics in the respective lists within values_by_company
             metrics = [

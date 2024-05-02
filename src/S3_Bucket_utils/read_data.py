@@ -2,6 +2,7 @@ import pandas as pd
 import json
 from scipy import sparse
 import streamlit as st
+import os
 
 
 @st.cache_data
@@ -87,11 +88,11 @@ class DataLoader:
             self.from_s3 = True
         self.connection = connection
 
-    def read_csv(self, file_path):
+    def read_csv(self, file_path, **kwargs):
         if self.from_s3:
-            return read_csv_bucket(self.connection, file_path)
+            return read_csv_bucket(self.connection, file_path, **kwargs)
         else:
-            return pd.read_csv("data/" + file_path)
+            return pd.read_csv("data/" + file_path, **kwargs)
 
     def read_json(self, file_path):
         if self.from_s3:
@@ -113,3 +114,10 @@ class DataLoader:
         else:
             with open("data/" + file_path, "rb") as file:
                 return sparse.load_npz(file).toarray()
+
+    def exists(self, file_path):
+        if self.from_s3:
+            full_file_path = self.connection["bucket"] + file_path
+            return full_file_path in self.connection["fs"].ls(self.connection["bucket"])
+        else:
+            return os.path.exists("data/" + file_path)

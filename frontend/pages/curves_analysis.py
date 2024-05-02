@@ -119,6 +119,7 @@ def display_curves_analysis(data_loader):
             fig = choose_pol(
                 first_part,
                 second_part,
+                data_loader=data_loader,
                 curves_by_company=curves_by_company,
                 axis=axis,
                 percentiles=percentiles,
