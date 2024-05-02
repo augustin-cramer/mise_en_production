@@ -15,7 +15,7 @@ from frontend.static.style import improve_style
 S3_CONFIG = yaml.safe_load(open("S3_config.yml"))
 BUCKET = "nfarhan/diffusion/mise_en_production/"
 
-try :
+try:
     fs = s3fs.S3FileSystem(
         client_kwargs={"endpoint_url": S3_CONFIG["endpoint_url"]},
         key=S3_CONFIG["key"],
@@ -25,7 +25,7 @@ try :
     connection = {"fs": fs, "bucket": BUCKET}
 except:
     connection = None
-    
+
 data_loader = DataLoader(connection)
 
 

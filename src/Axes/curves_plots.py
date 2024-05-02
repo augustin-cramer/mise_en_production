@@ -178,7 +178,7 @@ def choose_projection_cos(
     # Data loading
     parliament_str = "with" if with_parliament else "without"
     # if connection["fs"] is not None:
-        
+
     #     if with_parliament:
     #         df = read_csv_bucket(
     #             fs, bucket + "/with_parliament/current_dataframes/df.csv"
@@ -209,9 +209,13 @@ def choose_projection_cos(
     #         df_BT = pd.read_csv(
     #             "data/without parliament/current_dataframes/df_BT.csv"
     #         )
-    df = data_loader.read_csv(f"{parliament_str}_parliament/current_dataframes/df.csv")
-    df_BT = data_loader.read_csv(f"{parliament_str}_parliament/current_dataframes/df_BT.csv")
-    
+    df = data_loader.read_csv(
+        f"{parliament_str}_parliament/current_dataframes/df.csv"
+    )
+    df_BT = data_loader.read_csv(
+        f"{parliament_str}_parliament/current_dataframes/df_BT.csv"
+    )
+
     # Validate the sources parameter
     if sources is not None:
         for source in sources:
