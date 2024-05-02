@@ -10,6 +10,7 @@ import pandas as pd
 from ..Polarization.polarization_plots import choose_pol
 from ..Axes.bootstraping import bootstrap
 
+
 # Define a function to translate newspaper source to party
 def translate_party(newspaper, left_side, right_side):
     """
@@ -22,7 +23,8 @@ def translate_party(newspaper, left_side, right_side):
         return "Lab"
     if newspaper in right_side:
         return "Con"
-    
+
+
 def change_year(old_year):
     if int(old_year) == 20110:
         return 2020
@@ -34,6 +36,7 @@ def change_year(old_year):
         return 2023
     else:
         return int(old_year)
+
 
 def draw_cos_pol(
     left_side,
@@ -96,8 +99,10 @@ def draw_cos_pol(
         raise ValueError("It only works on an axis")
 
     companies = "all"
-    str_parliament = "with parliament" if with_parliament else "without parliament"
-    
+    str_parliament = (
+        "with parliament" if with_parliament else "without parliament"
+    )
+
     sources = left_side + right_side
 
     if not data_loader.exists(
@@ -120,7 +125,9 @@ def draw_cos_pol(
     else:
         st.write("polarization already computed...")
 
-    df_proj = data_loader.read_csv(f"{str_parliament}_parliament/current_dataframes/df.csv")
+    df_proj = data_loader.read_csv(
+        f"{str_parliament}_parliament/current_dataframes/df.csv"
+    )
     if not with_parliament:
         df_proj["party"], df_proj["Speaker"] = 0, 0
 
@@ -147,7 +154,9 @@ def draw_cos_pol(
     df2 = df_par[df_par["source"] != "par"]
 
     # Apply the translation function to assign parties based on sources
-    df2["party"] = df2["source"].apply(lambda x: translate_party(x, left_side, right_side))
+    df2["party"] = df2["source"].apply(
+        lambda x: translate_party(x, left_side, right_side)
+    )
     df2["Speaker"] = range(len(df2))
 
     # Combine the two DataFrames and reset index for continuity
@@ -156,7 +165,6 @@ def draw_cos_pol(
     df_par_grouped = df_par[["party", "year", f"cos axe {axis}"]]
     df_par_grouped = df_par_grouped.groupby(["party", "year"]).mean()
     df_par_grouped = df_par_grouped.reset_index()
-
 
     df_par["year"] = df_par["year"].apply(change_year)
     df_par_grouped["year"] = df_par_grouped["year"].apply(change_year)
