@@ -6,7 +6,7 @@ from src.Axes.curves_plots import choose_projection_cos
 from src.Polarization.cos_pol import draw_cos_pol
 
 
-def display_curves_analysis():
+def display_curves_analysis(data_loader):
     st.title("Curves Analysis")
     type_of_curve = st.multiselect(
         "Select the type of curve you want",
@@ -57,6 +57,7 @@ def display_curves_analysis():
                 focus_on_companies,
                 curves_by_company,
                 with_parliament,
+                data_loader,
             )
             st.plotly_chart(fig, use_container_width=True)
 
