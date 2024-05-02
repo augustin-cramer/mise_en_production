@@ -257,6 +257,7 @@ def get_values(
     year,
     party_1,
     party_2,
+    data_loader,
     token_partisanship_measure="posterior",
     leaveout=True,
     default_score=0.5,
@@ -277,22 +278,20 @@ def get_values(
     Returns:
     - tuple: Actual polarization value, random polarization value, and total user count.
     """
-
     dem_tweets, rep_tweets = (
         df[df["party"] == party_1],
         df[df["party"] == party_2],
     )  # get partisan tweets
 
     if with_parliament:
-        with open(
-            "data/with parliament/vocabs/vocab_" + str(year) + ".json"
-        ) as f:
-            vocab = json.load(f)
+        vocab = data_loader.read_json(
+            "with_parliament/vocabs/vocab_" + str(year) + ".json"
+        )
+
     if not with_parliament:
-        with open(
-            "data/without parliament/vocabs/vocab_" + str(year) + "_WP.json"
-        ) as f:
-            vocab = json.load(f)
+        vocab = data_loader.read_json(
+            "without_parliament/vocabs/vocab_" + str(year) + "_WP.json"
+        )
 
     # get vocab
     vocab = {w: i for i, w in enumerate(vocab)}
@@ -386,7 +385,9 @@ def get_values(
     return actual_val, random_val, dem_user_len + rep_user_len
 
 
-def compute_polarization_and_CI(df, year, party_1, party_2, with_parliament):
+def compute_polarization_and_CI(
+    df, year, party_1, party_2, with_parliament, data_loader
+):
     """
     Computes polarization and confidence intervals for the given dataset and parties.
 
@@ -410,6 +411,7 @@ def compute_polarization_and_CI(df, year, party_1, party_2, with_parliament):
             year,
             party_1,
             party_2,
+            data_loader,
             token_partisanship_measure="posterior",
             leaveout=True,
             default_score=0.5,
@@ -445,6 +447,7 @@ def compute_polarization_and_CI(df, year, party_1, party_2, with_parliament):
         year,
         party_1,
         party_2,
+        data_loader,
         token_partisanship_measure="posterior",
         leaveout=True,
         default_score=0.5,

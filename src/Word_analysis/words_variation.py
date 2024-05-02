@@ -11,11 +11,12 @@ from plotly.subplots import make_subplots
 import streamlit as st
 import pandas as pd
 
-from ..Axes.axes_definition import *
-from ..Axes.filter_words import *
+from ..Axes.axes_definition import pos_1, neg_1, pos_2, neg_2
+from ..Axes.filter_words import events_keywords, new_topics
+from ..Processing.text_cleaning import clean
 from ..GloVe.weights import get_weights_word2vec
 from ..Axes.projection_functions import axis_vector, cosine_with_axis
-from ..Axes.models import *
+from ..Axes.models import instatiate_models_w
 
 warnings.filterwarnings("ignore")
 
@@ -316,6 +317,8 @@ def word_variations(
     Returns:
         plotly.graph_objects.Figure: A figure illustrating the variations in word embeddings across specified axes.
     """
+    models_w = instatiate_models_w()
+
     if year > 2019:
         year += 18090  # Adjusting the year by adding 18090 to it if it's above 2019
     i = year % 10  # Getting the last digit of the year
