@@ -68,6 +68,7 @@ def both_cosines(df, pos_1, neg_1, pos_2, neg_2, model_words, model_sentences):
     )
     return df
 
+
 # to clean
 models_w = instatiate_models_w()
 models_s = instatiate_models_s()

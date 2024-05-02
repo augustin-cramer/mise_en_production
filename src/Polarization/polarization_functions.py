@@ -284,10 +284,14 @@ def get_values(
     )  # get partisan tweets
 
     if with_parliament:
-            vocab = data_loader.read_json("with_parliament/vocabs/vocab_" + str(year) + ".json")
-            
+        vocab = data_loader.read_json(
+            "with_parliament/vocabs/vocab_" + str(year) + ".json"
+        )
+
     if not with_parliament:
-            vocab = data_loader.read_json("without_parliament/vocabs/vocab_" + str(year) + "_WP.json")
+        vocab = data_loader.read_json(
+            "without_parliament/vocabs/vocab_" + str(year) + "_WP.json"
+        )
 
     # get vocab
     vocab = {w: i for i, w in enumerate(vocab)}
@@ -381,7 +385,9 @@ def get_values(
     return actual_val, random_val, dem_user_len + rep_user_len
 
 
-def compute_polarization_and_CI(df, year, party_1, party_2, with_parliament, data_loader):
+def compute_polarization_and_CI(
+    df, year, party_1, party_2, with_parliament, data_loader
+):
     """
     Computes polarization and confidence intervals for the given dataset and parties.
 

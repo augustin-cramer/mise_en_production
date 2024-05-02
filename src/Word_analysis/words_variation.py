@@ -318,7 +318,7 @@ def word_variations(
         plotly.graph_objects.Figure: A figure illustrating the variations in word embeddings across specified axes.
     """
     models_w = instatiate_models_w()
-    
+
     if year > 2019:
         year += 18090  # Adjusting the year by adding 18090 to it if it's above 2019
     i = year % 10  # Getting the last digit of the year

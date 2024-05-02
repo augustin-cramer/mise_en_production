@@ -201,7 +201,9 @@ def choose_pol(
     st.markdown("Polarization values not computed, starting computation...")
     # Load projection data if an axis is specified
     if axis:
-        df_proj = data_loader.read_csv(f"{str_parliament}_parliament/current_dataframes/df.csv")
+        df_proj = data_loader.read_csv(
+            f"{str_parliament}_parliament/current_dataframes/df.csv"
+        )
 
     # Main loop over each company (or all companies together)
     for company in companies:
@@ -228,16 +230,16 @@ def choose_pol(
             # Load data for the current year, with preprocessing
             if with_parliament:
                 df = standard_opening(
-                        data_loader,
-                        f"{str_parliament}_parliament/FinalDataframes/FilteredFinalDataFrame_201{i}.csv",
-                        True,
-                    ).reset_index()
+                    data_loader,
+                    f"{str_parliament}_parliament/FinalDataframes/FilteredFinalDataFrame_201{i}.csv",
+                    True,
+                ).reset_index()
             if not with_parliament:
                 df = standard_opening(
-                        data_loader,
-                        f"{str_parliament}_parliament/FinalDataframes/FilteredFinalDataFrame_201{i}_WP.csv",
-                        True,
-                    ).reset_index()
+                    data_loader,
+                    f"{str_parliament}_parliament/FinalDataframes/FilteredFinalDataFrame_201{i}_WP.csv",
+                    True,
+                ).reset_index()
                 df["party"], df["Speaker"] = 0, 0
 
             # Project data onto specified axis if applicable
@@ -326,7 +328,12 @@ def choose_pol(
 
             # Compute polarization and confidence intervals
             values = compute_polarization_and_CI(
-                df, year, party_1, party_2, with_parliament=with_parliament, data_loader=data_loader
+                df,
+                year,
+                party_1,
+                party_2,
+                with_parliament=with_parliament,
+                data_loader=data_loader,
             )
 
             # Store computed metrics in the respective lists within values_by_company

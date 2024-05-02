@@ -118,6 +118,8 @@ class DataLoader:
     def exists(self, file_path):
         if self.from_s3:
             full_file_path = self.connection["bucket"] + file_path
-            return full_file_path in self.connection["fs"].ls(self.connection["bucket"])
+            return full_file_path in self.connection["fs"].ls(
+                self.connection["bucket"]
+            )
         else:
             return os.path.exists("data/" + file_path)

@@ -8,12 +8,14 @@ import numpy as np
 from ..Axes.projection_functions import txt_to_model_sentences
 from ..Clustering.clustering_spectral import *
 
+
 # to clean out
 def load_df_BT_p():
     df_BT_p = pd.read_csv(
         "data/with parliament/current_dataframes/df_BT.csv", index_col=[0]
     ).reset_index()
     return df_BT_p
+
 
 # to clean out
 def load_df_BT_wp():
