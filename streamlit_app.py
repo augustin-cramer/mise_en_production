@@ -22,6 +22,7 @@ try:
         secret=S3_CONFIG["secret"],
         token=S3_CONFIG["token"],
     )
+    fs.ls(BUCKET)
     connection = {"fs": fs, "bucket": BUCKET}
 except:
     connection = None

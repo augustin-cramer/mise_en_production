@@ -82,6 +82,7 @@ def read_npz_bucket(_connection, file_path_s3):
 
 class DataLoader:
     def __init__(self, connection):
+        self.from_s3 = False
         if connection is not None:
             self.from_s3 = True
         self.connection = connection
