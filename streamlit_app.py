@@ -2,16 +2,15 @@
 
 import streamlit as st
 
-from frontend.home import display_home
-from frontend.description import display_description
-from frontend.style import improve_style
-from frontend.curves_analysis import display_curves_analysis
-from frontend.word_analysis import display_word_analysis
+from frontend.pages.home import display_home
+from frontend.pages.description import display_description
+from frontend.pages.curves_analysis import display_curves_analysis
+from frontend.pages.word_analysis import display_word_analysis
+from frontend.static.style import improve_style
 
 
 def main():
     improve_style()
-
     # Sidebar for navigation
     analysis_type = st.sidebar.radio(
         "Directory",
