@@ -176,6 +176,7 @@ def display_curves_analysis(data_loader):
             fig = draw_cos_pol(
                 first_part,
                 second_part,
+                data_loader=data_loader,
                 axis=axis,
                 percentiles=percentiles,
                 with_parliament=with_parliament,

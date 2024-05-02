@@ -10,10 +10,35 @@ import pandas as pd
 from ..Polarization.polarization_plots import choose_pol
 from ..Axes.bootstraping import bootstrap
 
+# Define a function to translate newspaper source to party
+def translate_party(newspaper, left_side, right_side):
+    """
+    Translates newspaper sources to their corresponding political party.
+
+    :param newspaper: The source to be translated.
+    :return: The political party corresponding to the source.
+    """
+    if newspaper in left_side:
+        return "Lab"
+    if newspaper in right_side:
+        return "Con"
+    
+def change_year(old_year):
+    if int(old_year) == 20110:
+        return 2020
+    if int(old_year) == 20111:
+        return 2021
+    if int(old_year) == 20112:
+        return 2022
+    if int(old_year) == 20113:
+        return 2023
+    else:
+        return int(old_year)
 
 def draw_cos_pol(
     left_side,
     right_side,
+    data_loader,
     curves_by_company=None,
     axis=None,
     percentiles=[10, 90],
@@ -71,16 +96,18 @@ def draw_cos_pol(
         raise ValueError("It only works on an axis")
 
     companies = "all"
-
+    str_parliament = "with parliament" if with_parliament else "without parliament"
+    
     sources = left_side + right_side
 
-    if not os.path.exists(
+    if not data_loader.exists(
         f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.csv"
     ):
         st.write("computing polarization...")
         choose_pol(
             left_side=left_side,
             right_side=right_side,
+            data_loader=data_loader,
             curves_by_company=None,
             axis=axis,
             percentiles=percentiles,
@@ -92,14 +119,9 @@ def draw_cos_pol(
 
     else:
         st.write("polarization already computed...")
-        print("polarization already computed...")
 
-    if with_parliament:
-        df_proj = pd.read_csv("data/with parliament/current_dataframes/df.csv")
+    df_proj = data_loader.read_csv(f"{str_parliament}_parliament/current_dataframes/df.csv")
     if not with_parliament:
-        df_proj = pd.read_csv(
-            "data/without parliament/current_dataframes/df.csv"
-        )
         df_proj["party"], df_proj["Speaker"] = 0, 0
 
     df_par = df_proj.loc[
@@ -124,21 +146,8 @@ def draw_cos_pol(
     df1 = df_par[df_par["source"] == "par"]
     df2 = df_par[df_par["source"] != "par"]
 
-    # Define a function to translate newspaper source to party
-    def translate_party(newspaper):
-        """
-        Translates newspaper sources to their corresponding political party.
-
-        :param newspaper: The source to be translated.
-        :return: The political party corresponding to the source.
-        """
-        if newspaper in left_side:
-            return "Lab"
-        if newspaper in right_side:
-            return "Con"
-
     # Apply the translation function to assign parties based on sources
-    df2["party"] = df2["source"].apply(translate_party)
+    df2["party"] = df2["source"].apply(lambda x: translate_party(x, left_side, right_side))
     df2["Speaker"] = range(len(df2))
 
     # Combine the two DataFrames and reset index for continuity
@@ -148,17 +157,6 @@ def draw_cos_pol(
     df_par_grouped = df_par_grouped.groupby(["party", "year"]).mean()
     df_par_grouped = df_par_grouped.reset_index()
 
-    def change_year(old_year):
-        if int(old_year) == 20110:
-            return 2020
-        if int(old_year) == 20111:
-            return 2021
-        if int(old_year) == 20112:
-            return 2022
-        if int(old_year) == 20113:
-            return 2023
-        else:
-            return int(old_year)
 
     df_par["year"] = df_par["year"].apply(change_year)
     df_par_grouped["year"] = df_par_grouped["year"].apply(change_year)
@@ -169,7 +167,7 @@ def draw_cos_pol(
 
     df_par_grouped["cos axe"] = df_par_grouped[f"cos axe {axis}"]
 
-    df_pol = pd.read_csv(
+    df_pol = data_loader.read_csv(
         f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {companies}, percentiles = {percentiles}, with parliament = {with_parliament}.csv"
     )
 
