@@ -4,7 +4,6 @@ inside a document in order to get the document general embedding."""
 import ast
 import gc
 import numpy as np
-import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import TruncatedSVD
 
@@ -69,7 +68,7 @@ def get_sentence_embeddings(phrase, weights, model):
         return None
 
 
-def phrase(list):
+def phrase(list_of_words):
     """Creates a sentence linked with '_' from a list of words.
     Used for sentence recognition in word2vec models
 
@@ -78,27 +77,27 @@ def phrase(list):
     list : list of words forming the sentence
     """
     phr = ""
-    for string in list:
+    for string in list_of_words:
         phr += string + "_"
     return phr
 
 
-def barycentre(list, model):
-    """Computes the embdeddings barycenter from a list of words
-    or sentences
+# def barycentre(list_of_words, model):
+#     """Computes the embdeddings barycenter from a list of words
+#     or sentences
 
-    Parameters:
-    -----------
-    list : list of words or sentences
-    model : the word2vec model containing the embeddings
-    """
-    bar = np.zeros(50, dtype=object)
-    for word in list:
-        bar = bar + model[word]
-    return bar / (len(list))
+#     Parameters:
+#     -----------
+#     list : list of words or sentences
+#     model : the word2vec model containing the embeddings
+#     """
+#     barycenter = np.zeros(50, dtype=object)
+#     for word in list_of_words:
+#         barycenter = barycenter + model[word]
+#     return barycenter / (len(list_of_words))
 
 
-def compute_pc(X, npc=1):
+def compute_pc(array, npc=1):
     """
     Compute the principal components of X. DO NOT MAKE THE DATA
     ZERO MEAN!
@@ -110,11 +109,11 @@ def compute_pc(X, npc=1):
     """
     svd = TruncatedSVD(n_components=npc, n_iter=7, random_state=0)
     print("Computing principal components...")
-    svd.fit(X)
+    svd.fit(array)
     return svd.components_
 
 
-def remove_pc(X, npc=1):
+def remove_pc(array, npc=1):
     """
     Remove the projection on the principal components
 
@@ -124,9 +123,9 @@ def remove_pc(X, npc=1):
     npc: number of principal components to remove
     """
     print("Removing principal component...")
-    pc = compute_pc(X, npc)
+    pc = compute_pc(array, npc)
     if npc == 1:
-        XX = X - X.dot(pc.transpose()) * pc
+        without_pc = array - array.dot(pc.transpose()) * pc
     else:
-        XX = X - X.dot(pc.transpose()).dot(pc)
-    return XX
+        without_pc = array - array.dot(pc.transpose()).dot(pc)
+    return without_pc
