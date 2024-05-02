@@ -5,6 +5,7 @@ import streamlit as st
 import os
 from gensim.scripts.glove2word2vec import glove2word2vec
 
+
 @st.cache_data
 def read_csv_bucket(_connection, file_path_s3):
     """
@@ -80,6 +81,7 @@ def read_npz_bucket(_connection, file_path_s3):
         npz_content = sparse.load_npz(file_in).toarray()
     return npz_content
 
+
 def write_csv_bucket(_connection, df, file_path_s3):
     """
     Writes a DataFrame to a CSV file in an object storage system.
@@ -93,7 +95,8 @@ def write_csv_bucket(_connection, df, file_path_s3):
         _connection["bucket"] + file_path_s3, "w"
     ) as file_out:
         df.to_csv(file_out, index=False)
-        
+
+
 def write_txt_bucket(_connection, text, file_path_s3):
     """
     Writes a text to a text file in an object storage system.
@@ -107,6 +110,7 @@ def write_txt_bucket(_connection, text, file_path_s3):
         _connection["bucket"] + file_path_s3, "w"
     ) as file_out:
         file_out.writelines(text)
+
 
 class DataLoader:
     def __init__(self, connection):
@@ -150,22 +154,25 @@ class DataLoader:
             )
         else:
             return os.path.exists("data/" + file_path)
-    
+
     def write_csv(self, df, file_path):
         if self.from_s3:
             write_csv_bucket(self.connection, df, file_path)
         else:
             df.to_csv("data/" + file_path, index=False)
-    
+
     def write_txt(self, text, file_path):
         if self.from_s3:
             write_txt_bucket(self.connection, text, file_path)
         else:
             with open("data/" + file_path, "w") as file:
                 file.write(text)
-                
+
     def glove2word2vec(self, file_path, word2vec_glove_file_sentences):
         if self.from_s3:
-            glove2word2vec(self.connection["bucket"] + file_path, word2vec_glove_file_sentences)
-        else :
+            glove2word2vec(
+                self.connection["bucket"] + file_path,
+                word2vec_glove_file_sentences,
+            )
+        else:
             glove2word2vec("data/" + file_path, word2vec_glove_file_sentences)

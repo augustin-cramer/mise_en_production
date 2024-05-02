@@ -21,13 +21,17 @@ warnings.filterwarnings("ignore")
 events_keywordskeywords = list(set(clean(events_keywords, "unigram")))
 new_topics = list(set(clean(new_topics, "unigram")))
 
+
 def get_word_from_model_words_year(model_words_year, word):
-    try :
+    try:
         return model_words_year.get_vector(word)
     except KeyError:
         return 0
 
-def process_year_data(data_loader, year, model_words_year, with_parliament=True):
+
+def process_year_data(
+    data_loader, year, model_words_year, with_parliament=True
+):
     """
     Processes and computes word embeddings and their cosine
     similarities with axes for a specified year.
@@ -43,19 +47,28 @@ def process_year_data(data_loader, year, model_words_year, with_parliament=True)
     """
 
     if with_parliament:
-        words_year = data_loader.read_json(f"with_parliament/words/Finalwords_{year}.json")
+        words_year = data_loader.read_json(
+            f"with_parliament/words/Finalwords_{year}.json"
+        )
     else:
-        words_year = data_loader.read_json(f"without_parliament/words/Finalwords_{year}_WP.json")
+        words_year = data_loader.read_json(
+            f"without_parliament/words/Finalwords_{year}_WP.json"
+        )
 
     weights_year = get_weights_word2vec(words_year, a=1e-3)
 
     if with_parliament:
-        vocab_year = data_loader.read_json(f"with_parliament/vocabs/vocab_{year}.json")
+        vocab_year = data_loader.read_json(
+            f"with_parliament/vocabs/vocab_{year}.json"
+        )
     else:
-        vocab_year = data_loader.read_json(f"without_parliament/vocabs/vocab_{year}_WP.json")
+        vocab_year = data_loader.read_json(
+            f"without_parliament/vocabs/vocab_{year}_WP.json"
+        )
 
     vocab_embed_year = [
-        weights_year.get(word, 0) * get_word_from_model_words_year(model_words_year, word)
+        weights_year.get(word, 0)
+        * get_word_from_model_words_year(model_words_year, word)
         for word in vocab_year
     ]
 
@@ -138,9 +151,13 @@ def process_yearly_data(data_loader, df, year, with_parliament=True):
     """
     # Load the words from the file
     if with_parliament:
-        words = data_loader.read_json(f"with_parliament/words/Finalwords_{year}.json")
+        words = data_loader.read_json(
+            f"with_parliament/words/Finalwords_{year}.json"
+        )
     if not with_parliament:
-        words = data_loader.read_json(f"without_parliament/words/Finalwords_{year}_WP.json")
+        words = data_loader.read_json(
+            f"without_parliament/words/Finalwords_{year}_WP.json"
+        )
 
     # Calculate word counts
     word_counts = Counter(words)
@@ -319,7 +336,9 @@ def word_variations(
     path_1 = f"word analysis values/processed yearly data ; year = {year}, model = {i}, with parliament = {with_parliament}"
     if not data_loader.exists(path_1):
         st.write((f"processing year {year}"))
-        current_df = process_year_data(data_loader, year, models_w[i], with_parliament)
+        current_df = process_year_data(
+            data_loader, year, models_w[i], with_parliament
+        )
         data_loader.write_csv(current_df, path_1)
     else:
         st.write(f"{year} already processed")
@@ -347,7 +366,8 @@ def word_variations(
                 df2=current_df,
                 cos_axe=cos_axe,
             )
-        data_loader.write_csv(current_df,
+        data_loader.write_csv(
+            current_df,
             f"word analysis values/var embed real ; current year = {year}, previous year = {year-1}",
             index=False,
         )
@@ -355,7 +375,9 @@ def word_variations(
         st.write("All already computed..")
         current_df = data_loader.read_csv(path_3)
 
-    current_df = process_yearly_data(data_loader, current_df, year, with_parliament)
+    current_df = process_yearly_data(
+        data_loader, current_df, year, with_parliament
+    )
 
     return visualize_top_variations(
         current_df,

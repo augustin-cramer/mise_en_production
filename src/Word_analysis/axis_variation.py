@@ -230,7 +230,12 @@ axes_words = clean(tech + reg + pos + neg, "unigram")
 
 
 def axis_variation(
-    data_loader, axis, source=None, year=2013, number_of_words=30, with_parliament=True
+    data_loader,
+    axis,
+    source=None,
+    year=2013,
+    number_of_words=30,
+    with_parliament=True,
 ):
     """
     Computes and visualizes the words that define the poles of the axes most responsible for
