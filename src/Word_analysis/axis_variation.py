@@ -17,7 +17,7 @@ from ..Axes.models import instatiate_models_w
 warnings.filterwarnings("ignore")
 
 
-def process_embeddings(file_path):
+def process_embeddings(data_loader, file_path):
     """
     Processes embedding data from a specified file, normalizing by source counts.
 
@@ -28,7 +28,7 @@ def process_embeddings(file_path):
     - DataFrame: Processed DataFrame with normalized sentence embeddings.
     """
     # Load the data
-    df = standard_opening(file_path, False)
+    df = standard_opening(data_loader, file_path, False)
     # Transform the 'sentence_embedding' column
     df["sentence_embedding"] = (
         df["sentence_embedding"].apply(eval).apply(np.array, args=(float,))
@@ -230,7 +230,7 @@ axes_words = clean(tech + reg + pos + neg, "unigram")
 
 
 def axis_variation(
-    axis, source=None, year=2013, number_of_words=30, with_parliament=True
+    data_loader, axis, source=None, year=2013, number_of_words=30, with_parliament=True
 ):
     """
     Computes and visualizes the words that define the poles of the axes most responsible for
@@ -267,10 +267,10 @@ def axis_variation(
         file_path_2 = f"data/without parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
 
     dataframes = []
-    dataframes.append(process_embeddings(file_path_1))
-    dataframes.append(process_embeddings(file_path_2))
+    dataframes.append(process_embeddings(data_loader, file_path_1))
+    dataframes.append(process_embeddings(data_loader, file_path_2))
 
-    models_w = instatiate_models_w()
+    models_w = instatiate_models_w(data_loader)
     axes_words_embeddings = [
         [
             give_embed_anyway(word, models_w[i], axes_words)

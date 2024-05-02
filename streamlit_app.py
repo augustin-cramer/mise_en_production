@@ -51,7 +51,7 @@ def main():
 
     # Word Analysis Section
     elif analysis_type == "Word Analysis":
-        display_word_analysis()
+        display_word_analysis(data_loader)
 
 
 if __name__ == "__main__":

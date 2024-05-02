@@ -7,7 +7,7 @@ from src.Word_analysis.cluster_words import (
 )
 
 
-def display_word_analysis():
+def display_word_analysis(data_loader):
     # Word analysis part
     ###################################################################################################
     st.title("Word Analysis")
@@ -68,6 +68,7 @@ def display_word_analysis():
 
         if st.button("Generate graph"):
             fig = word_variations(
+                data_loader=data_loader,
                 year=year,
                 axis_1=first_axis,
                 axis_2=second_axis,
@@ -116,6 +117,7 @@ def display_word_analysis():
 
         if st.button("Generate graph"):
             fig = axis_variation(
+                data_loader=data_loader,
                 axis=axis,
                 source=source[0],
                 year=year,
@@ -237,6 +239,7 @@ def display_word_analysis():
         # Button to generate silhouette and sse
         if st.button("Generate silhouette and sse"):
             fig_1, fig_2, data, df_t = cluster_words_intermediate(
+                data_loader=data_loader,
                 year=year,
                 axis=1,
                 percentiles=percentiles,

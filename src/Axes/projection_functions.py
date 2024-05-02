@@ -205,7 +205,7 @@ def theme(keywords):
     return list(set(l))
 
 
-def txt_to_model_sentences(fichier: str):
+def txt_to_model_sentences(data_loader, fichier: str):
     """Takes a txt file of sentence embeddings and translates it to a word2vec model format
 
     Parameters:
@@ -214,16 +214,15 @@ def txt_to_model_sentences(fichier: str):
     """
     # glove_file_sentences = datapath(fichier)
     word2vec_glove_file_sentences = get_tmpfile("format_word2vec.text")
-    glove2word2vec(fichier, word2vec_glove_file_sentences)
-    with open(word2vec_glove_file_sentences, "r") as file:
-        data = file.readlines()
-        data[0] = str(len(data) - 1) + " 50\n"
-    with open(word2vec_glove_file_sentences, "w") as file:
-        file.writelines(data)
+    #glove2word2vec(fichier, word2vec_glove_file_sentences)
+    data_loader.glove2word2vec(fichier, word2vec_glove_file_sentences)
+    data = data_loader.read_txt(fichier)
+    data[0] = str(len(data) - 1) + " 50\n"
+    data_loader.write_txt(data, fichier)
     return KeyedVectors.load_word2vec_format(word2vec_glove_file_sentences)
 
 
-def txt_to_model_words(fichier: str):
+def txt_to_model_words(data_loader, fichier: str):
     """Takes a txt file of word embeddings and translates it to a word2vec model format
 
     Parameters:
@@ -232,23 +231,9 @@ def txt_to_model_words(fichier: str):
     """
     # glove_file_sentences = datapath(fichier)
     word2vec_glove_file_sentences = get_tmpfile("format_word2vec.text")
-    glove2word2vec(fichier, word2vec_glove_file_sentences)
+    #glove2word2vec(fichier, word2vec_glove_file_sentences)
+    data_loader.glove2word2vec(fichier, word2vec_glove_file_sentences)
     return KeyedVectors.load_word2vec_format(word2vec_glove_file_sentences)
-
-
-def open_to_project(path: str, year):
-    """Takes a csv dataframe and formats it in order to facilitate the following manipulations
-    Parameters:
-    -----------
-    path : the path to the csv dataframe
-    year : the year corresponding to the dataframe
-    """
-    df = dd.read_csv(path, assume_missing=True)
-    df = df.compute()
-    df["text"] = df["text"].map(ast.literal_eval)
-    df["year"] = year
-    df["text"] = df["text"].apply(phrase)
-    return df
 
 
 #####################################

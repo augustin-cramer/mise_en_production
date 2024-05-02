@@ -2,8 +2,6 @@
 the most responsible for the movement of the corpus towards 
 their respective pole"""
 
-import json
-import os
 import warnings
 from collections import Counter
 import plotly.graph_objects as go
@@ -20,12 +18,16 @@ from ..Axes.models import instatiate_models_w
 
 warnings.filterwarnings("ignore")
 
-
 events_keywordskeywords = list(set(clean(events_keywords, "unigram")))
 new_topics = list(set(clean(new_topics, "unigram")))
 
+def get_word_from_model_words_year(model_words_year, word):
+    try :
+        return model_words_year.get_vector(word)
+    except KeyError:
+        return 0
 
-def process_year_data(year, model_words_year, with_parliament=True):
+def process_year_data(data_loader, year, model_words_year, with_parliament=True):
     """
     Processes and computes word embeddings and their cosine
     similarities with axes for a specified year.
@@ -41,25 +43,19 @@ def process_year_data(year, model_words_year, with_parliament=True):
     """
 
     if with_parliament:
-        with open(f"data/with parliament/words/Finalwords_{year}.json") as f:
-            words_year = json.load(f)
+        words_year = data_loader.read_json(f"with_parliament/words/Finalwords_{year}.json")
     else:
-        with open(
-            f"data/without parliament/words/Finalwords_{year}_WP.json"
-        ) as f:
-            words_year = json.load(f)
+        words_year = data_loader.read_json(f"without_parliament/words/Finalwords_{year}_WP.json")
 
     weights_year = get_weights_word2vec(words_year, a=1e-3)
 
     if with_parliament:
-        with open(f"data/with parliament/vocabs/vocab_{year}.json") as f:
-            vocab_year = json.load(f)
+        vocab_year = data_loader.read_json(f"with_parliament/vocabs/vocab_{year}.json")
     else:
-        with open(f"data/without parliament/vocabs/vocab_{year}_WP.json") as f:
-            vocab_year = json.load(f)
+        vocab_year = data_loader.read_json(f"without_parliament/vocabs/vocab_{year}_WP.json")
 
     vocab_embed_year = [
-        weights_year.get(word, 0) * model_words_year.get(word, 0)
+        weights_year.get(word, 0) * get_word_from_model_words_year(model_words_year, word)
         for word in vocab_year
     ]
 
@@ -125,7 +121,7 @@ def is_in_keywords(word):
     return False
 
 
-def process_yearly_data(df, year, with_parliament=True):
+def process_yearly_data(data_loader, df, year, with_parliament=True):
     """
     Processes yearly data by loading specific word data and
     applying keyword filters.
@@ -142,13 +138,9 @@ def process_yearly_data(df, year, with_parliament=True):
     """
     # Load the words from the file
     if with_parliament:
-        with open(f"data/with parliament/words/Finalwords_{year}.json") as f:
-            words = json.load(f)
+        words = data_loader.read_json(f"with_parliament/words/Finalwords_{year}.json")
     if not with_parliament:
-        with open(
-            f"data/without parliament/words/Finalwords_{year}_WP.json"
-        ) as f:
-            words = json.load(f)
+        words = data_loader.read_json(f"without_parliament/words/Finalwords_{year}_WP.json")
 
     # Calculate word counts
     word_counts = Counter(words)
@@ -289,6 +281,7 @@ def visualize_top_variations(
 
 
 def word_variations(
+    data_loader,
     year,
     axis_1=1,
     axis_2=1,
@@ -317,57 +310,52 @@ def word_variations(
     Returns:
         plotly.graph_objects.Figure: A figure illustrating the variations in word embeddings across specified axes.
     """
-    models_w = instatiate_models_w()
+    models_w = instatiate_models_w(data_loader)
 
     if year > 2019:
         year += 18090  # Adjusting the year by adding 18090 to it if it's above 2019
     i = year % 10  # Getting the last digit of the year
 
     path_1 = f"word analysis values/processed yearly data ; year = {year}, model = {i}, with parliament = {with_parliament}"
-    if not os.path.exists(path_1):
+    if not data_loader.exists(path_1):
         st.write((f"processing year {year}"))
-        print(f"processing year {year}")
-        current_df = process_year_data(year, models_w[i], with_parliament)
-        current_df.to_csv(path_1, index=False)
+        current_df = process_year_data(data_loader, year, models_w[i], with_parliament)
+        data_loader.write_csv(current_df, path_1)
     else:
         st.write(f"{year} already processed")
-        print(f"{year} already processed")
-        current_df = pd.read_csv(path_1)
+        current_df = data_loader.read_csv(path_1)
 
     path_2 = f"word analysis values/processed yearly data ; year = {year-1}, model = {i-1}, with parliament = {with_parliament}"
-    if not os.path.exists(path_2):
+    if not data_loader.exists(path_2):
         st.write(f"processing year {year-1}")
-        print(f"processing year {year-1}")
         previous_df = process_year_data(
-            year - 1, models_w[i - 1], with_parliament
+            data_loader, year - 1, models_w[i - 1], with_parliament
         )
-        previous_df.to_csv(path_2, index=False)
+        data_loader.write_csv(previous_df, path_2)
     else:
         st.write(f"{year-1} already processed")
-        print(f"{year-1} already processed")
-        previous_df = pd.read_csv(path_2)
+        previous_df = data_loader.read_csv(path_2)
 
     path_3 = f"word analysis values/var embed real ; current year = {year}, previous year = {year-1}"
-    if not os.path.exists(path_3):
+    if not data_loader.exists(path_3):
         st.write("computing...")
         for cos_axe in ["cos axe 1", "cos axe 2"]:
             var_column_name = f"var {cos_axe}"
-            print(f"comuting var embed for {cos_axe}")
             current_df[var_column_name] = current_df["text"].apply(
                 var_embed_real,
                 df1=previous_df,
                 df2=current_df,
                 cos_axe=cos_axe,
             )
-        current_df.to_csv(
+        data_loader.write_csv(current_df,
             f"word analysis values/var embed real ; current year = {year}, previous year = {year-1}",
             index=False,
         )
     else:
         st.write("All already computed..")
-        current_df = pd.read_csv(path_3)
+        current_df = data_loader.read_csv(path_3)
 
-    current_df = process_yearly_data(current_df, year, with_parliament)
+    current_df = process_yearly_data(data_loader, current_df, year, with_parliament)
 
     return visualize_top_variations(
         current_df,
