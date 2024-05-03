@@ -9,12 +9,12 @@ from plotly.subplots import make_subplots
 import streamlit as st
 import pandas as pd
 
-from ..Axes.axes_definition import pos_1, neg_1, pos_2, neg_2
-from ..Axes.filter_words import events_keywords, new_topics
-from ..Processing.text_cleaning import clean
-from ..GloVe.weights import get_weights_word2vec
-from ..Axes.projection_functions import axis_vector, cosine_with_axis
-from ..Axes.models import instatiate_models_w
+from ..axes.axes_definition import pos_1, neg_1, pos_2, neg_2
+from ..axes.filter_words import events_keywords, new_topics
+from ..processing.text_cleaning import clean
+from ..glove.weights import get_weights_word2vec
+from ..axes.projection_functions import axis_vector, cosine_with_axis
+from ..axes.models import instatiate_models_w
 
 warnings.filterwarnings("ignore")
 
@@ -328,11 +328,11 @@ def word_variations(
         plotly.graph_objects.Figure: A figure illustrating the variations in word embeddings across specified axes.
     """
     models_w = instatiate_models_w(data_loader)
-    
+
     if year > 2019:
         year += 18090  # Adjusting the year by adding 18090 to it if it's above 2019
-        i = 10 + year%10
-    else :
+        i = 10 + year % 10
+    else:
         i = year % 10  # Getting the last digit of the year
 
     path_1 = f"word analysis values/processed yearly data ; year = {year}, model = {i}, with parliament = {with_parliament}"
@@ -370,7 +370,7 @@ def word_variations(
             )
         data_loader.write_csv(
             current_df,
-            f"word analysis values/var embed real ; current year = {year}, previous year = {year-1}"
+            f"word analysis values/var embed real ; current year = {year}, previous year = {year-1}",
         )
     else:
         st.write("All already computed..")

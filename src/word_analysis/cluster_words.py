@@ -1,12 +1,16 @@
 """Functions to perform the spectral clustering of a selectd 
-corpus, also using the functions in [`src/Clustering/`]"""
+corpus, also using the functions in [`src/clustering/`]"""
 
-import os
 import pandas as pd
 import numpy as np
 
-from ..Axes.projection_functions import txt_to_model_sentences
-from ..Clustering.clustering_spectral import *
+from ..axes.projection_functions import txt_to_model_sentences
+from ..clustering.clustering_spectral import (
+    plot_silhouette_and_sse,
+    plot_clusters_on_pc_spectral_3d,
+    visualize_main_words_in_clusters_TFIDF,
+    visualize_main_words_in_clusters_TFIDF_streamlit,
+)
 
 
 def get_quantiles(data, percentiles):
@@ -61,9 +65,12 @@ def cluster_words(
         data_loader,
         f"{str_parliament}_parliament/sentence_embeddings/sentence_embeddings_"
         + str(year)
-        + ".txt"
-        )
-    df_BT = data_loader.read_csv(f"{str_parliament}_parliament/current_dataframes/df_BT.csv", index_col=[0]).reset_index()
+        + ".txt",
+    )
+    df_BT = data_loader.read_csv(
+        f"{str_parliament}_parliament/current_dataframes/df_BT.csv",
+        index_col=[0],
+    ).reset_index()
 
     df_t = df_BT.loc[df_BT["year"] == year]
 
@@ -149,10 +156,12 @@ def cluster_words_intermediate(
         data_loader,
         f"{str_parliament}_parliament/sentence_embeddings/sentence_embeddings_"
         + str(year)
-        + ".txt"
-        )
-    df_BT = data_loader.read_csv(f"{str_parliament}_parliament/current_dataframes/df_BT.csv", index_col=[0]).reset_index()
-
+        + ".txt",
+    )
+    df_BT = data_loader.read_csv(
+        f"{str_parliament}_parliament/current_dataframes/df_BT.csv",
+        index_col=[0],
+    ).reset_index()
 
     df_t = df_BT.loc[df_BT["year"] == year]
 
@@ -184,15 +193,6 @@ def cluster_words_intermediate(
 
     embeds_list = [model_sentences[sentence] for sentence in df_t["text"]]
     data = np.array(embeds_list)
-
-    # Ask the user for the number of clusters
-    """try:
-        n_clusters = int(
-            input("Enter the number of clusters you want to use: ")
-        )
-    except ValueError:
-        print("Invalid number, using a default value of 5 clusters.")
-        n_clusters = 5  # Default value if the user input is not valid"""
 
     fig_1, fig_2 = plot_silhouette_and_sse(11, data)
 

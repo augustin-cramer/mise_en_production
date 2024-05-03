@@ -124,6 +124,12 @@ the project's capabilities and explaining the parameters.
 ### `src/`
 
 - The source code for the core functionality of the project.
+  
+  - [`src/processing/`](src/processing/): All the functions linked use to filter texts on the theme of BigTechs, and text cleaning functions. The `clean()` function is called many times in the project in order to clean uniformally newcoming texts.
+
+  - [`src/GloVe/`](src/GloVe/): 
+    - [`glove_functs.py`](src/GloVe/glove_functs.py) contains the main functions to perform the computation of the cooccurrence matric then the training of the GloVe model.
+    - [`weights.py`](src/GloVe/weights.py) contains the functions to compute the weighting of embeddings inside a document in order to get the document general embedding.
 
   - [`src/Axes/`](src/Axes/): This folder builds all the functions relative to the definition of the axes we want to look at and the projection of embeddings on them.
     - [`axes_definition.py`](src/Axes/axes_definition.py) : Here you can find and modify the list of words defining the poles of the axes.

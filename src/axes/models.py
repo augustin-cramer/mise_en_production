@@ -1,7 +1,7 @@
 """This script loads the embeddings from text format 
 into word2vec format, which is much more manipulable."""
 
-from ..Axes.projection_functions import txt_to_model_words
+from ..axes.projection_functions import txt_to_model_words
 
 import warnings
 
