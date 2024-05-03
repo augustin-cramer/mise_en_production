@@ -16,7 +16,7 @@ from mittens import Mittens
 import psutil
 from tqdm import tqdm
 
-from ..Processing.text_cleaning import clean
+from ..processing.text_cleaning import clean
 
 
 def vocab_dic(fichier):

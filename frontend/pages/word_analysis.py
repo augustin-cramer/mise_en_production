@@ -1,7 +1,7 @@
 import streamlit as st
-from src.Word_analysis.words_variation import word_variations
-from src.Word_analysis.axis_variation import axis_variation
-from src.Word_analysis.cluster_words import (
+from src.word_analysis.words_variation import word_variations
+from src.word_analysis.axis_variation import axis_variation
+from src.word_analysis.cluster_words import (
     cluster_words_intermediate,
     display_clusters,
 )
@@ -14,7 +14,10 @@ def display_word_analysis(data_loader):
 
     type_of_analysis = st.multiselect(
         "Select the type of words analysis you want",
-        ["Embeddings variation", "Axis variation", "Spectral Clustering"],
+        [
+            "Embeddings variation",
+            "Axis variation",
+        ],  # "Spectral clustering"], disabled for now
         max_selections=1,
     )
 
@@ -128,7 +131,7 @@ def display_word_analysis(data_loader):
 
     # Spectral clustering
     ###################################################################################################
-    if type_of_analysis == ["Spectral Clustering"]:
+    if type_of_analysis == ["Spectral clustering"]:
         with_parliament = st.checkbox("With Parliament")
 
         with st.expander("Embeddings Variation", expanded=True):

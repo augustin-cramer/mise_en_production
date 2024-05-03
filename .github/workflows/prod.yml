@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - 'main'
-      - 'augustin/make_modules'
-      - 'augustin/make_secret_config'
 
 jobs:
   docker:

@@ -2,9 +2,8 @@
 
 import pandas as pd
 import numpy as np
-from sklearn.cluster import SpectralClustering
 from sklearn.metrics import silhouette_score
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, SpectralClustering
 from sklearn.decomposition import PCA
 from sklearn.feature_extraction.text import TfidfVectorizer
 import plotly.graph_objects as go
@@ -90,68 +89,9 @@ def sse_scaler_(k_rng, data):
     return fig
 
 
-def plot_clusters_on_pc_spectral(number_of_clusters, data):
-    """
-    Perform Spectral Clustering and visualize the clusters in 2D using PCA.
-
-    This function applies Spectral Clustering to the dataset and uses PCA to reduce
-    the dimensionality of the data to two principal components for visualization purposes.
-    The resulting clusters are then plotted in a 2D scatter plot.
-
-    Parameters:
-    - number_of_clusters (int): The number of clusters to generate.
-    - data (array-like): The dataset to be clustered and visualized.
-    """
-    model = SpectralClustering(
-        n_clusters=number_of_clusters,
-        assign_labels="discretize",
-        random_state=0,
-        affinity="nearest_neighbors",
-        n_neighbors=10,
-    )
-    model.fit(data.astype("double"))
-    pc = PCA(n_components=2).fit_transform(data)
-    label = model.fit_predict(data.astype("double"))
-
-    df_pc = pd.DataFrame(zip(pc.T[0].tolist(), pc.T[1].tolist(), label))
-    fig = px.scatter(df_pc, x=0, y=1, color=2)
-    return fig
-
-
-def plot_clusters_on_pc_kmeans(number_of_clusters, data):
-    """
-    Performs K-means clustering on the provided dataset and visualizes the clusters using PCA for dimension reduction.
-
-    This function applies K-means clustering to the dataset and reduces the dimensionality of the data to two principal components using PCA. It then plots the first two principal components and colors the points according to their cluster assignment.
-
-    Parameters:
-    - number_of_clusters (int): The number of clusters to form as well as the number of centroids to generate.
-    - data (np.ndarray or pd.DataFrame): Data on which clustering and PCA will be performed. Data should be numeric.
-
-    Returns:
-    - plotly.graph_objs._figure.Figure: A Plotly scatter plot figure with points colored based on their cluster assignments. The x and y axes represent the first and second principal components, respectively.
-
-    Notes:
-    - The function assumes data can be converted to type 'double' for numerical precision in calculations.
-    - 'n_init' parameter in KMeans is set to 4, which means the K-means algorithm will run with different centroid seeds four times, and the final results will be the best output of those runs in terms of inertia.
-    """
-    nbr_clusters = number_of_clusters
-    kmeans = KMeans(init="k-means++", n_clusters=nbr_clusters, n_init=4)
-    kmeans.fit(data.astype("double"))
-    pc = PCA(n_components=2).fit_transform(data)
-    # pc = data
-    # label = kmeans.fit_predict(pc)
-    label = kmeans.fit_predict(data.astype("double"))
-
-    df_pc = pd.DataFrame(zip(pc.T[0].tolist(), pc.T[1].tolist(), label))
-
-    fig = px.scatter(df_pc, x=0, y=1, color=2)
-    return fig
-
-
 def plot_clusters_on_pc_spectral_3d(number_of_clusters, data, marker_size=0.5):
     """
-    Perform Spectral Clustering and visualize the clusters in 3D using PCA.
+    Perform Spectral clustering and visualize the clusters in 3D using PCA.
 
     Parameters:
     - number_of_clusters (int): The number of clusters to generate.

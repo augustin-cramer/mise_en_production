@@ -1,1 +1,1 @@
-from .Axes import *
+from .axes import *

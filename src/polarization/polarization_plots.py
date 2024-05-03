@@ -12,9 +12,9 @@ import plotly.graph_objects as go
 import streamlit as st
 
 
-from ..Polarization.polarization_functions import compute_polarization_and_CI
-from ..Axes.projection_functions import df_BT
-from ..GloVe.weights import standard_opening
+from ..polarization.polarization_functions import compute_polarization_and_CI
+from ..axes.projection_functions import df_BT
+from ..glove.weights import standard_opening
 
 
 def print_with_timestamp(message):

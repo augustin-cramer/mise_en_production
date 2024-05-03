@@ -7,8 +7,8 @@ import plotly.graph_objects as go
 import streamlit as st
 import pandas as pd
 
-from ..Polarization.polarization_plots import choose_pol
-from ..Axes.bootstraping import bootstrap
+from ..polarization.polarization_plots import choose_pol
+from ..axes.bootstraping import bootstrap
 
 
 # Define a function to translate newspaper source to party

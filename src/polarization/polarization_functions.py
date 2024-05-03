@@ -6,7 +6,6 @@ from __future__ import division
 from collections import Counter
 import sys
 import gc
-import json
 import random
 import math
 import scipy.sparse as sp
