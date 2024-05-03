@@ -15,6 +15,7 @@ from frontend.static.style import improve_style
 BUCKET = "nfarhan/diffusion/mise_en_production/"
 
 try:
+    st.write(os.environ)
     fs = s3fs.S3FileSystem(
         client_kwargs={"endpoint_url": os.environ.get("ENDPOINT_URL")},
         key=os.environ.get("S3_KEY"),
