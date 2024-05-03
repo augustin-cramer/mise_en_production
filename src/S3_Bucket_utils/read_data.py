@@ -91,6 +91,9 @@ def write_csv_bucket(_connection, df, file_path_s3):
         df (DataFrame): The DataFrame to be written to a CSV file.
         file_path_s3 (str): Path to the CSV file in the object storage system.
     """
+    _connection["fs"].makedirs(
+        os.path.dirname(_connection["bucket"] + file_path_s3), exist_ok=True
+    )
     with _connection["fs"].open(
         _connection["bucket"] + file_path_s3, "w"
     ) as file_out:
@@ -106,6 +109,9 @@ def write_txt_bucket(_connection, text, file_path_s3):
         text (str): The text to be written to a text file.
         file_path_s3 (str): Path to the text file in the object storage system.
     """
+    _connection["fs"].makedirs(
+        os.path.dirname(_connection["bucket"] + file_path_s3), exist_ok=True
+    )
     with _connection["fs"].open(
         _connection["bucket"] + file_path_s3, "w"
     ) as file_out:
@@ -159,12 +165,14 @@ class DataLoader:
         if self.from_s3:
             write_csv_bucket(self.connection, df, file_path)
         else:
+            os.makedirs(os.path.dirname("data/" + file_path), exist_ok=True)
             df.to_csv("data/" + file_path, index=False)
 
     def write_txt(self, text, file_path):
         if self.from_s3:
             write_txt_bucket(self.connection, text, file_path)
         else:
+            os.makedirs(os.path.dirname("data/" + file_path), exist_ok=True)
             with open("data/" + file_path, "w") as file:
                 file.write(text)
 
