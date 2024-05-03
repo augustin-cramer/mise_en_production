@@ -379,9 +379,9 @@ def choose_pol(
     for company in companies:
         # Convert the company's metrics into a DataFrame and save to CSV
         df_pol_BT[company] = pd.DataFrame(values_by_company[company])
-        df_pol_BT[company].to_csv(
+        data_loader.write_csv(
+            df_pol_BT[company],
             f"polarization values/Polarization between {left_side} VS {right_side} ; axis = {axis}, companies = {company}, percentiles = {percentiles}, with parliament = {with_parliament}.csv",
-            index=False,
         )
 
         # Extract polarization metrics for plotting

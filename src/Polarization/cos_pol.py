@@ -99,9 +99,7 @@ def draw_cos_pol(
         raise ValueError("It only works on an axis")
 
     companies = "all"
-    str_parliament = (
-        "with parliament" if with_parliament else "without parliament"
-    )
+    str_parliament = "with" if with_parliament else "without"
 
     sources = left_side + right_side
 
