@@ -89,7 +89,6 @@ def sse_scaler_(k_rng, data):
     return fig
 
 
-
 def plot_clusters_on_pc_spectral_3d(number_of_clusters, data, marker_size=0.5):
     """
     Perform Spectral clustering and visualize the clusters in 3D using PCA.

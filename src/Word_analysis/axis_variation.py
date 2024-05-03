@@ -11,7 +11,16 @@ import pandas as pd
 from ..glove.weights import standard_opening
 from ..axes.projection_functions import filter_model, barycentre
 from ..processing.text_cleaning import clean
-from ..axes.axes_definition import tech, reg, pos, neg, pos_1, neg_1, pos_2, neg_2
+from ..axes.axes_definition import (
+    tech,
+    reg,
+    pos,
+    neg,
+    pos_1,
+    neg_1,
+    pos_2,
+    neg_2,
+)
 from ..axes.models import instatiate_models_w
 
 warnings.filterwarnings("ignore")
@@ -262,7 +271,7 @@ def axis_variation(
 
     if year_plus1 == 20110:
         year = 2019
-    
+
     str_parliament = "with" if with_parliament else "without"
     file_path_1 = f"{str_parliament}_parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
     file_path_2 = f"{str_parliament}_parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"

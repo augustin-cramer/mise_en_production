@@ -5,7 +5,12 @@ import pandas as pd
 import numpy as np
 
 from ..axes.projection_functions import txt_to_model_sentences
-from ..clustering.clustering_spectral import plot_silhouette_and_sse, plot_clusters_on_pc_spectral_3d, visualize_main_words_in_clusters_TFIDF, visualize_main_words_in_clusters_TFIDF_streamlit
+from ..clustering.clustering_spectral import (
+    plot_silhouette_and_sse,
+    plot_clusters_on_pc_spectral_3d,
+    visualize_main_words_in_clusters_TFIDF,
+    visualize_main_words_in_clusters_TFIDF_streamlit,
+)
 
 
 def get_quantiles(data, percentiles):
@@ -60,9 +65,12 @@ def cluster_words(
         data_loader,
         f"{str_parliament}_parliament/sentence_embeddings/sentence_embeddings_"
         + str(year)
-        + ".txt"
-        )
-    df_BT = data_loader.read_csv(f"{str_parliament}_parliament/current_dataframes/df_BT.csv", index_col=[0]).reset_index()
+        + ".txt",
+    )
+    df_BT = data_loader.read_csv(
+        f"{str_parliament}_parliament/current_dataframes/df_BT.csv",
+        index_col=[0],
+    ).reset_index()
 
     df_t = df_BT.loc[df_BT["year"] == year]
 
@@ -148,10 +156,12 @@ def cluster_words_intermediate(
         data_loader,
         f"{str_parliament}_parliament/sentence_embeddings/sentence_embeddings_"
         + str(year)
-        + ".txt"
-        )
-    df_BT = data_loader.read_csv(f"{str_parliament}_parliament/current_dataframes/df_BT.csv", index_col=[0]).reset_index()
-
+        + ".txt",
+    )
+    df_BT = data_loader.read_csv(
+        f"{str_parliament}_parliament/current_dataframes/df_BT.csv",
+        index_col=[0],
+    ).reset_index()
 
     df_t = df_BT.loc[df_BT["year"] == year]
 

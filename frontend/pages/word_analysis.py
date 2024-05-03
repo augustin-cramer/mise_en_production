@@ -14,7 +14,10 @@ def display_word_analysis(data_loader):
 
     type_of_analysis = st.multiselect(
         "Select the type of words analysis you want",
-        ["Embeddings variation", "Axis variation"], #"Spectral clustering"], disabled for now
+        [
+            "Embeddings variation",
+            "Axis variation",
+        ],  # "Spectral clustering"], disabled for now
         max_selections=1,
     )
 
