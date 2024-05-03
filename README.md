@@ -1,3 +1,5 @@
+Augustin : "dans le readme tu peux dire qu'on fait du CI / CD, qu'on utilise des secrets et qu'on a mis du caching pour éviter d'avoir à charger les données plusieurs fois en voulant générer un graphe"
+
 # Mise en production
 
 This project explores techniques described in recent scholarly papers and adapts them to analyze public opinion about BigTech companies in the UK. Our aim is to develop robust analysis tools tailored to this specific context. Specifically, the tools of the project are inspired by :
@@ -30,6 +32,20 @@ Our analysis tools are built upon a dense and balanced database of relevant text
     - *The Daily Mail*
     - *The Daily Express*
     - *Metro*
+
+</details>
+
+<details>
+<summary><strong>Approach</strong></summary>
+<br>
+
+We adapt methodologies from referenced papers to suit the topic of public opinion on BigTechs in the UK, enhancing our ability to derive insightful analytics from textual data.
+                
+We trained a GloVe model on the database, and we defined simple and relevant axes in the embeddings space. The axes defined aim to have a global feel of the opinion from the media and the politicians regarding tech companies. 
+            
+The two axes we work with are :
+- Axis 1 : a positive pole formed of words describing economic technologic laisser-faire, and a negative pole formed of words describing more regulation. 
+- Axis 2 : a positive pole with positive words, and a negative pole with negative words.
 
 </details>
 
@@ -77,6 +93,32 @@ pip install -r requirements.txt
 ## Project Structure
 
 This section provides a detailed overview of the project's directory and file structure, explaining the purpose and contents of each part.
+
+```bash
+├── Dockerfile
+├── LICENSE
+├── README.md
+├── S3_config.yml
+├── demo.ipynb
+├── deployment
+│   ├── deployment.yaml
+│   ├── ingress.yaml
+│   └── service.yaml
+├── requirements.txt
+├── src
+│   ├── Axes
+│   ├── Clustering
+│   ├── GloVe
+│   ├── Polarization
+│   ├── Processing
+│   ├── S3_Bucket_utils
+│   ├── Word_analysis
+│   ├── __init__.py
+│   └── __pycache__
+└── streamlit_app.py
+``````
+
+### Detailed structure and scripts utility : 
 
 <details>
 <summary><strong>src</strong></summary>
