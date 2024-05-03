@@ -143,7 +143,7 @@ class DataLoader:
             return read_txt_bucket(self.connection, file_path)
         else:
             with open("data/" + file_path) as file:
-                return file.read()
+                return file.readlines()
 
     def read_npz(self, file_path):
         if self.from_s3:
@@ -174,7 +174,7 @@ class DataLoader:
         else:
             os.makedirs(os.path.dirname("data/" + file_path), exist_ok=True)
             with open("data/" + file_path, "w") as file:
-                file.write(text)
+                file.writelines(text)
 
     def glove2word2vec(self, file_path, word2vec_glove_file_sentences):
         if self.from_s3:
@@ -183,7 +183,7 @@ class DataLoader:
             with open("data/" + file_path, "w") as file:
                 file.writelines(text)
             glove2word2vec(
-                self.connection["bucket"] + file_path,
+                "data/" + file_path,
                 word2vec_glove_file_sentences,
             )
         else:

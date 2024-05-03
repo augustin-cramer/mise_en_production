@@ -216,9 +216,11 @@ def txt_to_model_sentences(data_loader, fichier: str):
     word2vec_glove_file_sentences = get_tmpfile("format_word2vec.text")
     # glove2word2vec(fichier, word2vec_glove_file_sentences)
     data_loader.glove2word2vec(fichier, word2vec_glove_file_sentences)
-    data = data_loader.read_txt(fichier)
+    with open("data/" + fichier, "r") as file:
+        data = file.readlines(fichier)
     data[0] = str(len(data) - 1) + " 50\n"
-    data_loader.write_txt(data, fichier)
+    with open("data/" + fichier, "w") as file:
+        file.writelines(data)
     return KeyedVectors.load_word2vec_format(word2vec_glove_file_sentences)
 
 
