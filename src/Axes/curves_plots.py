@@ -1,12 +1,10 @@
 """Builds the main function to plot the cosine between selected sources and axis, with multple parameters available."""
-
+import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 import plotly.graph_objects as go
 
-from ..s3_bucket_utils.read_data import read_csv_bucket
-from ..axes.projection_functions import *
-from ..axes.bootstraping import *
+from ..axes.bootstraping import bootstrap
 
 
 def format_year(integer):

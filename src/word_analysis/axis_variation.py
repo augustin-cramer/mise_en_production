@@ -11,7 +11,7 @@ import pandas as pd
 from ..glove.weights import standard_opening
 from ..axes.projection_functions import filter_model, barycentre
 from ..processing.text_cleaning import clean
-from ..axes.axes_definition import *
+from ..axes.axes_definition import tech, reg, pos, neg, pos_1, neg_1, pos_2, neg_2
 from ..axes.models import instatiate_models_w
 
 warnings.filterwarnings("ignore")

@@ -1,8 +1,8 @@
-import pandas as pd
 import json
+import os
+import pandas as pd
 from scipy import sparse
 import streamlit as st
-import os
 from gensim.scripts.glove2word2vec import glove2word2vec
 
 

@@ -1,18 +1,18 @@
 """The `clean()` function is called many times in the project 
 in order to clean uniformally newcoming texts"""
-
 import string
 import re
 import nltk
 import pandas as pd
 
-nltk.download("stopwords")
-nltk.download("punkt")
 from nltk.tokenize import word_tokenize
 from nltk.stem.snowball import SnowballStemmer
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 
+
+nltk.download("stopwords")
+nltk.download("punkt")
 stemmer = SnowballStemmer(language="english")
 english_stopwords = set(stopwords.words("english"))
 

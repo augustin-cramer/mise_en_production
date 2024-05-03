@@ -1,6 +1,5 @@
 import streamlit as st
 
-# from src.word_analysis.cluster_words import *
 from src.polarization.polarization_plots import choose_pol
 from src.axes.curves_plots import choose_projection_cos
 from src.polarization.cos_pol import draw_cos_pol
