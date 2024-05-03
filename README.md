@@ -1,5 +1,62 @@
 # Mise en production
 
+This project explores techniques described in recent scholarly papers and adapts them to analyze public opinion about BigTech companies in the UK. Our aim is to develop robust analysis tools tailored to this specific context. Specifically, the tools of the project are inspired by :
+
+- [Gentzkow, Matthew, Jesse M. Shapiro, and Matt Taddy](https://scholar.harvard.edu/shapiro/publications/measuring-group-differences-high-dimensional-choices-method-and-application)
+- [Dorottya Demszky, Nikhil Garg, Rob Voigt, James Zou, Matthew Gentzkow, Jesse Shapiro, Dan Jurafsky](https://arxiv.org/abs/1904.01596)
+- [Austin C. Kozlowski, Matt Taddy, James A. Evans](https://arxiv.org/abs/1803.09288)
+
+## Overview
+
+<details>
+<summary><strong>Objective</strong></summary>
+<br>
+
+The primary goal is to devise methods that can:
+- Track positions of newspapers and political parties on specific issues.
+- Identify words and phrases that are most indicative of their stance on BigTechs.
+
+</details>
+
+<details>
+<summary><strong>Data Sources</strong></summary>
+<br>
+
+Our analysis tools are built upon a dense and balanced database of relevant texts, which includes:
+- Speeches from the House of Commons related to BigTechs, spanning from 2010 to 2019.
+- Articles from five major British newspapers covering the same theme from 2010 to 2023:
+    - *The Guardian*
+    - *The Telegraph*
+    - *The Daily Mail*
+    - *The Daily Express*
+    - *Metro*
+
+</details>
+
+<details>
+<summary><strong>The two main parts</strong></summary>
+<br>
+
+#### Curves analysis 
+
+In this part we can visualize, given some filtering arguments, 2 types of curves :
+- The curves of cosine similarity of the embeddings of different corpuses with the axes.
+- The curves of polarization between two different corpuses. 
+
+We can also visualize them both on the same graphs, for the same sources and axis.
+            
+#### Words analysis
+
+In this part we can visualize, given some filtering arguments, 3 types of measures :
+- The words with projected embeddings on an axis that are varying the most between two years.
+- The words that define the poles of the axes that are the most responsible for attracting the corpus towards them between two years.
+- A spectral clustering of the words embeddings of words in filtered corpuses.
+
+
+</details>
+    
+
+
 ## Data
 
 For now, the data can be found in https://drive.google.com/drive/folders/1OG0NaPqlbzNlvG83L0LQMMVsw8jftEsz
@@ -21,15 +78,6 @@ pip install -r requirements.txt
 
 This section provides a detailed overview of the project's directory and file structure, explaining the purpose and contents of each part.
 
-<details>
-<summary><strong>webscraping</strong></summary>
-<br>
-
-### `webscraping/`
-
-- Scripts designed to extract data from the web, facilitating the data collection process for analysis. They can be viewed as an inspiration for future webscrapping, as they will be very hard to use again. 
-
-</details>
 <details>
 <summary><strong>src</strong></summary>
 
@@ -60,55 +108,12 @@ This section provides a detailed overview of the project's directory and file st
     - [`axis_variation.py`](src/Word_analysis/axis_variation.py): Functions to look at the words in the poles which are the most responsible for the movement of the corpus towards their respective pole. 
     - [`cluster_words.py`](src/Word_analysis/cluster_words.py): main function to perform the spectral clustering of a selectd corpus, also using the functions in [`src/Clustering/`](src/Clustering/).
 
+  - [`src/S3_Bucket_utils`](src/S3_Bucket_utils):
+    - [`read_data.py`](src/S3_Bucket_utils/read_data.py): 
+
 
 </details>
-<details>
-<summary><strong>processing</strong></summary>
 
-### `processing/`
-
-This folder contains the three notebooks that we use to clean and filter our corpus, and also get the entire vocabulary of our corpus. 
-
-</details>
-<details>
-<summary><strong>notebooks</strong></summary>
-
-### `notebooks/`
-
-This folder is where we can visualize all our results and do our manipulations. 
-
-- [`glove model/`](notebooks/glove%20model/):
-  - [`__main__.ipynb`](notebooks/glove%20model/__main__.ipynb): The notebook is where we can launch the computation of the cooccurence matrix, the training of the GloVe model and the formation of document embeddings. 
-
-- [`define axes/`](notebooks/define%20axes/):
-  - [`axes_definition.ipynb`](notebooks/define%20axes/axes_definition.ipynb): This notebook launches the definition of axes, the computation of cosines between the corpus and the axes and the filtering with respect to the BigTechs. 
-
-- [`cosine similarity curves/`](notebooks/cosine%20similarity%20curves/):
-  - [`curves.ipynb`](notebooks/cosine%20similarity%20curves/curves.ipynb): The main notebook where we can visualize the evolution of cosine similarity between a corpus and an axis, given multiple variables. 
-
-- [`polarization/`](notebooks/polarization/):
-  - [`curves.ipynb`](notebooks/polarization/curves.ipynb): The main notebook to visualize the evolution of the polarization between two sources, given multiple variables, and also compared to the evolution of the cosine similarity on an axis during the same period. 
-  - [`polarized_words.ipyn`](notebooks/polarization/polarized_words.ipynb): The notebook to vizualize the most partisan words every year. 
-
-- [`word analysis/`](notebooks/word%20analysis/): Here you can perform all the linguistic analysis built in [`src/Word_analysis/`](src/Word_analysis/) in order to explain the variation on the preceeding curves. 
-
-</details>
-<details>
-<summary><strong>plots</strong></summary>
-
-### `plots/`
-
-- This directory houses all graphical outputs generated by the project.
-
-</details>
-<details>
-<summary><strong>data</strong></summary>
-
-### `data/`
-
-- This directory houses all the inputs used by the project.
-
-</details>
 <details>
 <summary><strong>main notebook</strong></summary>
 
@@ -117,9 +122,3 @@ This folder is where we can visualize all our results and do our manipulations.
 The main notebook to use in order to easily access all the different analysis at the place, and play with the different parameters. This is where all the parameters of the main functions are explained. 
 
 </details>
-
-## How to proceed to a new GloVe training ? 
-
-- Start from your dataframes.
-- Clean them, filter them and convert them to vocabulary with the notebooks in [`processing`](processing).
-- Compute the cooccurence matrix, train your model and form document embeddings in [`glove model/`](notebooks/glove%20model/). 

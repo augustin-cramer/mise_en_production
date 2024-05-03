@@ -57,10 +57,7 @@ def process_year_data(year, model_words_year, with_parliament=True):
         with open(f"data/without parliament/vocabs/vocab_{year}_WP.json") as f:
             vocab_year = json.load(f)
 
-    vocab_embed_year = [
-        weights_year.get(word, 0) * model_words_year.get(word, 0)
-        for word in vocab_year
-    ]
+    vocab_embed_year = [weights_year[i] * model_words_year[i] for i in vocab_year]
 
     df_words_year = pd.DataFrame(
         zip(vocab_year, vocab_embed_year), columns=["text", "embedding"]
@@ -318,7 +315,11 @@ def word_variations(
     """
     if year > 2019:
         year += 18090  # Adjusting the year by adding 18090 to it if it's above 2019
-    i = year % 10  # Getting the last digit of the year
+        i = 10 + year%10
+    else :
+        i = year % 10  # Getting the last digit of the year
+
+    print(i)
 
     path_1 = f"word analysis values/processed yearly data ; year = {year}, model = {i}, with parliament = {with_parliament}"
     if not os.path.exists(path_1):
