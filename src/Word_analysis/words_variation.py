@@ -370,8 +370,7 @@ def word_variations(
             )
         data_loader.write_csv(
             current_df,
-            f"word analysis values/var embed real ; current year = {year}, previous year = {year-1}",
-            index=False,
+            f"word analysis values/var embed real ; current year = {year}, previous year = {year-1}"
         )
     else:
         st.write("All already computed..")
