@@ -23,7 +23,9 @@ try:
     )
     fs.ls(BUCKET)
     connection = {"fs": fs, "bucket": BUCKET}
-except:
+except Exception as e:
+    st.write("Couldn't to S3 bucket")
+    st.write(e)
     connection = None
 
 data_loader = DataLoader(connection)
