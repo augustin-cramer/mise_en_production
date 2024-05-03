@@ -109,7 +109,7 @@ def display_description():
                     
                     year = 2016
 
-        #### Axes
+        #### axes
         - The axes considered for each of the subplots. For example :
                     
                     first_axis = 1

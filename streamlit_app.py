@@ -4,7 +4,7 @@ import streamlit as st
 import os
 import s3fs
 
-from src.S3_Bucket_utils.read_data import DataLoader
+from src.s3_bucket_utils.read_data import DataLoader
 
 from frontend.pages.home import display_home
 from frontend.pages.description import display_description

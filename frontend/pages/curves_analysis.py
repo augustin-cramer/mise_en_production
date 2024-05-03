@@ -1,9 +1,9 @@
 import streamlit as st
 
-# from src.Word_analysis.cluster_words import *
-from src.Polarization.polarization_plots import choose_pol
-from src.Axes.curves_plots import choose_projection_cos
-from src.Polarization.cos_pol import draw_cos_pol
+# from src.word_analysis.cluster_words import *
+from src.polarization.polarization_plots import choose_pol
+from src.axes.curves_plots import choose_projection_cos
+from src.polarization.cos_pol import draw_cos_pol
 
 
 def display_curves_analysis(data_loader):
