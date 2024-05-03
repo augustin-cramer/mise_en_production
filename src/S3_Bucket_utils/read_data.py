@@ -7,7 +7,7 @@ from gensim.scripts.glove2word2vec import glove2word2vec
 
 
 @st.cache_data
-def read_csv_bucket(_connection, file_path_s3):
+def read_csv_bucket(_connection, file_path_s3, **kwargs):
     """
     Reads a CSV file from an object storage system.
 
@@ -21,7 +21,7 @@ def read_csv_bucket(_connection, file_path_s3):
     with _connection["fs"].open(
         _connection["bucket"] + file_path_s3, mode="r"
     ) as file_in:
-        df = pd.read_csv(file_in, sep=",")
+        df = pd.read_csv(file_in, sep=",", **kwargs)
     return df
 
 
@@ -170,9 +170,21 @@ class DataLoader:
 
     def glove2word2vec(self, file_path, word2vec_glove_file_sentences):
         if self.from_s3:
+            with self.connection["fs"].open(self.connection["bucket"] + file_path, mode='r') as f:
+                text_content = f.read()
+
+            local_file_path = 'local_file.txt' 
+            try:
+                os.remove(local_file_path)
+            except:
+                pass
+            with open(local_file_path, mode="w") as file_out:
+                file_out.write(text_content)
             glove2word2vec(
-                self.connection["bucket"] + file_path,
+                local_file_path,
                 word2vec_glove_file_sentences,
             )
+            print('embeddings file opened')
+            
         else:
             glove2word2vec("data/" + file_path, word2vec_glove_file_sentences)
