@@ -7,7 +7,7 @@ from gensim.scripts.glove2word2vec import glove2word2vec
 
 
 @st.cache_data
-def read_csv_bucket(_connection, file_path_s3):
+def read_csv_bucket(_connection, file_path_s3, **kwargs):
     """
     Reads a CSV file from an object storage system.
 
@@ -21,7 +21,7 @@ def read_csv_bucket(_connection, file_path_s3):
     with _connection["fs"].open(
         _connection["bucket"] + file_path_s3, mode="r"
     ) as file_in:
-        df = pd.read_csv(file_in, sep=",")
+        df = pd.read_csv(file_in, sep=",", **kwargs)
     return df
 
 
