@@ -179,7 +179,7 @@ class DataLoader:
     def glove2word2vec(self, file_path, word2vec_glove_file_sentences):
         if self.from_s3:
             os.makedirs(os.path.dirname("data/" + file_path), exist_ok=True)
-            text = self.read_txt(self.connection["bucket"] + file_path)
+            text = self.read_txt(file_path)
             with open("data/" + file_path, "w") as file:
                 file.writelines(text)
             glove2word2vec(
