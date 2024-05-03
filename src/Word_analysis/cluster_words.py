@@ -9,22 +9,6 @@ from ..Axes.projection_functions import txt_to_model_sentences
 from ..Clustering.clustering_spectral import *
 
 
-# to clean out
-def load_df_BT_p():
-    df_BT_p = pd.read_csv(
-        "data/with parliament/current_dataframes/df_BT.csv", index_col=[0]
-    ).reset_index()
-    return df_BT_p
-
-
-# to clean out
-def load_df_BT_wp():
-    df_BT_wp = pd.read_csv(
-        "data/without parliament/current_dataframes/df_BT.csv", index_col=[0]
-    ).reset_index()
-    return df_BT_wp
-
-
 def get_quantiles(data, percentiles):
     """
     Calculates quantiles for specified percentiles from given data.
@@ -40,6 +24,7 @@ def get_quantiles(data, percentiles):
 
 
 def cluster_words(
+    data_loader,
     year,
     axis,
     left_threshold=None,
@@ -71,20 +56,14 @@ def cluster_words(
         year = year + 18090
     i = eval(str(year)[-1:])
 
-    if with_parliament:
-        df_BT = load_df_BT_p()
-        model_sentences = txt_to_model_sentences(
-            "data/with parliament/sentence_embeddings/sentence_embeddings_"
-            + str(year)
-            + ".txt"
+    str_parliament = "with" if with_parliament else "without"
+    model_sentences = txt_to_model_sentences(
+        data_loader,
+        f"{str_parliament}_parliament/sentence_embeddings/sentence_embeddings_"
+        + str(year)
+        + ".txt"
         )
-    if not with_parliament:
-        df_BT = load_df_BT_wp()
-        model_sentences = txt_to_model_sentences(
-            "data/without parliament/sentence_embeddings/sentence_embeddings_"
-            + str(year)
-            + ".txt"
-        )
+    df_BT = data_loader.read_csv(f"{str_parliament}_parliament/current_dataframes/df_BT.csv", index_col=[0]).reset_index()
 
     df_t = df_BT.loc[df_BT["year"] == year]
 
@@ -135,6 +114,7 @@ def cluster_words(
 
 
 def cluster_words_intermediate(
+    data_loader,
     year,
     axis,
     left_threshold=None,
@@ -164,20 +144,15 @@ def cluster_words_intermediate(
         year = year + 18090
     i = eval(str(year)[-1:])
 
-    if with_parliament:
-        df_BT = load_df_BT_p()
-        model_sentences = txt_to_model_sentences(
-            "data/with parliament/sentence_embeddings/sentence_embeddings_"
-            + str(year)
-            + ".txt"
+    str_parliament = "with" if with_parliament else "without"
+    model_sentences = txt_to_model_sentences(
+        data_loader,
+        f"{str_parliament}_parliament/sentence_embeddings/sentence_embeddings_"
+        + str(year)
+        + ".txt"
         )
-    if not with_parliament:
-        df_BT = load_df_BT_wp()
-        model_sentences = txt_to_model_sentences(
-            "data/without parliament/sentence_embeddings/sentence_embeddings_"
-            + str(year)
-            + ".txt"
-        )
+    df_BT = data_loader.read_csv(f"{str_parliament}_parliament/current_dataframes/df_BT.csv", index_col=[0]).reset_index()
+
 
     df_t = df_BT.loc[df_BT["year"] == year]
 

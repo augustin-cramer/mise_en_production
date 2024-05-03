@@ -1,21 +1,14 @@
 """Functions to go from the texts embeddings to the 
 cosine similarities with the defined axes."""
-
-import ast
 import warnings
 
 from gensim.test.utils import get_tmpfile
 from gensim.models import KeyedVectors
-from gensim.scripts.glove2word2vec import glove2word2vec
 import pandas as pd
 import numpy as np
-from dask import dataframe as dd
 from numpy.linalg import norm
 
 warnings.filterwarnings("ignore")
-
-from ..GloVe.weights import phrase
-
 
 #################################################
 # Transformation of the data for the projection #
@@ -217,10 +210,10 @@ def txt_to_model_sentences(data_loader, fichier: str):
     # glove2word2vec(fichier, word2vec_glove_file_sentences)
     data_loader.glove2word2vec(fichier, word2vec_glove_file_sentences)
     with open("data/" + fichier, "r") as file:
-        data = file.readlines(fichier)
+        data = file.readlines()
     data[0] = str(len(data) - 1) + " 50\n"
     with open("data/" + fichier, "w") as file:
-        file.writelines(data)
+        file.write(data)
     return KeyedVectors.load_word2vec_format(word2vec_glove_file_sentences)
 
 

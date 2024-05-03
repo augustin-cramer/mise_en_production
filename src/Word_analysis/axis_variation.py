@@ -9,7 +9,7 @@ import streamlit as st
 import pandas as pd
 
 from ..GloVe.weights import standard_opening
-from ..Axes.projection_functions import filter_model
+from ..Axes.projection_functions import filter_model, barycentre
 from ..Processing.text_cleaning import clean
 from ..Axes.axes_definition import *
 from ..Axes.models import instatiate_models_w
@@ -262,14 +262,10 @@ def axis_variation(
 
     if year_plus1 == 20110:
         year = 2019
-
-    if with_parliament:
-        file_path_1 = f"data/with parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
-        file_path_2 = f"data/with parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
-
-    if not with_parliament:
-        file_path_1 = f"data/without parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
-        file_path_2 = f"data/without parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
+    
+    str_parliament = "with" if with_parliament else "without"
+    file_path_1 = f"{str_parliament}_parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
+    file_path_2 = f"{str_parliament}_parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
 
     dataframes = []
     dataframes.append(process_embeddings(data_loader, file_path_1))
