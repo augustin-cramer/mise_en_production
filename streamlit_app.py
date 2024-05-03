@@ -1,7 +1,7 @@
 """Streamlit app"""
 
 import streamlit as st
-import yaml
+import os
 import s3fs
 
 from src.S3_Bucket_utils.read_data import DataLoader
@@ -12,15 +12,14 @@ from frontend.pages.curves_analysis import display_curves_analysis
 from frontend.pages.word_analysis import display_word_analysis
 from frontend.static.style import improve_style
 
-S3_CONFIG = yaml.safe_load(open("S3_config.yml"))
 BUCKET = "nfarhan/diffusion/mise_en_production/"
 
 try:
     fs = s3fs.S3FileSystem(
-        client_kwargs={"endpoint_url": S3_CONFIG["endpoint_url"]},
-        key=S3_CONFIG["key"],
-        secret=S3_CONFIG["secret"],
-        token=S3_CONFIG["token"],
+        client_kwargs={"endpoint_url": os.environ.get("ENDPOINT_URL")},
+        key=os.environ.get("S3_KEY"),
+        secret=os.environ.get("S3_SECRET"),
+        token=os.environ.get("S3_TOKEN"),
     )
     fs.ls(BUCKET)
     connection = {"fs": fs, "bucket": BUCKET}
