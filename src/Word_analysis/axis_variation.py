@@ -13,6 +13,7 @@ from ..Axes.projection_functions import filter_model
 from ..Processing.text_cleaning import clean
 from ..Axes.axes_definition import *
 from ..Axes.models import instatiate_models_w
+from ..Axes.projection_functions import barycentre
 
 warnings.filterwarnings("ignore")
 
@@ -264,12 +265,12 @@ def axis_variation(
         year = 2019
 
     if with_parliament:
-        file_path_1 = f"data/with parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
-        file_path_2 = f"data/with parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
+        file_path_1 = f"with_parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
+        file_path_2 = f"with_parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
 
     if not with_parliament:
-        file_path_1 = f"data/without parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
-        file_path_2 = f"data/without parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
+        file_path_1 = f"without_parliament/sentence_embeddings/sentence_embeddings_{year}.csv"
+        file_path_2 = f"without_parliament/sentence_embeddings/sentence_embeddings_{year_plus1}.csv"
 
     dataframes = []
     dataframes.append(process_embeddings(data_loader, file_path_1))

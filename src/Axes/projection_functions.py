@@ -3,6 +3,7 @@ cosine similarities with the defined axes."""
 
 import ast
 import warnings
+import os
 
 from gensim.test.utils import get_tmpfile
 from gensim.models import KeyedVectors
@@ -214,11 +215,12 @@ def txt_to_model_sentences(data_loader, fichier: str):
     """
     # glove_file_sentences = datapath(fichier)
     word2vec_glove_file_sentences = get_tmpfile("format_word2vec.text")
-    # glove2word2vec(fichier, word2vec_glove_file_sentences)
     data_loader.glove2word2vec(fichier, word2vec_glove_file_sentences)
-    data = data_loader.read_txt(fichier)
-    data[0] = str(len(data) - 1) + " 50\n"
-    data_loader.write_txt(data, fichier)
+    with open(word2vec_glove_file_sentences, "r") as file:
+        data = file.readlines()
+        data[0] = str(len(data) - 1) + " 50\n"
+    with open(word2vec_glove_file_sentences, "w") as file:
+        file.writelines(data)
     return KeyedVectors.load_word2vec_format(word2vec_glove_file_sentences)
 
 
@@ -231,7 +233,6 @@ def txt_to_model_words(data_loader, fichier: str):
     """
     # glove_file_sentences = datapath(fichier)
     word2vec_glove_file_sentences = get_tmpfile("format_word2vec.text")
-    # glove2word2vec(fichier, word2vec_glove_file_sentences)
     data_loader.glove2word2vec(fichier, word2vec_glove_file_sentences)
     return KeyedVectors.load_word2vec_format(word2vec_glove_file_sentences)
 

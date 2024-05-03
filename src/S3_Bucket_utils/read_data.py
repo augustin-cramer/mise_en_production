@@ -178,9 +178,21 @@ class DataLoader:
 
     def glove2word2vec(self, file_path, word2vec_glove_file_sentences):
         if self.from_s3:
+            with self.connection["fs"].open(self.connection["bucket"] + file_path, mode='r') as f:
+                text_content = f.read()
+
+            local_file_path = 'local_file.txt' 
+            try:
+                os.remove(local_file_path)
+            except:
+                pass
+            with open(local_file_path, mode="w") as file_out:
+                file_out.write(text_content)
             glove2word2vec(
-                self.connection["bucket"] + file_path,
+                local_file_path,
                 word2vec_glove_file_sentences,
             )
+            print('embeddings file opened')
+            
         else:
             glove2word2vec("data/" + file_path, word2vec_glove_file_sentences)
